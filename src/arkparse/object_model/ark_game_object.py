@@ -73,7 +73,12 @@ class ArkGameObject(ArkPropertyContainer):
                         ArkSaveLogger.debug_log(f"Name: {name}")
 
                     self.section = binary_reader.read_part()
-                    self.unknown = binary_reader.read_short()
+                    self.unknown = binary_reader.read_byte()
+
+                    # Zero byte here, only in aberration???
+                    is_zero = binary_reader.read_byte() == 0
+                    if not is_zero:
+                        binary_reader.set_position(binary_reader.position - 1)
 
                     ArkSaveLogger.debug_log(f"Section: {self.section}, Unknown: {self.unknown}")
                     
