@@ -5,9 +5,7 @@ from typing import Dict, Any
 from uuid import UUID
 
 from arkparse.logging import ArkSaveLogger
-from arkparse.object_model.cryopods.cryopod import Cryopod
-from arkparse.object_model.dinos.dino import Dino
-from arkparse.object_model.dinos.tamed_dino import TamedDino
+from arkparse.object_model.dinos import Dino
 from arkparse.object_model.equipment import Weapon, Shield, Armor, Saddle
 from arkparse.object_model.equipment.__equipment_with_armor import EquipmentWithArmor
 from arkparse.object_model.equipment.__equipment_with_durability import EquipmentWithDurability
@@ -16,90 +14,13 @@ from arkparse.object_model import ArkGameObject
 from arkparse.api import EquipmentApi, PlayerApi, StructureApi, DinoApi
 from arkparse.parsing import ArkBinaryParser
 from arkparse.parsing.struct.ark_item_net_id import ArkItemNetId
-from arkparse.parsing.struct import ArkUniqueNetIdRepl
+from arkparse.parsing.struct import ActorTransform
 from arkparse.parsing.struct import ObjectReference
 from arkparse.saves.asa_save import AsaSave
 from arkparse.utils.json_utils import DefaultJsonEncoder
 
 from arkparse.enums import ArkEquipmentStat
 from arkparse.object_model.equipment.__armor_defaults import _get_default_hypoT, _get_default_hyperT
-
-def get_player_short_name(obj: ArkGameObject):
-    to_strip_end = [
-        "_C",
-    ]
-
-    short = obj.blueprint.split('/')[-1].split('.')[0]
-
-    for strip in to_strip_end:
-        if short.endswith(strip):
-            short = short[:-len(strip)]
-
-    return short
-
-def get_actual_value(obj: ArkGameObject, stat: ArkEquipmentStat, internal_value: int) -> float:
-    if stat == ArkEquipmentStat.ARMOR:
-        d = EquipmentWithArmor.get_default_armor(obj.blueprint)
-        return round(d * (0.0002 * internal_value + 1), 1)
-    elif stat == ArkEquipmentStat.DURABILITY:
-        d = EquipmentWithDurability.get_default_dura(obj.blueprint)
-        return d * (0.00025 * internal_value + 1)
-    elif stat == ArkEquipmentStat.DAMAGE:
-        return round(100.0 + internal_value / 100, 1)
-    elif stat == ArkEquipmentStat.HYPOTHERMAL_RESISTANCE:
-        if internal_value == 0:
-            return 0
-        d = _get_default_hypoT(obj.blueprint)
-        return round(d * (0.0002 * internal_value + 1), 1)
-    elif stat == ArkEquipmentStat.HYPERTHERMAL_RESISTANCE:
-        if internal_value == 0:
-            return 0
-        d = _get_default_hyperT(obj.blueprint)
-        return round(d * (0.0002 * internal_value + 1), 1)
-    else:
-        raise ValueError(f"Stat {stat} is not valid for {obj.blueprint}")
-
-def primal_item_to_json_obj(obj: ArkGameObject):
-    item_id: ArkItemNetId = obj.get_property_value("ItemID")
-    owner_in: ObjectReference = obj.get_property_value("OwnerInventory", default=ObjectReference())
-    owner_inv_uuid = UUID(owner_in.value) if owner_in is not None and hasattr(owner_in, "value") and owner_in.value is not None else None
-    result = { "UUID": obj.uuid.__str__() if obj.uuid is not None else None,
-               "ItemNetId1": item_id.id1 if item_id is not None else None,
-               "ItemNetId2": item_id.id2 if item_id is not None else None,
-               "OwnerInventoryUUID": owner_inv_uuid.__str__() if owner_inv_uuid is not None else None,
-               "ClassName": "item",
-               "ItemArchetype": obj.blueprint }
-
-    if obj.properties is not None and len(obj.properties) > 0:
-        for prop in obj.properties:
-            if prop is not None:
-                if prop.name is not None and \
-                        len(prop.name) > 0 and \
-                        "CustomItemDatas" not in prop.name and \
-                        "ItemID" not in prop.name and \
-                        "OwnerInventory" not in prop.name:
-                    prop_value = obj.get_property_value(prop.name, None)
-                    if "NextSpoilingTime" in prop.name or "SavedDurability" in prop.name:
-                        if math.isnan(prop.value):
-                            prop_value = None
-                    result[prop.name] = prop_value
-
-    if "/PrimalItemArmor_" in obj.blueprint:
-        armor = obj.get_property_value("ItemStatValues", position=ArkEquipmentStat.ARMOR.value, default=0)
-        result["Armor"] = get_actual_value(obj, ArkEquipmentStat.ARMOR, armor)
-        dura = obj.get_property_value("ItemStatValues", position=ArkEquipmentStat.DURABILITY.value, default=0)
-        result["Durability"] = get_actual_value(obj, ArkEquipmentStat.DURABILITY, dura)
-        if "Saddle" not in obj.blueprint:
-            hypo = obj.get_property_value("ItemStatValues", position=ArkEquipmentStat.HYPOTHERMAL_RESISTANCE.value, default=0)
-            result["HypothermalResistance"] = get_actual_value(obj, ArkEquipmentStat.HYPOTHERMAL_RESISTANCE, hypo)
-            hyper = obj.get_property_value("ItemStatValues", position=ArkEquipmentStat.HYPERTHERMAL_RESISTANCE.value, default=0)
-            result["HyperthermalResistance"] = get_actual_value(obj, ArkEquipmentStat.HYPERTHERMAL_RESISTANCE, hyper)
-
-    if "/PrimalItem_" in obj.blueprint:
-        damage = obj.get_property_value("ItemStatValues", position=ArkEquipmentStat.DAMAGE.value, default=0)
-        result["Damage"] = get_actual_value(obj, ArkEquipmentStat.DAMAGE, damage)
-
-    return result
 
 class JsonApi:
     def __init__(self, save: AsaSave, ignore_error: bool = False):
@@ -108,6 +29,89 @@ class JsonApi:
 
     def __del__(self):
         self.save = None
+
+    # -----------------
+    # UTILITY FUNCTIONS
+    # -----------------
+
+    @staticmethod
+    def get_actual_value(obj: ArkGameObject, stat: ArkEquipmentStat, internal_value: int) -> float:
+        if stat == ArkEquipmentStat.ARMOR:
+            d = EquipmentWithArmor.get_default_armor(obj.blueprint)
+            return round(d * (0.0002 * internal_value + 1), 1)
+        elif stat == ArkEquipmentStat.DURABILITY:
+            d = EquipmentWithDurability.get_default_dura(obj.blueprint)
+            return d * (0.00025 * internal_value + 1)
+        elif stat == ArkEquipmentStat.DAMAGE:
+            return round(100.0 + internal_value / 100, 1)
+        elif stat == ArkEquipmentStat.HYPOTHERMAL_RESISTANCE:
+            if internal_value == 0:
+                return 0
+            d = _get_default_hypoT(obj.blueprint)
+            return round(d * (0.0002 * internal_value + 1), 1)
+        elif stat == ArkEquipmentStat.HYPERTHERMAL_RESISTANCE:
+            if internal_value == 0:
+                return 0
+            d = _get_default_hyperT(obj.blueprint)
+            return round(d * (0.0002 * internal_value + 1), 1)
+        else:
+            return 0
+
+    @staticmethod
+    def primal_item_to_json_obj(obj: ArkGameObject):
+        # Grab already set properties
+        json_obj: Dict[str, Any] = {"UUID": obj.uuid.__str__(),
+                                    "ClassName": "item",
+                                    "ItemArchetype": obj.blueprint}
+
+        # Grab item ID if it exists
+        if obj.has_property("ItemID"):
+            item_id: ArkItemNetId = obj.get_property_value("ItemID")
+            if item_id is not None:
+                json_obj["ItemID"] = item_id.to_json_obj()
+
+        # Grab item owner inventory if it exists
+        if obj.has_property("OwnerInventory"):
+            owner_inv: ObjectReference = obj.get_property_value("OwnerInventory")
+            if owner_inv is not None and owner_inv.value is not None:
+                json_obj["OwnerInventoryUUID"] = owner_inv.value
+
+        # Grab specific item stats
+        if obj.has_property("ItemStatValues"):
+            if "/PrimalItemArmor_" in obj.blueprint:
+                armor = obj.get_property_value("ItemStatValues", position=ArkEquipmentStat.ARMOR.value, default=0)
+                json_obj["Armor"] = JsonApi.get_actual_value(obj, ArkEquipmentStat.ARMOR, armor)
+                dura = obj.get_property_value("ItemStatValues", position=ArkEquipmentStat.DURABILITY.value, default=0)
+                json_obj["Durability"] = JsonApi.get_actual_value(obj, ArkEquipmentStat.DURABILITY, dura)
+                if "Saddle" not in obj.blueprint:
+                    hypo = obj.get_property_value("ItemStatValues", position=ArkEquipmentStat.HYPOTHERMAL_RESISTANCE.value, default=0)
+                    json_obj["HypothermalResistance"] = JsonApi.get_actual_value(obj, ArkEquipmentStat.HYPOTHERMAL_RESISTANCE, hypo)
+                    hyper = obj.get_property_value("ItemStatValues", position=ArkEquipmentStat.HYPERTHERMAL_RESISTANCE.value, default=0)
+                    json_obj["HyperthermalResistance"] = JsonApi.get_actual_value(obj, ArkEquipmentStat.HYPERTHERMAL_RESISTANCE, hyper)
+            if "/PrimalItem_" in obj.blueprint:
+                damage = obj.get_property_value("ItemStatValues", position=ArkEquipmentStat.DAMAGE.value, default=0)
+                json_obj["Damage"] = JsonApi.get_actual_value(obj, ArkEquipmentStat.DAMAGE, damage)
+
+        # Grab remaining properties if any
+        if obj.properties is not None and len(obj.properties) > 0:
+            for prop in obj.properties:
+                if prop is not None and \
+                        prop.name is not None and \
+                        len(prop.name) > 0 and \
+                        "ItemID" not in prop.name and \
+                        "OwnerInventory" not in prop.name and \
+                        "ItemStatValues" not in prop.name:
+                    prop_value = obj.get_property_value(prop.name)
+                    if "NextSpoilingTime" in prop.name or "SavedDurability" in prop.name:
+                        if math.isnan(prop.value):
+                            prop_value = None
+                    json_obj[prop.name] = prop_value
+
+        return json_obj
+
+    # ----------------
+    # EXPORT FUNCTIONS
+    # ----------------
 
     def export_armors(self, equipment_api: EquipmentApi = None, export_folder_path: str = Path.cwd() / "json_exports"):
         ArkSaveLogger.api_log("Exporting armors...")
@@ -226,36 +230,43 @@ class JsonApi:
         # Format player pawns into JSON.
         all_pawns = []
         for pawn_obj in player_pawns.values():
-            pawn_obj_binary = self.save.get_game_obj_binary(pawn_obj.uuid)
-            pawn: StructureWithInventory = StructureWithInventory(pawn_obj.uuid, ArkBinaryParser(pawn_obj_binary, save_context=self.save.save_context), self.save)
-            if pawn.inventory is not None and pawn.inventory.object is not None:
-                platform_profile_id: ArkUniqueNetIdRepl = pawn_obj.get_property_value("PlatformProfileID", None)
-                pawn_data = { "UUID": pawn_obj.uuid.__str__() if pawn_obj.uuid is not None else None,
-                              "InventoryUUID": pawn.inventory.object.uuid.__str__() if pawn.inventory.object.uuid is not None else None,
-                              "ShortName": get_player_short_name(pawn_obj),
-                              "ClassName": "player",
-                              "ItemArchetype": pawn_obj.blueprint,
-                              "PlayerUniqueNetID": platform_profile_id.value if platform_profile_id is not None else None,
-                              "PlayerName": pawn_obj.get_property_value("PlayerName", None),
-                              "PlatformProfileName": pawn_obj.get_property_value("PlatformProfileName", None),
-                              "LinkedPlayerDataID": pawn_obj.get_property_value("LinkedPlayerDataID", None),
-                              "TribeID": pawn_obj.get_property_value("TargetingTeam", None),
-                              "TribeName": pawn_obj.get_property_value("TribeName", None),
-                              "SavedSleepAnim": pawn_obj.get_property_value("SavedSleepAnim", None), # Last sleep time (Game Time in seconds)
-                              "SavedLastTimeHadController": pawn_obj.get_property_value("SavedLastTimeHadController", None), # Last controlled time (Game Time in seconds)
-                              "LastTimeUpdatedCharacterStatusComponent": pawn_obj.get_property_value("LastTimeUpdatedCharacterStatusComponent", None), # Last StatusComponent update time (Game Time in seconds)
-                              "LastEnterStasisTime": pawn_obj.get_property_value("LastEnterStasisTime", None), # Last enter statis time (Game Time in seconds)
-                              "OriginalCreationTime": pawn_obj.get_property_value("OriginalCreationTime", None), # Original creation time (Game Time in seconds)
-                              "FacialHairIndex": pawn_obj.get_property_value("FacialHairIndex", None),
-                              "HeadHairIndex": pawn_obj.get_property_value("HeadHairIndex", None),
-                              "PercentOfFullHeadHairGrowth": pawn_obj.get_property_value("PercentOfFullHeadHairGrowth", None),
-                              "bGaveInitialItems": pawn_obj.get_property_value("bGaveInitialItems", None),
-                              "bIsSleeping": pawn_obj.get_property_value("bIsSleeping", None),
-                              "bSavedWhenStasised": pawn_obj.get_property_value("bSavedWhenStasised", None),
-                              "ActorTransformX": pawn_obj.location.x if pawn_obj.location is not None else None,
-                              "ActorTransformY": pawn_obj.location.y if pawn_obj.location is not None else None,
-                              "ActorTransformZ": pawn_obj.location.z if pawn_obj.location is not None else None }
-                all_pawns.append(pawn_data)
+            # Grab already set properties
+            pawn_data: Dict[str, Any] = { "UUID": pawn_obj.uuid.__str__(),
+                                          "ClassName": "player",
+                                          "ItemArchetype": pawn_obj.blueprint }
+
+            # Grab pawn location if it exists
+            if pawn_obj.has_property("SavedBaseWorldLocation"):
+                pawn_location = ActorTransform(vector = pawn_obj.get_property_value("SavedBaseWorldLocation"))
+                if pawn_location is not None:
+                    pawn_data["ActorTransformX"] = pawn_location.x
+                    pawn_data["ActorTransformY"] = pawn_location.y
+                    pawn_data["ActorTransformZ"] = pawn_location.z
+
+            # Grab pawn inventory UUID if it exists
+            if pawn_obj.has_property("MyInventoryComponent"):
+                inv_comp = pawn_obj.get_property_value("MyInventoryComponent")
+                if inv_comp is not None and inv_comp.value is not None:
+                    pawn_data["InventoryUUID"] = inv_comp.value
+
+            # Grab pawn owner inventory UUID if it exists
+            if pawn_obj.has_property("OwnerInventory"):
+                owner_inv: ObjectReference = pawn_obj.get_property_value("OwnerInventory")
+                if owner_inv is not None and owner_inv.value is not None:
+                    pawn_data["OwnerInventoryUUID"] = owner_inv.value
+
+            # Grab remaining properties if any
+            if pawn_obj.properties is not None and len(pawn_obj.properties) > 0:
+                for prop in pawn_obj.properties:
+                    if prop is not None and \
+                            prop.name is not None and \
+                            len(prop.name) > 0 and \
+                            "SavedBaseWorldLocation" not in prop.name and \
+                            "MyInventoryComponent" not in prop.name and \
+                            "OwnerInventory" not in prop.name:
+                        pawn_data[prop.name] = pawn_obj.get_property_value(prop.name)
+
+            all_pawns.append(pawn_data)
 
         # Create json exports folder if it does not exist.
         path_obj = Path(export_folder_path)
@@ -276,16 +287,12 @@ class JsonApi:
             dino_api = DinoApi(self.save)
 
         # Get dinos.
-        dinos: Dict[UUID, Any] = dino_api.get_all()
+        dinos: Dict[UUID, Dino] = dino_api.get_all()
 
         # Format dinos into JSON.
         all_dinos = []
         for dino in dinos.values():
-            if isinstance(dino, TamedDino):
-                tamed_dino: TamedDino = dino
-                all_dinos.append(tamed_dino.to_json_obj())
-            else:
-                all_dinos.append(dino.to_json_obj())
+            all_dinos.append(dino.to_json_obj())
 
         # Create json exports folder if it does not exist.
         path_obj = Path(export_folder_path)
@@ -306,16 +313,12 @@ class JsonApi:
             structure_api = StructureApi(self.save)
 
         # Get structures.
-        structures: Dict[UUID, Structure | StructureWithInventory] = structure_api.get_all()
+        structures: list[Structure | StructureWithInventory] = structure_api.get_all_fast()
 
         # Format dinos into JSON.
         all_structures = []
-        for structure in structures.values():
-            if isinstance(structure, StructureWithInventory):
-                structure_with_inv: StructureWithInventory = structure
-                all_structures.append(structure_with_inv.to_json_obj())
-            else:
-                all_structures.append(structure.to_json_obj())
+        for structure in structures:
+            all_structures.append(structure.to_json_obj())
 
         # Create json exports folder if it does not exist.
         path_obj = Path(export_folder_path)
@@ -351,10 +354,13 @@ class JsonApi:
                     continue
 
                 obj = self.save.parse_as_predefined_object(obj_uuid, class_name, byte_buffer)
-                if obj:
-                    if (not include_engrams) and obj.get_property_value("bIsEngram"):
+                if obj is not None:
+                    is_engram = False
+                    if obj.has_property("bIsEngram"):
+                        is_engram = obj.get_property_value("bIsEngram", False)
+                    if is_engram and not include_engrams:
                         continue
-                    all_items.append(primal_item_to_json_obj(obj))
+                    all_items.append(JsonApi.primal_item_to_json_obj(obj))
 
         # Create json exports folder if it does not exist.
         path_obj = Path(export_folder_path)
@@ -370,12 +376,14 @@ class JsonApi:
     def export_all(self,
                    equipment_api: EquipmentApi = None,
                    player_api: PlayerApi = None,
+                   dino_api: DinoApi = None,
+                   structure_api: StructureApi = None,
                    export_folder_path: str = Path.cwd() / "json_exports"):
         self.export_armors(equipment_api=equipment_api, export_folder_path=export_folder_path)
         self.export_weapons(equipment_api=equipment_api, export_folder_path=export_folder_path)
         self.export_shields(equipment_api=equipment_api, export_folder_path=export_folder_path)
         self.export_saddles(equipment_api=equipment_api, export_folder_path=export_folder_path)
-        self.export_player_pawns(player_api=player_api, export_folder_path=export_folder_path)
         self.export_items(export_folder_path=export_folder_path)
-        self.export_dinos(export_folder_path=export_folder_path)
-        self.export_structures(export_folder_path=export_folder_path)
+        self.export_structures(structure_api=structure_api, export_folder_path=export_folder_path)
+        self.export_dinos(dino_api=dino_api, export_folder_path=export_folder_path)
+        self.export_player_pawns(player_api=player_api, export_folder_path=export_folder_path)

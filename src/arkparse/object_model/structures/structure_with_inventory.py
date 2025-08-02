@@ -14,7 +14,7 @@ class StructureWithInventory(Structure):
 
     inventory: Inventory
 
-    def __init__(self, uuid: UUID, save: AsaSave):
+    def __init__(self, uuid: UUID, binary: ArkBinaryParser, database: AsaSave, bypass_inventory: bool = False):
         super().__init__(uuid, save=save)
         self.save = save
 
@@ -23,7 +23,7 @@ class StructureWithInventory(Structure):
         self.item_count = self.object.get_property_value("CurrentItemCount", default=0)
         self.max_item_count = self.object.get_property_value("MaxItemCount")
 
-        if self.inventory_uuid is not None:
+        if self.inventory_uuid is not None and not bypass_inventory:
             self.inventory = Inventory(self.inventory_uuid, save=self.save)
         else:
             self.inventory = None

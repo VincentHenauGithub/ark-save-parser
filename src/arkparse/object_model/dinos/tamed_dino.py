@@ -76,8 +76,8 @@ class TamedDino(Dino):
 
     def to_json_obj(self):
         json_obj = super().to_json_obj()
-        if self.cryopod is not None:
-            json_obj["CryopodUUID"] = self.cryopod.object.uuid.__str__() if self.cryopod is not None and self.cryopod.object is not None and self.cryopod.object.uuid is not None else None
+        if self.cryopod is not None and self.cryopod.object is not None and self.cryopod.object.uuid is not None:
+            json_obj["CryopodUUID"] = self.cryopod.object.uuid.__str__()
         return json_obj
 
     def to_json_str(self):

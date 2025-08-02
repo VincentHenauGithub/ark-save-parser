@@ -1,5 +1,8 @@
+import json
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
+
+from arkparse.utils.json_utils import DefaultJsonEncoder
 
 if TYPE_CHECKING:
     from arkparse.parsing import ArkBinaryParser
@@ -17,6 +20,12 @@ class ArkDinoAncestor:
     def __str__(self):
         return f"Ancestor:(name={self.name}, id=({self.id1}, {self.id2}))"
 
+    def to_json_obj(self):
+        return { "name": self.name, "id1": self.id1, "id2": self.id2 }
+
+    def to_json_str(self):
+        return json.dumps(self.to_json_obj(), default=lambda o: o.to_json_obj() if hasattr(o, 'to_json_obj') else None, indent=4, cls=DefaultJsonEncoder)
+
 @dataclass
 class ArkDinoAncestorEntry:
     male: ArkDinoAncestor
@@ -33,5 +42,12 @@ class ArkDinoAncestorEntry:
         id2 = byte_buffer.parse_uint32_property("FemaleDinoID2")
         self.female = ArkDinoAncestor(female_name, id1, id2)
         byte_buffer.validate_name("None")
+
     def __str__(self):
         return f"AncestorEntry:[M:{self.male}, F:{self.female}]"
+
+    def to_json_obj(self):
+        return { "male": self.male.to_json_obj(), "female": self.female.to_json_obj() }
+
+    def to_json_str(self):
+        return json.dumps(self.to_json_obj(), default=lambda o: o.to_json_obj() if hasattr(o, 'to_json_obj') else None, indent=4, cls=DefaultJsonEncoder)

@@ -14,6 +14,7 @@ from arkparse.enums import ArkDinoTrait
 from arkparse.utils.json_utils import DefaultJsonEncoder
 
 from .stats import DinoStats
+from ..misc.inventory import Inventory
 from ...parsing.struct import ObjectReference
 
 
@@ -140,70 +141,77 @@ class Dino(ParsedObjectBase):
         return server_name
 
     def to_json_obj(self):
-        inv_uuid = None
-        inv_comp: ObjectReference = self.object.get_property_value("MyInventoryComponent")
-        if inv_comp is not None:
-            inv_uuid = UUID(inv_comp.value)
-        return { "UUID": self.object.uuid.__str__(),
-                 "InventoryUUID": inv_uuid.__str__() if inv_uuid is not None else None,
-                 "DinoID1": self.id1,
-                 "DinoID2": self.id2,
-                 "bIsCryopodded": self.is_cryopodded,
-                 "ShortName": self.get_short_name(),
-                 "ClassName": "dino",
-                 "ItemArchetype": self.object.blueprint,
-                 "BaseLevel": self.stats.base_level if self.stats is not None else None,
-                 "CurrentLevel": self.stats.current_level if self.stats is not None else None,
-                 "BaseStatPoints": self.stats.base_stat_points.to_string_all() if self.stats is not None and self.stats.base_stat_points is not None else None,
-                 "AddedStatPoints": self.stats.added_stat_points.to_string_all() if self.stats is not None and self.stats.added_stat_points is not None else None,
-                 "MutatedStatPoints": self.stats.mutated_stat_points.to_string_all() if self.stats is not None and self.stats.mutated_stat_points is not None else None,
-                 "StatValues": self.stats.stat_values.to_string_all() if self.stats is not None and self.stats.stat_values is not None else None,
-                 "GeneTraits": ', '.join(self.gene_traits) if self.gene_traits is not None else None,
-                 "ColorSetIndices": self.get_color_set_indices().__str__(),
-                 "ColorSetNames": self.get_color_set_names().__str__(),
-                 "BabyAge": self.object.get_property_value("BabyAge", None),
-                 "ForcedWildBabyAge": self.object.get_property_value("ForcedWildBabyAge", None),
-                 "ImprinterName": self.object.get_property_value("ImprinterName", None),
-                 "ImprinterPlayerUniqueNetId": self.object.get_property_value("ImprinterPlayerUniqueNetId", None),
-                 "OwningPlayerID": self.object.get_property_value("OwningPlayerID", None),
-                 "OwningPlayerName": self.object.get_property_value("OwningPlayerName", None),
-                 "RandomMutationsFemale": self.object.get_property_value("RandomMutationsFemale", None),
-                 "RandomMutationsMale": self.object.get_property_value("RandomMutationsMale", None),
-                 "RequiredTameAffinity": self.object.get_property_value("RequiredTameAffinity", None),
-                 "StoredXP": self.object.get_property_value("StoredXP", None),
-                 "UploadedFromServerName": self.get_uploaded_from_server_name(),
-                 "TamedOnServerName": self.object.get_property_value("TamedOnServerName", None),
-                 "TamedName": self.object.get_property_value("TamedName", None),
-                 "TamerString": self.object.get_property_value("TamerString", None),
-                 "TamingTeamID": self.object.get_property_value("TamingTeamID", None),
-                 "TargetingTeam": self.object.get_property_value("TargetingTeam", None),
-                 "TribeName": self.object.get_property_value("TribeName", None),
-                 "bBabyInitiallyUnclaimed": self.object.get_property_value("bBabyInitiallyUnclaimed", None),
-                 "bDontWander": self.object.get_property_value("bDontWander", None),
-                 "bEnableTamedMating": self.object.get_property_value("bEnableTamedMating", None),
-                 "bEnableTamedWandering": self.object.get_property_value("bEnableTamedWandering", None),
-                 "bForceDisablingTaming": self.object.get_property_value("bForceDisablingTaming", None),
-                 "bIsBaby": self.object.get_property_value("bIsBaby", None),
-                 "bIsDead": self.object.get_property_value("bIsDead", None),
-                 "bIsFemale": self.object.get_property_value("bIsFemale", None),
-                 "bIsFlying": self.object.get_property_value("bIsFlying", None),
-                 "bIsParentWildDino": self.object.get_property_value("bIsParentWildDino", None),
-                 "bIsSleeping": self.object.get_property_value("bIsSleeping", None),
-                 "bSavedWhenStasised": self.object.get_property_value("bSavedWhenStasised", None),
-                 "DinoDownloadedAtTime": self.object.get_property_value("DinoDownloadedAtTime", None),
-                 "LastEnterStasisTime": self.object.get_property_value("LastEnterStasisTime", None),
-                 "LastInAllyRangeSerialized": self.object.get_property_value("LastInAllyRangeSerialized", None),
-                 "LastUnstasisStructureTime": self.object.get_property_value("LastUnstasisStructureTime", None),
-                 "LastUpdatedBabyAgeAtTime": self.object.get_property_value("LastUpdatedBabyAgeAtTime", None),
-                 "LastUpdatedGestationAtTime": self.object.get_property_value("LastUpdatedGestationAtTime", None),
-                 "LastUpdatedMatingAtTime": self.object.get_property_value("LastUpdatedMatingAtTime", None),
-                 "NextAllowedMatingTime": self.object.get_property_value("NextAllowedMatingTime", None),
-                 "OriginalCreationTime": self.object.get_property_value("OriginalCreationTime", None),
-                 "TamedAtTime": self.object.get_property_value("TamedAtTime", None),
-                 "TamedTimeStamp": self.object.get_property_value("TamedTimeStamp", None),
-                 "ActorTransformX": self.location.x if self.location is not None else None,
-                 "ActorTransformY": self.location.y if self.location is not None else None,
-                 "ActorTransformZ": self.location.z if self.location is not None else None }
+        # Grab already set properties
+        json_obj = { "UUID": self.object.uuid.__str__(),
+                     "DinoID1": self.id1,
+                     "DinoID2": self.id2,
+                     "bIsCryopodded": self.is_cryopodded,
+                     "bIsFemale": self.is_female,
+                     "ShortName": self.get_short_name(),
+                     "ClassName": "dino",
+                     "ItemArchetype": self.object.blueprint }
+
+        # Grab dino location if it exists
+        if self.location is not None:
+            json_obj["ActorTransformX"] = self.location.x
+            json_obj["ActorTransformY"] = self.location.y
+            json_obj["ActorTransformZ"] = self.location.z
+
+        # Grab dino inventory UUID if it exists
+        if self.object.has_property("MyInventoryComponent"):
+            inv_comp = self.object.get_property_value("MyInventoryComponent")
+            if inv_comp is not None and inv_comp.value is not None:
+                json_obj["InventoryUUID"] = inv_comp.value
+
+        # Grab owner inventory UUID if it exists
+        if self.object.has_property("OwnerInventory"):
+            owner_inv: ObjectReference = self.object.get_property_value("OwnerInventory")
+            if owner_inv is not None and owner_inv.value is not None:
+                json_obj["OwnerInventoryUUID"] = owner_inv.value
+
+        # Grab stats if they exists
+        if self.stats is not None:
+            json_obj["BaseLevel"] = self.stats.base_level
+            json_obj["CurrentLevel"] = self.stats.current_level
+            if self.stats.base_stat_points is not None:
+                json_obj["BaseStatPoints"] = self.stats.base_stat_points.to_string_all()
+            if self.stats.added_stat_points is not None:
+                json_obj["AddedStatPoints"] = self.stats.added_stat_points.to_string_all()
+            if self.stats.mutated_stat_points is not None:
+                json_obj["MutatedStatPoints"] = self.stats.mutated_stat_points.to_string_all()
+            if self.stats.stat_values is not None:
+                json_obj["StatValues"] = self.stats.stat_values.to_string_all()
+
+        # Grab gene traits if they exists
+        if self.gene_traits is not None:
+            json_obj["GeneTraits"] = self.gene_traits
+
+        # Grab colors if they exists
+        color_set_indices = self.get_color_set_indices()
+        if color_set_indices is not None:
+            json_obj["ColorSetIndices"] = color_set_indices.__str__()
+        color_set_names = self.get_color_set_names()
+        if color_set_names is not None:
+            json_obj["ColorSetNames"] = color_set_names.__str__()
+
+        # Grab remaining properties if any
+        if self.object.properties is not None and len(self.object.properties) > 0:
+            for prop in self.object.properties:
+                if prop is not None and \
+                        prop.name is not None and \
+                        len(prop.name) > 0 and \
+                        "DinoID1" not in prop.name and \
+                        "DinoID2" not in prop.name and \
+                        "bIsFemale" not in prop.name and \
+                        "SavedBaseWorldLocation" not in prop.name and \
+                        "MyInventoryComponent" not in prop.name and \
+                        "OwnerInventory" not in prop.name and \
+                        "GeneTraits" not in prop.name and \
+                        "ColorSetIndices" not in prop.name and \
+                        "ColorSetNames" not in prop.name:
+                    json_obj[prop.name] = self.object.get_property_value(prop.name)
+
+        return json_obj
 
     def to_json_str(self):
         return json.dumps(self.to_json_obj(), default=lambda o: o.to_json_obj() if hasattr(o, 'to_json_obj') else None, indent=4, cls=DefaultJsonEncoder)

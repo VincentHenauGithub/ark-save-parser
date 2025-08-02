@@ -24,3 +24,6 @@ class ArkGigantoraptorBondedStruct:
         ark_binary_data.validate_name("None")
 
         ArkSaveLogger.parser_log(f"ArkGigantoraptorBondedStruct: {self.dino_class}, {self.dino_name} (ID1: {self.id1}, ID2: {self.id2})")
+
+    def to_json_obj(self):
+        return { "id1": self.id1, "id2": self.id2, "dino_class": self.dino_class, "dino_name": self.dino_name }

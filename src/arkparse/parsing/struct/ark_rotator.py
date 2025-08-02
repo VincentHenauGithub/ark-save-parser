@@ -27,3 +27,6 @@ class ArkRotator:
 
     def __str__(self):
         return f"Rotator(Pitch: {self.pitch:.2f}, Yaw: {self.yaw:.2f}, Roll: {self.roll:.2f})"
+
+    def to_json_obj(self):
+        return { "pitch": self.pitch, "yaw": self.yaw, "roll": self.roll }

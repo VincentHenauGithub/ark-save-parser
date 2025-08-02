@@ -19,3 +19,6 @@ class ArkQuat:
         self.w = byte_buffer.read_double()
 
         ArkSaveLogger.parser_log(f"Read ArkQuat: x={self.x}, y={self.y}, z={self.z}, w={self.w}")
+
+    def to_json_obj(self):
+        return { "x": self.x, "y": self.y, "z": self.z, "w": self.w }

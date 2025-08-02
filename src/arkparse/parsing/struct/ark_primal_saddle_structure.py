@@ -32,3 +32,6 @@ class ArkPrimalSaddleStructure:
         ark_binary_data.validate_name("None")
 
         ArkSaveLogger.parser_log(f"ArkPrimalSaddleStructure: {self.location}, {self.rotation}, {self.bone_name}, {self.my_structure}")
+
+    def to_json_obj(self):
+        return { "location": self.location.to_json_obj(), "rotation": self.rotation.to_json_obj(), "bone_name": self.bone_name, "my_structure": self.my_structure.__str__() }

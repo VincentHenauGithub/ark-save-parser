@@ -45,8 +45,24 @@ class StructureApi:
         for key, loc in self.save.save_context.actor_transforms.items():
             if key == obj.uuid:
                 structure.set_actor_transform(loc)
+                break
 
         self.parsed_structures[obj.uuid] = structure
+
+        return structure
+
+    def _parse_single_structure_fast(self, obj: ArkGameObject, parser: ArkBinaryParser = None) -> Union[Structure | StructureWithInventory]:
+        """Same as _parse_single_structure, but does not parse Inventory and does not store in cache."""
+        if parser is None:
+            parser = ArkBinaryParser(self.save.get_game_obj_binary(obj.uuid), self.save.save_context)
+
+        if obj.get_property_value("MaxItemCount") is not None or (obj.get_property_value("MyInventoryComponent") is not None and obj.get_property_value("CurrentItemCount") is not None):
+            structure = StructureWithInventory(obj.uuid, parser, self.save, bypass_inventory=True)
+        else:
+            structure = Structure(obj.uuid, parser)
+
+        if obj.uuid in self.save.save_context.actor_transforms:
+            structure.set_actor_transform(self.save.save_context.actor_transforms[obj.uuid])
 
         return structure
 
@@ -73,7 +89,22 @@ class StructureApi:
             self.retrieved_all = True
 
         return structures
-    
+
+    def get_all_fast(self, config: GameObjectReaderConfiguration = None) -> List[Structure | StructureWithInventory]:
+        """Same as get_all, but uses fast parsing and does not store in cache."""
+
+        objects = self.get_all_objects(config)
+
+        structures = []
+
+        for obj in objects.values():
+            if obj is None:
+                continue
+            structure = self._parse_single_structure_fast(obj)
+            structures.append(structure)
+
+        return structures
+
     def get_by_id(self, id: UUID) -> Union[Structure, StructureWithInventory]:
         obj = self.save.get_game_object_by_id(id)
         return self._parse_single_structure(obj)

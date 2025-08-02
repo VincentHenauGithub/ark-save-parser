@@ -156,24 +156,31 @@ class Equipment(InventoryItem):
         return cls(item.object.uuid, parser)
 
     def to_json_obj(self):
-        return {"UUID": self.object.uuid.__str__(),
-                "ItemNetId1": self.id_.id1 if self.id_ is not None else None,
-                "ItemNetId2": self.id_.id2 if self.id_ is not None else None,
-                "OwnerInventoryUUID": self.owner_inv_uuid.__str__() if self.owner_inv_uuid is not None else None,
-                "ShortName": self.get_short_name(),
-                "ClassName": self.class_name,
-                "ItemArchetype": self.object.blueprint,
-                "ImplementedStats": self.get_implemented_stats().__str__() if self.get_implemented_stats() is not None else None,
-                "bIsBlueprint": self.is_bp,
-                "bEquippedItem": self.is_equipped,
-                "bIsRated": self.is_rated(),
-                "bIsCrafted": self.is_crafted(),
-                "ItemQuantity": self.quantity,
-                "ItemQualityIndex": self.quality,
-                "ItemRating": self.rating,
-                "SavedDurability": self.current_durability,
-                "CrafterCharacterName": self.crafter.char_name if self.crafter is not None else None,
-                "CrafterTribeName": self.crafter.tribe_name if self.crafter is not None else None}
+        json_obj = super().to_json_obj()
+
+        # Grab already set properties
+        json_obj["ShortName"] = self.get_short_name(),
+        json_obj["ClassName"] = self.class_name,
+        json_obj["ItemArchetype"] = self.object.blueprint,
+        json_obj["bIsBlueprint"] = self.is_bp
+        json_obj["bEquippedItem"] = self.is_equipped
+        json_obj["bIsRated"] = self.is_rated()
+        json_obj["bIsCrafted"] = self.is_crafted()
+        json_obj["ItemQualityIndex"] = self.quality
+        json_obj["ItemRating"] = self.rating
+        json_obj["SavedDurability"] = self.current_durability
+
+        # Grab implemented stats if they exists
+        implemented_stats =self.get_implemented_stats()
+        if implemented_stats is not None:
+            json_obj["ImplementedStats"] = implemented_stats
+
+        # Grab crafter if it exists
+        if self.crafter is not None:
+            json_obj["CrafterCharacterName"] = self.crafter.char_name
+            json_obj["CrafterTribeName"] = self.crafter.tribe_name
+
+        return json_obj
 
     def to_json_str(self):
         return json.dumps(self.to_json_obj(), default=lambda o: o.to_json_obj() if hasattr(o, 'to_json_obj') else None, indent=4, cls=DefaultJsonEncoder)

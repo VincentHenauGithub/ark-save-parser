@@ -18,3 +18,6 @@ class ArkEnumValue:
 
     def __str__(self):
         return f"{self.enum_name}->{self.enum_value}"
+
+    def to_json_obj(self):
+        return { "name": self.enum_name, "value": self.enum_value }

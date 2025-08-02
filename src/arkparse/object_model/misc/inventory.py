@@ -1,3 +1,4 @@
+import json
 from dataclasses import dataclass
 from uuid import UUID
 from typing import Dict
@@ -9,6 +10,9 @@ from arkparse.parsing.struct import get_uuid_reference_bytes
 from arkparse.logging import ArkSaveLogger
 
 from .inventory_item import InventoryItem
+from ...utils.json_utils import DefaultJsonEncoder
+
+
 # items array InventoryItems -> ArrayProperty -> ObjectProperty
 
 @dataclass
@@ -43,11 +47,11 @@ class Inventory(ParsedObjectBase):
 
         self.items[item] = InventoryItem(item, self.save)
         self.items[item].add_self_to_inventory(self.object.uuid)
-        
+
         object_references = []
         for item in self.items.keys():
             object_references.append(get_uuid_reference_bytes(item))
-        
+
         if len(self.items) == 0:
             raise ValueError("Inventory cannot be empty when adding items (at this point in time)")
             # self.binary.insert_array("InventoryItems", "ObjectProperty", object_references)
@@ -64,11 +68,11 @@ class Inventory(ParsedObjectBase):
 
         self.items.pop(item)
         self.binary.set_property_position("InventoryItems")
-        
+
         object_references = []
         for item in self.items:
             object_references.append(get_uuid_reference_bytes(item))
-        
+
         self.binary.replace_array("InventoryItems", "ObjectProperty", object_references if len(object_references) > 0 else None)
 
         self.update_binary()
@@ -76,7 +80,7 @@ class Inventory(ParsedObjectBase):
     def clear_items(self):
         if len(self.items) == 0:
             return
-        
+
         self.items = []
         self.binary.set_property_position("InventoryItems")
         self.binary.replace_array("InventoryItems", "ObjectProperty", None)
@@ -92,8 +96,17 @@ class Inventory(ParsedObjectBase):
 
     def __str__(self):
         out = f"Inventory(items={len(self.items)}; uuid={self.object.uuid})"
-              
+
         for _, item in self.items.items():
             out += "\n   - " + item.get_short_name() + f" ({item.object.uuid})"
 
         return out
+
+    def to_json_obj(self):
+        json_items = []
+        for key, item in self.items.items():
+            json_items.append(item.to_json_obj(include_owner_inv_uuid=False))
+        return { "UUID": self.object.uuid.__str__(), "InventoryItems": json_items }
+
+    def to_json_str(self):
+        return json.dumps(self.to_json_obj(), default=lambda o: o.to_json_obj() if hasattr(o, 'to_json_obj') else None, indent=4, cls=DefaultJsonEncoder)

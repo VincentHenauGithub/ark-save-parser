@@ -16,3 +16,6 @@ class ArkLinearColor:
         self.g = byte_buffer.read_float()
         self.b = byte_buffer.read_float()
         self.a = byte_buffer.read_float()
+
+    def to_json_obj(self):
+        return { "r": self.r, "g": self.g, "b": self.b, "a": self.a }

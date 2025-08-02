@@ -140,60 +140,56 @@ class Structure(ParsedObjectBase):
         return "\n".join(parts)
 
     def get_linked_structures_str(self):
-        result = ""
-        if self.linked_structures is not None:
+        result = []
+        if self.linked_structure_uuids is not None and len(self.linked_structure_uuids) > 0:
             for linked_structure in self.linked_structure_uuids:
-                if len(result) > 0:
-                    result = result + ","
-                result = result + linked_structure.__str__()
+                result.append(linked_structure.__str__())
         return result
 
     def to_json_obj(self):
         # Grab already set properties
-        retj = { "UUID": self.object.uuid.__str__(),
-                 "LinkedStructureUUIDS": self.get_linked_structures_str(),
-                 "ItemArchetype": self.object.blueprint,
-                 "StructureID": self.id_,
-                 "MaxHealth": self.max_health,
-                 "Health": self.current_health,
-                 "bSavedWhenStasised": self.saved_when_stasised,
-                 "bWasPlacementSnapped": self.was_placement_snapped,
-                 "bHasResetDecayTime": self.has_reset_decay_time,
-                 "LastInAllyRangeTimeSerialized": self.last_in_ally_range_time_serialized,
-                 "LastEnterStasisTime": self.last_enter_stasis_time,
-                 "OriginalCreationTime": self.original_creation_time }
+        json_obj = { "UUID": self.object.uuid.__str__(),
+                     "ItemArchetype": self.object.blueprint,
+                     "StructureID": self.id_,
+                     "MaxHealth": self.max_health,
+                     "Health": self.current_health,
+                     "bSavedWhenStasised": self.saved_when_stasised,
+                     "bWasPlacementSnapped": self.was_placement_snapped,
+                     "bHasResetDecayTime": self.has_reset_decay_time,
+                     "LastInAllyRangeTimeSerialized": self.last_in_ally_range_time_serialized,
+                     "LastEnterStasisTime": self.last_enter_stasis_time,
+                     "OriginalCreationTime": self.original_creation_time }
+
+        # Grab linked structure IDs if there are some
+        linked_structures = self.get_linked_structures_str()
+        if linked_structures is not None and len(linked_structures) > 0:
+            json_obj["LinkedStructureUUIDs"] = linked_structures
 
         # Grab inventory UUID if it exists
-        inv_uuid = None
         if self.object.has_property("MyInventoryComponent"):
-            inv_comp: ObjectReference = self.object.get_property_value("MyInventoryComponent", default=None)
-            if inv_comp is not None:
-                inv_uuid = UUID(inv_comp.value)
-        if inv_uuid is not None:
-            retj["InventoryUUID"] = inv_uuid.__str__()
+            inv_comp: ObjectReference = self.object.get_property_value("MyInventoryComponent")
+            if inv_comp is not None and inv_comp.value is not None:
+                json_obj["InventoryUUID"] = inv_comp.value
 
         # Grab owner inventory UUID if it exists
-        owner_inv_uuid = None
         if self.object.has_property("OwnerInventory"):
-            owner_in: ObjectReference = self.object.get_property_value("OwnerInventory", default=None)
-            if owner_in is not None:
-                owner_inv_uuid = UUID(owner_in.value)
-        if owner_inv_uuid is not None:
-            retj["OwnerInventoryUUID"] = owner_inv_uuid.__str__()
+            owner_inv: ObjectReference = self.object.get_property_value("OwnerInventory")
+            if owner_inv is not None and owner_inv.value is not None:
+                json_obj["OwnerInventoryUUID"] = owner_inv.value
 
         # Grab location if it exists
         if self.location is not None:
-            retj["ActorTransformX"] = self.location.x
-            retj["ActorTransformY"] = self.location.y
-            retj["ActorTransformZ"] = self.location.z
+            json_obj["ActorTransformX"] = self.location.x
+            json_obj["ActorTransformY"] = self.location.y
+            json_obj["ActorTransformZ"] = self.location.z
 
         # Grab owner if it exists
         if self.owner is not None:
-            retj["OwningPlayerID"] = self.owner.id_
-            retj["OwningPlayerName"] = self.owner.player_name
-            retj["TargetingTeam"] = self.owner.tribe_id
-            retj["OwnerName"] = self.owner.tribe_name
-            retj["OriginalPlacerPlayerID"] = self.owner.original_placer_id
+            json_obj["OwningPlayerID"] = self.owner.id_
+            json_obj["OwningPlayerName"] = self.owner.player_name
+            json_obj["TargetingTeam"] = self.owner.tribe_id
+            json_obj["OwnerName"] = self.owner.tribe_name
+            json_obj["OriginalPlacerPlayerID"] = self.owner.original_placer_id
 
         # Grab remaining properties if any
         if self.object.properties is not None and len(self.object.properties) > 0:
@@ -213,12 +209,9 @@ class Structure(ParsedObjectBase):
                             "OriginalCreationTime" not in prop.name and \
                             "MyInventoryComponent" not in prop.name and \
                             "OwnerInventory" not in prop.name:
-                        prop_value = self.object.get_property_value(prop.name, None)
-                        retj[prop.name] = prop_value
-                        #print("Prop: " + prop.name, flush=True)
-                        #teststr = json.dumps(prop_value)
+                        json_obj[prop.name] = self.object.get_property_value(prop.name)
 
-        return retj
+        return json_obj
 
     def to_json_str(self):
         return json.dumps(self.to_json_obj(), default=lambda o: o.to_json_obj() if hasattr(o, 'to_json_obj') else None, indent=4, cls=DefaultJsonEncoder)
