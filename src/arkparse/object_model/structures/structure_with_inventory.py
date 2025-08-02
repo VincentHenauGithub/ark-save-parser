@@ -13,12 +13,10 @@ class StructureWithInventory(Structure):
     max_item_count: int
 
     inventory: Inventory
-    db = AsaSave
 
-    def __init__(self, uuid: UUID, binary: ArkBinaryParser, database: AsaSave):
-        binary.save_context = database.save_context
-        super().__init__(uuid, binary)
-        self.db = database
+    def __init__(self, uuid: UUID, save: AsaSave):
+        super().__init__(uuid, save=save)
+        self.save = save
 
         inv_uuid = self.object.get_property_value("MyInventoryComponent")
         self.inventory_uuid = UUID(inv_uuid.value) if inv_uuid is not None else None
@@ -26,9 +24,7 @@ class StructureWithInventory(Structure):
         self.max_item_count = self.object.get_property_value("MaxItemCount")
 
         if self.inventory_uuid is not None:
-            inv_reader = ArkBinaryParser(database.get_game_obj_binary(self.inventory_uuid))
-            inv_reader.save_context = binary.save_context
-            self.inventory = Inventory(self.inventory_uuid, inv_reader, save=database)
+            self.inventory = Inventory(self.inventory_uuid, save=self.save)
         else:
             self.inventory = None
 
@@ -36,9 +32,9 @@ class StructureWithInventory(Structure):
         if self.item_count != None:
             self.binary.replace_u32(self.object.find_property("CurrentItemCount"), quantity)
             self.item_count = quantity
-            self.db.modify_game_obj(self.object.uuid, self.binary.byte_buffer)
+            self.update_binary()
 
-    def add_item(self, item: UUID, save: AsaSave = None):
+    def add_item(self, item: UUID):
         if self.item_count == self.max_item_count:
             return False
         
@@ -46,9 +42,13 @@ class StructureWithInventory(Structure):
             raise ValueError("Currently, adding stuff to empty inventories is not supported!")
             
         self.set_item_quantity(self.item_count + 1)
-        self.inventory.add_item(item, self.db, store=(save is not None))
-        self.db.modify_game_obj(self.inventory.object.uuid, self.inventory.binary.byte_buffer)
+        self.inventory.add_item(item)
         return True
+    
+    def update_binary(self):
+        if self.inventory is not None:
+            self.inventory.update_binary()
+        super().update_binary()
 
     def remove_item(self, item: UUID):
         if self.item_count == 0:
@@ -56,9 +56,9 @@ class StructureWithInventory(Structure):
 
         self.set_item_quantity(self.item_count - 1)
         self.inventory.remove_item(item)
-        self.db.modify_game_obj(self.object.uuid, self.binary.byte_buffer)
-        self.db.modify_game_obj(self.inventory.object.uuid, self.inventory.binary.byte_buffer)
-        self.db.remove_obj_from_db(item)
+        self.update_binary()
+        self.inventory.update_binary()
+        self.save.remove_obj_from_db(item)
 
     def remove_from_save(self, save: AsaSave):
         for key, _ in self.inventory.items.items():
@@ -70,10 +70,10 @@ class StructureWithInventory(Structure):
         self.set_item_quantity(0)
 
         for item in self.inventory.items:
-            self.db.remove_obj_from_db(item)
+            self.save.remove_obj_from_db(item)
 
         self.inventory.clear_items()
-        self.db.modify_game_obj(self.inventory.object.uuid, self.inventory.binary)
+        self.inventory.update_binary()
 
     def reidentify(self, new_uuid: UUID = None):
         super().reidentify(new_uuid)

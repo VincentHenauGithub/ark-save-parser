@@ -1,6 +1,7 @@
 import pytest
 from pathlib import Path
-import time
+import shutil
+from uuid import uuid4
 
 from arkparse import AsaSave
 from arkparse.enums import ArkMap
@@ -25,6 +26,19 @@ def save_path(map: ArkMap, set: str = "set_1"):
     """
     return file_directory(set) / f"{map.to_file_name()}_WP" / f"{map.to_file_name()}_WP.ark"
 
+def pytest_addoption(parser: pytest.Parser):
+    parser.addoption(
+        "--profile",
+        action="store",
+        default="simple",
+        choices=["simple", "full"],
+        help="Which test profile to run (simple: only Ragnarok; full: all maps)",
+    )
+
+@pytest.fixture(scope="session")
+def profile(request: pytest.FixtureRequest):
+    return request.config.getoption("profile")
+
 @pytest.fixture(scope="session")
 def resource_path() -> Path:
     """
@@ -33,24 +47,33 @@ def resource_path() -> Path:
     return Path(__file__).parent / "test_data"
 
 @pytest.fixture(scope="session")
-def temp_file_folder() -> Path:
+def session_uuid() -> str:
     """
-    Returns the path to the temporary file folder.
+    Returns a unique identifier for the session.
     """
-    path = Path(__file__).parent / "temp_files"
+    return str(uuid4())
 
-    # remove existing folder
+@pytest.fixture(scope="session", autouse=True)
+def temp_file_folder(session_uuid):
+    """
+    Creates a clean temp_files folder *once* before any tests run,
+    and then deletes it *once* after the very last test completes.
+    """
+    path = Path(__file__).parent / f"temp_files_{session_uuid}"
+
+    # SETUP: remove any existing folder
     if path.exists():
-        for item in path.iterdir():
-            if item.is_file():
-                item.unlink()
-            elif item.is_dir():
-                import shutil
-                shutil.rmtree(item)
-    
-    # create folder
+        shutil.rmtree(path)
+
+    # (re-)create it fresh
     path.mkdir(parents=True, exist_ok=True)
-    return path
+
+    # yield it for tests to use…
+    yield path
+
+    # TEARDOWN: after *all* tests have finished, delete it
+    if path.exists():
+        shutil.rmtree(path)
 
 @pytest.fixture(scope="session")
 def enabled_maps():
@@ -58,15 +81,30 @@ def enabled_maps():
     Returns a list of enabled ArkMaps.
     """
     return [
-        # ArkMap.ABERRATION,
-        # ArkMap.EXTINCTION,
+        ArkMap.ABERRATION,
+        ArkMap.EXTINCTION,
         ArkMap.RAGNAROK,
-        # ArkMap.SCORCHED_EARTH,
-        # ArkMap.THE_CENTER,
-        # ArkMap.THE_ISLAND,
-        # ArkMap.ASTRAEOS
+        ArkMap.SCORCHED_EARTH,
+        ArkMap.THE_CENTER,
+        ArkMap.THE_ISLAND,
+        ArkMap.ASTRAEOS
     ]
 
+@pytest.fixture(scope="session")
+def enabled_maps(profile):
+    if profile == "simple":
+        return [ArkMap.RAGNAROK]
+    elif profile == "full":
+        return [
+            ArkMap.ABERRATION,
+            ArkMap.EXTINCTION,
+            ArkMap.RAGNAROK,
+            ArkMap.SCORCHED_EARTH,
+            ArkMap.THE_CENTER,
+            ArkMap.THE_ISLAND,
+            ArkMap.ASTRAEOS
+        ]
+    
 @pytest.fixture(scope="session")
 def ragnarok_save():
     # setup (runs once, at first use)

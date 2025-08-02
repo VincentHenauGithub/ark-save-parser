@@ -14,6 +14,7 @@ class ParsedObjectBase:
     binary: ArkBinaryParser = None
     object: ArkGameObject = None
     props_initialized: bool = False
+    save: "AsaSave" = None
 
     def __get_class_name(self):
         self.binary.set_position(0)
@@ -22,18 +23,16 @@ class ParsedObjectBase:
     def __init_props__(self):
         pass
 
-    def __init__(self, uuid: UUID = None, binary: ArkBinaryParser = None, save: "AsaSave" = None):
-        if (uuid is None) or ((binary is None) and (save is None)):
+    def __init__(self, uuid: UUID = None, save: "AsaSave" = None):
+        if uuid is None or save is None:
             return
         if save is not None:
+            self.save = save
             if not save.is_in_db(uuid):
                 ArkSaveLogger.error_log(f"Could not find binary for game object {uuid} in save")
-            self.binary = save.get_parser_for_game_object(uuid)
-            self.object = save.get_game_object_by_id(uuid)
-        else:
-            self.binary = binary
-            bp = self.__get_class_name()
-            self.object = ArkGameObject(uuid=uuid, blueprint=bp, binary_reader=binary)
+            else:
+                self.binary = save.get_parser_for_game_object(uuid)
+                self.object = save.get_game_object_by_id(uuid)
 
         self.__init_props__()
 
@@ -46,17 +45,18 @@ class ParsedObjectBase:
         names: Dict[int, str] = json.loads(name_path.read_text())
         parser = ArkBinaryParser(bin, save.save_context)
         new_uuid = uuid4()
-
-        # Update the template name encodings to the actal save name encodings
         parser.replace_name_ids(names, save)
-
+        save.add_obj_to_db(new_uuid, parser.byte_buffer)
         return new_uuid, parser
 
-    def reidentify(self, new_uuid: UUID = None):
+    def reidentify(self, new_uuid: UUID = None, update=True):
         self.replace_uuid(new_uuid=new_uuid)
         self.renumber_name()
         uuid = new_uuid if new_uuid is not None else self.object.uuid
         self.object = ArkGameObject(uuid=uuid, blueprint=self.object.blueprint, binary_reader=self.binary)
+
+        if update:
+            self.update_binary()
 
     def replace_uuid(self, new_uuid: UUID = None, uuid_to_replace: UUID = None):
         if new_uuid is  None:
@@ -83,9 +83,15 @@ class ParsedObjectBase:
         with open(name_path, "w") as file:
             json.dump(self.binary.find_names(), file, indent=4)
 
-    def update_binary(self, save: "AsaSave"):
-        if save is not None:
-            save.modify_game_obj(self.object.uuid, self.binary.byte_buffer)
+    def update_binary(self):
+
+        if self.object is None:
+            ArkSaveLogger.error_log("This object has no ArkGameObject associated with it, cannot update binary as not in save")
+            return
+        if self.save is not None:
+            self.save.modify_game_obj(self.object.uuid, self.binary.byte_buffer)
+        else:
+            ArkSaveLogger.error_log("Parsed objects should have a save attached")
 
     def get_short_name(self):
         to_strip_end = [

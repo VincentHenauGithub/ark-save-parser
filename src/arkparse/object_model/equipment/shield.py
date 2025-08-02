@@ -6,23 +6,28 @@ from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.parsing import ArkBinaryParser
 from arkparse.enums import ArkEquipmentStat
 from arkparse.utils.json_utils import DefaultJsonEncoder
-
 from .__equipment_with_durability import EquipmentWithDurability
 
 class Shield(EquipmentWithDurability):
     def __init_props__(self):
         super().__init_props__()
 
-    def __init__(self, uuid: UUID = None, binary: ArkBinaryParser = None):
-        super().__init__(uuid, binary)
+    def __init__(self, uuid: UUID = None, save: AsaSave = None):
+        super().__init__(uuid, save=save)
         self.class_name = "shield"
 
-    def auto_rate(self, save: AsaSave = None):
-        self._auto_rate(0.000519, self.get_average_stat(), save)    
+    def auto_rate(self):
+        self._auto_rate(0.000519, self.get_average_stat())    
 
     def get_stat_for_rating(self, stat: ArkEquipmentStat, rating: float) -> float:
         value = super()._get_stat_for_rating(stat, rating, 0.000519)
         return self.get_actual_value(stat, value)
+    
+    @staticmethod
+    def generate_from_template(class_: str, save: AsaSave, is_bp: bool):
+        file = "shield_bp" if is_bp else "shield"
+        eq = EquipmentWithDurability._generate_from_template(Shield, file, class_, save)
+        return eq
 
     @staticmethod
     def from_object(obj: ArkGameObject):

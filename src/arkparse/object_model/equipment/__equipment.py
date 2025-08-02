@@ -2,6 +2,7 @@ import json
 from uuid import UUID
 import os
 
+from arkparse.logging import ArkSaveLogger
 from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.parsing import ArkBinaryParser
 from arkparse.object_model.misc.object_crafter import ObjectCrafter
@@ -32,8 +33,8 @@ class Equipment(InventoryItem):
         self.quality = self.object.get_property_value("ItemQualityIndex", default=ArkItemQuality.PRIMITIVE.value)
         self.current_durability = self.object.get_property_value("SavedDurability", default=1.0)
 
-    def __init__(self, uuid: UUID = None, binary: ArkBinaryParser = None):
-        super().__init__(uuid, binary)
+    def __init__(self, uuid: UUID = None, save: AsaSave = None):
+        super().__init__(uuid, save=save)
             
     def get_internal_value(self, stat: ArkEquipmentStat) -> int:
         raise ValueError(f"Stat {stat} is not valid for {self.class_name}")
@@ -41,7 +42,7 @@ class Equipment(InventoryItem):
     def get_actual_value(self, stat: ArkEquipmentStat, internal_value: int) -> float:
         raise ValueError(f"Stat {stat} is not valid for {self.class_name}")
     
-    def set_stat(self, stat: ArkEquipmentStat, value: float, save: AsaSave = None):
+    def set_stat(self, stat: ArkEquipmentStat, value: float):
         raise ValueError(f"Stat {stat} is not valid for {self.class_name}")
     
     def generate_from_template(class_: str, save: AsaSave, is_bp: bool):
@@ -72,11 +73,11 @@ class Equipment(InventoryItem):
 
         return index
     
-    def _auto_rate(self, multiplier: float, average_stat: int, save: AsaSave = None):
+    def _auto_rate(self, multiplier: float, average_stat: int):
         self.rating = average_stat * multiplier
         self.quality = self.__determine_quality_index()
-        self.set_quality_index(self.quality, save)
-        self.set_rating(self.rating, save)
+        self.set_quality_index(self.quality)
+        self.set_rating(self.rating)
 
     def _get_stat_for_rating(self, stat: ArkEquipmentStat, _: float, __: float) -> float:
         raise ValueError(f"Stat {stat} is not valid for {self.class_name}")
@@ -86,9 +87,9 @@ class Equipment(InventoryItem):
 
     @staticmethod
     def _generate_from_template(own_class: callable, template_file: str, bp_class: str, save: AsaSave):
-        uuid, parser = super()._generate(save, os.path.join("templates", "equipment", template_file))
-        parser.replace_bytes(uuid.bytes, position=len(parser.byte_buffer) - 16)
-        eq: "Equipment" = own_class(uuid, parser)
+        uuid, _ = super()._generate(save, os.path.join("templates", "equipment", template_file))
+        eq: "Equipment" = own_class(uuid, save)
+        eq.binary.replace_bytes(uuid.bytes, position=len(eq.binary.byte_buffer) - 16)
         name_id = save.save_context.get_name_id(bp_class) # gnerate name id if needed
         if name_id is None:
             save.add_name_to_name_table(bp_class)
@@ -101,31 +102,40 @@ class Equipment(InventoryItem):
     def is_crafted(self) -> bool:
         return False if self.crafter is None else self.crafter.is_valid()
 
-    def set_quality_index(self, quality: ArkItemQuality, save: AsaSave = None):
+    def set_quality_index(self, quality: ArkItemQuality):
         if self.quality == ArkItemQuality.PRIMITIVE.value:
             raise ValueError("Cannot modify quality of an item with quality 0")
         
         self.quality = quality.value
         self.binary.replace_byte_property(self.object.find_property("ItemQualityIndex"), quality.value)
-        self.update_binary(save)
+        self.update_binary()
 
-    def set_rating(self, rating: int, save: AsaSave = None):
+    def set_rating(self, rating: int):
         if not self.is_rated():
             raise ValueError(f"Cannot modify rating of a default crafted item (rating={self.rating})")
 
         self.rating = rating
         self.binary.replace_float(self.object.find_property("ItemRating"), rating)
-        self.update_binary(save)
+        self.update_binary()
 
-    def set_current_durability(self, percentage: float, save: AsaSave = None):
+    def set_current_durability(self, percentage: float):
         self.current_durability = percentage / 100
         self.binary.replace_float(self.object.find_property("SavedDurability"), self.current_durability)
-        self.update_binary(save)
+        self.update_binary()
 
-    def _set_internal_stat_value(self, value: float, position: ArkEquipmentStat, save: AsaSave = None):
+    def _set_internal_stat_value(self, value: float, position: ArkEquipmentStat) -> bool:
         prop = self.object.find_property("ItemStatValues", position.value)
-        self.binary.replace_16(prop, int(value))
-        self.update_binary(save)
+        clipped = False
+
+        if int(value) > 65535:
+            ArkSaveLogger.warning_log(f"Value {value} for stat {position} is too high to fit in equipment value property, clipping to 65535")
+            value = 65535
+            clipped = True
+
+        self.binary.replace_u16(prop, int(value))
+        self.update_binary()
+
+        return clipped
 
     def get_stat_value(self, position: ArkEquipmentStat) -> int:
         return self.object.get_property_value("ItemStatValues", position=position.value, default=0)

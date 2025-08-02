@@ -102,11 +102,11 @@ class Base:
             for _, structure in self.structures.items():
                 save.modify_actor_transform(structure.object.uuid, structure.location.to_bytes())
 
-    def set_owner(self, new_owner: ObjectOwner, save: AsaSave):
+    def set_owner(self, new_owner: ObjectOwner):
         for uuid, structure in self.structures.items():
             # print(f"Setting owner {new_owner} for structure {structure.object.uuid}")
             structure.owner.replace_self_with(new_owner, structure.binary)
-            save.modify_game_obj(uuid, structure.binary.byte_buffer)
+            structure.update_binary()
 
     def store_binary(self, path: Path):
         path.mkdir(parents=True, exist_ok=True)
@@ -141,8 +141,8 @@ class Base:
             self.__set_new_inventory(save, turret, bullet, amount)
 
             ArkSaveLogger.objects_log(f"Updating {turret.get_short_name()} and inventory in database")
-            save.modify_game_obj(turret.object.uuid, turret.binary.byte_buffer)
-            save.modify_game_obj(turret.inventory.object.uuid, turret.inventory.binary.byte_buffer)
+            turret.update_binary()
+            turret.inventory.update_binary()
 
         return len(turrets)
     
@@ -168,8 +168,8 @@ class Base:
             self.__set_new_inventory(save, generator, item_class, amount)
 
             ArkSaveLogger.objects_log(f"Updating generator and inventory {generator.object.uuid} in database")
-            save.modify_game_obj(generator.object.uuid, generator.binary.byte_buffer)
-            save.modify_game_obj(generator.inventory.object.uuid, generator.inventory.binary.byte_buffer)
+            generator.update_binary()
+            generator.inventory.update_binary()
 
             ArkSaveLogger.objects_log(f"\n")
 
@@ -211,10 +211,8 @@ class Base:
         else:
             raise ValueError(f"Unknown fuel item class: {item_class}")
 
-        stack.reidentify()
-        ArkSaveLogger.objects_log(f"Created stack item {stack.get_short_name()} with quantity {quantity} for parent {parent_uuid}")
         stack.set_quantity(quantity)
-        save.add_obj_to_db(stack.object.uuid, stack.binary.byte_buffer)
+        stack.update_binary()
 
         return stack
     
@@ -233,25 +231,29 @@ class Base:
             for key, _ in previous_items.items():
                 if key != keep:
                     ArkSaveLogger.objects_log(f"Removing item {key} from inventory {structure.object.uuid} to make space for new items")
-                    structure.inventory.remove_item(key, save)
+                    structure.inventory.remove_item(key)
                     save.remove_obj_from_db(key)
 
             num_full_stacks = quantity // stack_size
             remainder = quantity % stack_size
+            if remainder == 0:
+                remainder = stack_size
+                num_full_stacks = num_full_stacks - 1
+
+            ArkSaveLogger.objects_log(f"Adding {num_full_stacks} full stacks of {item_class} ({stack_size} each) and remainder {remainder} to inventory {structure.object.uuid}")
 
             if remainder > 0:
                 stack = self.__create_stack_item(save, item_class, remainder, structure.object.uuid)
-                structure.add_item(stack.object.uuid, save)
+                structure.add_item(stack.object.uuid)
 
             if keep is not None:
                 ArkSaveLogger.objects_log(f"Removing last original item {keep} in inventory {structure.object.uuid}")
-                structure.inventory.remove_item(keep, save)
+                structure.inventory.remove_item(keep)
                 save.remove_obj_from_db(keep)
 
             for _ in range(num_full_stacks):
                 stack = self.__create_stack_item(save, item_class, stack_size, structure.object.uuid)
-                space_available = structure.add_item(stack.object.uuid, save)
-                ArkSaveLogger.objects_log(f"Adding stack item {stack.get_short_name()} to inventory {structure.object.uuid}")
+                space_available = structure.add_item(stack.object.uuid)
 
                 if not space_available:
                     break

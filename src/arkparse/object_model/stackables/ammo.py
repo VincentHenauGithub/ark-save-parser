@@ -16,10 +16,9 @@ class Ammo(Stackable):
     def generate_from_template(class_: str, save: AsaSave, owner_inventory_uuid: UUID):
         uuid, parser = Stackable._generate(save)
         parser.replace_bytes(uuid.bytes, position=len(parser.byte_buffer) - 16)
-        rsrc = Ammo(uuid, parser)
-        rsrc.set_quantity(1)
-        rsrc.reidentify(uuid, class_)
+        rsrc = Ammo(uuid, save)
         rsrc.replace_uuid(owner_inventory_uuid, rsrc.owner_inv_uuid)
+        rsrc.reidentify(uuid, class_)
         return rsrc
 
     

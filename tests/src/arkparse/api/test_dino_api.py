@@ -9,6 +9,10 @@ NR_DINOS = 33767
 NR_TAMED = 2242
 NR_WILD = 31525
 NR_IN_CRYO = 1517
+NR_WILD_BABIES = 2747
+NR_TAMED_BABIES = 40
+NR_BABIES = NR_WILD_BABIES + NR_TAMED_BABIES
+NR_BABIES_IN_CRYO = 40
 
 def dinos_per_map():
     """ Fixture to provide the expected number of dinos for each map. """
@@ -42,13 +46,13 @@ def dino_mod_api(rag_limited: AsaSave, temp_file_folder: Path):
     assert save is not None, "AsaSave should be initialized"
     return DinoApi(save)
 
-def test_parse_ragnarok(ragnarok_save: AsaSave, enabled_maps: list):
+def test_parse_ragnarok(dino_api: DinoApi, enabled_maps: list):
     """
     Test to parse the Ragnarok save file and check the number of dinos.
     """
     if not ArkMap.RAGNAROK in enabled_maps:
         pytest.skip("Ragnarok map is not enabled in the test configuration.")
-    dinos = DinoApi(ragnarok_save).get_all()  # This will trigger the parsing of dinos
+    dinos = dino_api.get_all()  # This will trigger the parsing of dinos
     print(f"Total dinos found in Ragnarok: {len(dinos)}")
     assert len(dinos) == dinos_per_map()[ArkMap.RAGNAROK], "Unexpected number of dinos found"
 
@@ -184,10 +188,10 @@ def test_retrieve_cryopodded_dinos(dino_api: DinoApi):
 def test_retrieve_babies(dino_api: DinoApi):
     """ Test to retrieve all baby dinos from the Ragnarok save.
     """
-    babies = dino_api.get_all_babies(include_tamed=True, include_cryopodded=True, include_wild=False)
+    babies = dino_api.get_all_babies(include_tamed=True, include_cryopodded=True, include_wild=True)
     assert isinstance(babies, dict), "Expected a dictionary of baby dinos"
     print(f"Total baby dinos found: {len(babies)}")
-    # assert len(babies) == 100, f"Expected 100 baby dinos, got {len(babies)}"
+    assert len(babies) == NR_BABIES, f"Expected {NR_BABIES} baby dinos, got {len(babies)}"
 
 def test_retrieve_wild_babies(dino_api: DinoApi):
     """ Test to retrieve all wild baby dinos from the Ragnarok save.
@@ -195,7 +199,7 @@ def test_retrieve_wild_babies(dino_api: DinoApi):
     wild_babies = dino_api.get_all_babies(include_tamed=False, include_cryopodded=True, include_wild=True)
     assert isinstance(wild_babies, dict), "Expected a dictionary of wild baby dinos"
     print(f"Total wild baby dinos found: {len(wild_babies)}")
-    # assert len(wild_babies) == 50, f"Expected 50 wild baby dinos, got {len(wild_babies)}"
+    assert len(wild_babies) == NR_WILD_BABIES, f"Expected {NR_WILD_BABIES} wild baby dinos, got {len(wild_babies)}"
 
 def test_retrieve_tamed_babies(dino_api: DinoApi):
     """ Test to retrieve all tamed baby dinos from the Ragnarok save.
@@ -203,7 +207,7 @@ def test_retrieve_tamed_babies(dino_api: DinoApi):
     tamed_babies = dino_api.get_all_babies(include_tamed=True, include_cryopodded=True, include_wild=False)
     assert isinstance(tamed_babies, dict), "Expected a dictionary of tamed baby dinos"
     print(f"Total tamed baby dinos found: {len(tamed_babies)}")
-    # assert len(tamed_babies) == 50, f"Expected 50 tamed baby dinos, got {len(tamed_babies)}"
+    assert len(tamed_babies) == NR_TAMED_BABIES, f"Expected {NR_TAMED_BABIES} tamed baby dinos, got {len(tamed_babies)}"
 
 def test_retrieve_babies_in_cryopods(dino_api: DinoApi):
     """ Test to retrieve all baby dinos in cryopods from the Ragnarok save.
@@ -211,7 +215,7 @@ def test_retrieve_babies_in_cryopods(dino_api: DinoApi):
     cryopodded_babies = dino_api.get_all_babies(include_tamed=True, include_cryopodded=True, include_wild=False)
     assert isinstance(cryopodded_babies, dict), "Expected a dictionary of cryopodded baby dinos"
     print(f"Total cryopodded baby dinos found: {len(cryopodded_babies)}")
-    # assert len(cryopodded_babies) == 20, f"Expected 20 cryopodded baby dinos, got {len(cryopodded_babies)}"
+    assert len(cryopodded_babies) == NR_BABIES_IN_CRYO, f"Expected {NR_BABIES_IN_CRYO} cryopodded baby dinos, got {len(cryopodded_babies)}"
 
 def test_tamed_baby_stage(dino_api: DinoApi):
     """ Test to check the stage of a tamed baby dino.

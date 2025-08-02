@@ -3,6 +3,7 @@ from uuid import UUID
 import math
 
 from arkparse import AsaSave
+from arkparse.logging.ark_save_logger import ArkSaveLogger
 from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.parsing import ArkBinaryParser
 from arkparse.enums import ArkEquipmentStat
@@ -22,8 +23,8 @@ class Weapon(EquipmentWithDurability):
         damage = self.object.get_property_value("ItemStatValues", position=ArkEquipmentStat.DAMAGE.value, default=0)
         self.damage = self.get_actual_value(ArkEquipmentStat.DAMAGE, damage)
 
-    def __init__(self, uuid: UUID = None, binary: ArkBinaryParser = None):
-        super().__init__(uuid, binary)
+    def __init__(self, uuid: UUID = None, save: AsaSave = None):
+        super().__init__(uuid, save=save)
 
         self.class_name = "weapon"             
 
@@ -40,7 +41,8 @@ class Weapon(EquipmentWithDurability):
 
     def get_internal_value(self, stat: ArkEquipmentStat) -> int:
         if stat == ArkEquipmentStat.DAMAGE:
-            return int((self.damage - 100.0) * 100)
+            value = int((self.damage - 100.0) * 100)
+            return value if value >= 100 else 100
         else:
             return super().get_internal_value(stat)    
         
@@ -50,18 +52,21 @@ class Weapon(EquipmentWithDurability):
         else:
             return super().get_actual_value(stat, internal_value)
         
-    def set_stat(self, stat: ArkEquipmentStat, value: float, save: AsaSave = None):
+    def set_stat(self, stat: ArkEquipmentStat, value: float):
         if stat == ArkEquipmentStat.DAMAGE:
-            self.__set_damage(value, save)
+            self.__set_damage(value)
         else:
-            return super().set_stat(stat, value, save)
+            return super().set_stat(stat, value)
 
-    def __set_damage(self, damage: float, save: AsaSave = None):
+    def __set_damage(self, damage: float):
         self.damage = damage
-        self._set_internal_stat_value(self.get_internal_value(ArkEquipmentStat.DAMAGE), ArkEquipmentStat.DAMAGE, save)
+        clipped = self._set_internal_stat_value(self.get_internal_value(ArkEquipmentStat.DAMAGE), ArkEquipmentStat.DAMAGE)
+        if clipped:
+            self.damage = self.get_actual_value(ArkEquipmentStat.DAMAGE, 65535)
+            ArkSaveLogger.warning_log(f"Damage value clipped to {self.damage} for {self.object.blueprint}")
 
-    def auto_rate(self, save: AsaSave = None):
-        self._auto_rate(0.000674, self.get_average_stat(), save) 
+    def auto_rate(self):
+        self._auto_rate(0.000674, self.get_average_stat()) 
 
     def get_stat_for_rating(self, stat: ArkEquipmentStat, rating: float) -> float:
         if stat == ArkEquipmentStat.DAMAGE:

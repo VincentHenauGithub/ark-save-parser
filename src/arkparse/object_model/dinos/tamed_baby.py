@@ -11,8 +11,8 @@ class TamedBaby(TamedDino, Baby):
     def __init_props__(self):
         super().__init_props__()
 
-    def __init__(self, uuid: UUID = None, binary: ArkBinaryParser = None, save: AsaSave = None):
-        super().__init__(uuid, binary=binary, save=save)
+    def __init__(self, uuid: UUID = None, save: AsaSave = None):
+        super().__init__(uuid, save=save)
 
     @staticmethod
     def from_object(dino_obj: ArkGameObject, status_obj: ArkGameObject):

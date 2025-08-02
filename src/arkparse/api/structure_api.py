@@ -33,18 +33,15 @@ class StructureApi:
 
         return objects
     
-    def _parse_single_structure(self, obj: ArkGameObject, parser: ArkBinaryParser = None) -> Union[Structure, StructureWithInventory]:
+    def _parse_single_structure(self, obj: ArkGameObject) -> Union[Structure, StructureWithInventory]:
         if obj.uuid in self.parsed_structures.keys():
             return self.parsed_structures[obj.uuid]
         
-        if parser is None:
-            parser = ArkBinaryParser(self.save.get_game_obj_binary(obj.uuid), self.save.save_context)
-
         if obj.get_property_value("MaxItemCount") is not None or (obj.get_property_value("MyInventoryComponent") is not None and obj.get_property_value("CurrentItemCount") is not None):
-            structure = StructureWithInventory(obj.uuid, parser, self.save)
+            structure = StructureWithInventory(obj.uuid, self.save)
         else:
-            structure = Structure(obj.uuid, parser)
-        
+            structure = Structure(obj.uuid, self.save)
+
         for key, loc in self.save.save_context.actor_transforms.items():
             if key == obj.uuid:
                 structure.set_actor_transform(loc)
@@ -193,7 +190,7 @@ class StructureApi:
             if new_owner is not None:
                 obj.owner.replace_self_with(new_owner, binary=obj.binary)
 
-            self.save.modify_game_obj(key, obj.binary.byte_buffer)
+            obj.update_binary()
 
         if ftp_client is not None:
             self.save.store_db(TEMP_FILES_DIR / "sapi_temp_save.ark")

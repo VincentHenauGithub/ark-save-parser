@@ -50,8 +50,8 @@ class Structure(ParsedObjectBase):
     #MyInventoryComponent
     #NetDestructionTime
 
-    def __init__(self, uuid: UUID, binary: ArkBinaryParser):
-        super().__init__(uuid, binary)
+    def __init__(self, uuid: UUID, save: AsaSave):
+        super().__init__(uuid, save=save)
 
         properties = self.object
         self.owner = ObjectOwner(properties)
@@ -87,11 +87,11 @@ class Structure(ParsedObjectBase):
         self.current_health = self.max_health
         self.binary.replace_float(self.object.find_property("Health"), float(self.max_health))
 
-    def reidentify(self, new_uuid: UUID = None):
+    def reidentify(self, new_uuid: UUID = None, update=True):
         new_id = random.randint(0, 2**32 - 1)
         self.id_ = new_id
         self.binary.replace_u32(self.object.find_property("StructureID"), new_id)
-        super().reidentify(new_uuid)
+        super().reidentify(new_uuid, update=update)
 
     def remove_from_save(self, save: AsaSave):
         save.remove_obj_from_db(self.object.uuid)

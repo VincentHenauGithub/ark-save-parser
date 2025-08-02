@@ -5,6 +5,7 @@ import struct
 from pathlib import Path
 import json
 from uuid import UUID
+import numpy as np
 
 if TYPE_CHECKING:
     from arkparse.parsing.ark_binary_parser import ArkBinaryParser
@@ -70,10 +71,24 @@ class MapCoordinateParameters:
         return round(lat, 2), round(lo, 2)
     
     def transform_from(self, lat: float, lo: float) -> ArkVector:
-        x = (lat - self.latitude_shift) * self.latitude_scale
-        y = (lo - self.longitude_shift) * self.longitude_scale
+        y = (lat - self.latitude_shift) * self.latitude_scale
+        x = (lo - self.longitude_shift) * self.longitude_scale
 
         return ArkVector(x=x, y=y, z=0)
+    
+    @staticmethod
+    def fit_transform_params(xs, ys, lats, los):
+        # fit lo = m_x * x + b_x
+        m_x, b_x = np.polyfit(xs, los, 1)
+        # fit lat = m_y * y + b_y
+        m_y, b_y = np.polyfit(ys, lats, 1)
+
+        latitude_scale   = round(1.0 / m_x)
+        latitude_shift   = round(b_x)
+        longitude_scale  = round(1.0 / m_y)
+        longitude_shift  = round(b_y)
+
+        return latitude_scale, latitude_shift, longitude_scale, longitude_shift
 
 class MapCoords:
     lat : float

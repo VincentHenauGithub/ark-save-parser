@@ -101,8 +101,7 @@ class ArkPlayer:
     def get_location_and_inventory(self, save: AsaSave, pawn: ArkGameObject):
         self.location = ActorTransform(vector = pawn.get_property_value("SavedBaseWorldLocation"))
         inv_uuid = UUID(pawn.get_property_value("MyInventoryComponent").value)
-        reader = ArkBinaryParser(save.get_game_obj_binary(inv_uuid), save.save_context)
-        self.inventory = Inventory(inv_uuid, reader, save=save)
+        self.inventory = Inventory(inv_uuid, save=save)
 
     def __str__(self):
         return f"ArkPlayer: {self.char_name} (platform name=\'{self.name}\') in tribe {self.tribe} (ue5 id {self.unique_id}, ark id {self.id_})"

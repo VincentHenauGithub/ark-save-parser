@@ -2,7 +2,7 @@ import logging
 from uuid import UUID
 from typing import List
 
-from arkparse.parsing.ark_property import ArkProperty
+from arkparse import AsaSave
 from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.object_model.equipment.saddle import Saddle
 from arkparse.object_model.dinos.tamed_dino import TamedDino
@@ -80,8 +80,8 @@ class Cryopod(InventoryItem):
     saddle: Saddle
     costume: any
 
-    def __init__(self, uuid: UUID = None, binary: ArkBinaryParser = None):
-        super().__init__(uuid, binary=binary)
+    def __init__(self, uuid: UUID = None, save: AsaSave = None):
+        super().__init__(uuid, save=save)
         self.dino = None
         self.saddle = None
         self.costume = None

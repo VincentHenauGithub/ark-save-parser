@@ -14,8 +14,9 @@ from arkparse.object_model.equipment.__equipment import Equipment
 from arkparse.object_model.equipment import Weapon, Armor, Saddle, Shield
 
 # retrieve the save file (can also retrieve it from a local path)
-save_path = ArkFtpClient.from_config(
-    Path("../../ftp_config.json"), ArkMap.ABERRATION).download_save_file(Path.cwd())
+# save_path = ArkFtpClient.from_config(
+#     Path("../../ftp_config.json"), ArkMap.ABERRATION).download_save_file(Path.cwd())
+save_path = store_path = Path("D:\\SteamLibrary\\steamapps\\common\\ARK Survival Ascended\\ShooterGame\\Saved\\SavedArksLocal\\Ragnarok_WP\\Ragnarok_WP.ark")
 save = AsaSave(save_path)
 
 equipment_api = EquipmentApi(save)  # Create Equipment API
@@ -29,6 +30,7 @@ ratings = {}
 for d in [weapons, armors, shields, saddles]:
     d: Dict[UUID, Equipment]
     for key, value in d.items():
+        print(value)
         value: Equipment
         ratings[key] = [type(value), value.rating, value.get_average_stat(), ArkItemQuality(value.quality), value.is_bp]
 

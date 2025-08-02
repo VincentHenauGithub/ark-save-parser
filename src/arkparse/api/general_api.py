@@ -5,12 +5,14 @@ from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.parsing import ArkBinaryParser
 from arkparse.saves.asa_save import AsaSave
 from arkparse.parsing import GameObjectReaderConfiguration
+from arkparse.object_model.misc.__parsed_object_base import ParsedObjectBase
 
 class GeneralApi:
     def __init__(self, save: AsaSave, config: GameObjectReaderConfiguration= GameObjectReaderConfiguration()):
         self.save = save
         self.config = config
         self.all_objects = None
+        self.parsed_objects: Dict[UUID, ParsedObjectBase] = {}
 
     def get_all_objects(self, config: GameObjectReaderConfiguration = None) -> Dict[UUID, ArkGameObject]:
         reuse = False
@@ -28,7 +30,7 @@ class GeneralApi:
 
         return objects
     
-    def get_all(self, constructor, use_save_in_constructor: bool = False, valid_filter = None, config = None) -> Dict[UUID, object]:
+    def get_all(self, constructor, valid_filter = None, config = None) -> Dict[UUID, object]:
         objects = self.get_all_objects(config)
 
         parsed = {}
@@ -37,11 +39,11 @@ class GeneralApi:
             if valid_filter and not valid_filter(obj):
                 continue
 
-            parser = ArkBinaryParser(self.save.get_game_obj_binary(obj.uuid), self.save.save_context)
-            if use_save_in_constructor:
-                parsed[key] = constructor(obj.uuid, parser, self.save)
+            if key in self.parsed_objects:
+                parsed[key] = self.parsed_objects[key]
             else:
-                parsed[key] = constructor(obj.uuid, parser)
+                parsed[key] = constructor(obj.uuid, self.save)
+                self.parsed_objects[key] = parsed[key]
 
         return parsed
     

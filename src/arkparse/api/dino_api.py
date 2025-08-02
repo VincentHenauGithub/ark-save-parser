@@ -59,11 +59,10 @@ class DinoApi:
             if uuid in self.parsed_dinos:
                 dino = self.parsed_dinos[uuid]
             else:
-                parser = ArkBinaryParser(self.save.get_game_obj_binary(uuid), self.save.save_context)
                 if is_tamed:
-                    dino = TamedDino(uuid, parser, self.save)
+                    dino = TamedDino(uuid, self.save)
                 else:
-                    dino = Dino(uuid, parser, self.save)
+                    dino = Dino(uuid, self.save)
                 self.parsed_dinos[uuid] = dino
 
         return dino
@@ -115,8 +114,7 @@ class DinoApi:
                             dino = self.parsed_cryopods[obj.uuid].dino
                     else:
                         try:
-                            parser = ArkBinaryParser(self.save.get_game_obj_binary(obj.uuid), self.save.save_context)
-                            cryopod = Cryopod(obj.uuid, parser)
+                            cryopod = Cryopod(obj.uuid, save=self.save)
                             self.parsed_cryopods[obj.uuid] = cryopod
                             if cryopod.dino is not None:
                                 dino = cryopod.dino
@@ -348,7 +346,7 @@ class DinoApi:
         for key, dino in dinos.items():
             if new_owner is not None:
                 dino.owner.replace_with(new_owner, dino.binary)
-                self.save.modify_game_obj(key, dino.binary.byte_buffer)
+                dino.update_binary()
 
         if ftp_client is not None:
             self.save.store_db(TEMP_FILES_DIR / "sapi_temp_save.ark")

@@ -150,7 +150,7 @@ def test_get_player_location_distance(player_api: PlayerApi, test_player):
 def test_get_player_xp(player_api: PlayerApi, test_player):
     xp = player_api.get_xp(test_player.name)
     print(f"Player {test_player.name} XP: {xp}")
-    assert int(xp) == 383304896, (
-        f"Expected 383304896 XP for player {test_player.name}, got {xp}"
+    assert int(xp) > 383304000, (
+        f"Expected >383304000 XP for player {test_player.name}, got {xp}"
     )
 

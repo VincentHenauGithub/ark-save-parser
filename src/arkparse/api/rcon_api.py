@@ -175,7 +175,7 @@ class RconApi:
         response = self.send_cmd("listplayers")
         if response is None:
             print("Server not responding")
-            return
+            return []
         
         for l in response.split("\n"):
             if l.strip() != "":

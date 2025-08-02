@@ -17,6 +17,16 @@ def count_files_in_folder(folder: Path) -> int:
         return 0
     return sum(1 for _ in folder.iterdir() if _.is_file())
 
+def get_file_names_in_folder(folder: Path) -> set:
+    """
+    Returns a set of file names in the given folder.
+    """
+    if not folder.exists():
+        return set()
+    all_files = {f.name for f in folder.iterdir() if f.is_file()}
+    all_files.remove("base.json")  # Exclude base.json if it exists
+    return all_files
+
 def get_base_api(rag_limited: AsaSave, temp_file_folder: Path) -> BaseApi:
     rag_limited.store_db(temp_file_folder / "copy.db")
     assert (temp_file_folder / "copy.db").exists(), "Database file should be created"
@@ -61,6 +71,14 @@ def test_base_import(resource_path, temp_file_folder, rag_limited: AsaSave):
 
     assert count_files_in_folder(temp_file_folder / "test_export") > 0, "Exported files should exist"
     assert count_files_in_folder(temp_file_folder / "test_export") == count_files_in_folder(base_path), "Exported files count should match the original base files"
+
+    file_names_original = get_file_names_in_folder(base_path)
+    file_names_exported = get_file_names_in_folder(temp_file_folder / "test_export")
+
+    for file_name in file_names_original:
+        assert file_name not in file_names_exported, (
+            f"File {file_name} from original base should not be in exported files"
+        )
 
 def test_base_import_at_location(resource_path, temp_file_folder, rag_limited: AsaSave):
     """
@@ -107,7 +125,7 @@ def test_base_replace_owner(resource_path, temp_file_folder, rag_limited: AsaSav
     o.set_player(777, "The imagined")
     print(f"Replacing owner {original_owner} with {o}")
 
-    base.set_owner(o, base_api.save)
+    base.set_owner(o)
 
     b = base_api.get_base_at(base.location.as_map_coords(ArkMap.RAGNAROK), radius=1)
     print(b.owner)
@@ -243,9 +261,20 @@ def test_turret_ammo(rag_limited: AsaSave, temp_file_folder: Path, resource_path
     base = base_api.import_base(base_path)
     assert base is not None, "Imported base should not be None"
 
-    base.set_turret_ammo(base_api.save, bullets_in_heavy=2345, shards_in_tek=1717)
+    # Test single stack
+    base.set_turret_ammo(base_api.save, bullets_in_heavy=100, shards_in_tek=1000)
     print(f"Set ammo in turrets, now checking inventory")
+    for heavy_turret in base.get_turrets(Base.TurretType.HEAVY):
+        nr_of_ammo = count_stacks(heavy_turret.inventory, Classes.equipment.ammo.advanced_rifle_bullet)
+        print(f"Heavy Turret {heavy_turret.object.uuid} has {nr_of_ammo} Advanced Rifle Bullets in inventory")
+        assert nr_of_ammo == 100, f"Expected 100 Advanced Rifle Bullets in heavy turret inventory, got {nr_of_ammo}"
 
+    for tek_turret in base.get_turrets(Base.TurretType.TEK):
+        nr_of_ammo = count_stacks(tek_turret.inventory, Classes.resources.Basic.element_shard)
+        print(f"Tek Turret {tek_turret.object.uuid} has {nr_of_ammo} Element Shards in inventory")
+        assert nr_of_ammo == 1000, f"Expected 1000 Element Shards in tek turret inventory, got {nr_of_ammo}"
+
+    base.set_turret_ammo(base_api.save, bullets_in_heavy=2345, shards_in_tek=1717)
     for heavy_turret in base.get_turrets(Base.TurretType.HEAVY):
         nr_of_ammo = count_stacks(heavy_turret.inventory, Classes.equipment.ammo.advanced_rifle_bullet)
         print(f"Heavy Turret {heavy_turret.object.uuid} has {nr_of_ammo} Advanced Rifle Bullets in inventory")

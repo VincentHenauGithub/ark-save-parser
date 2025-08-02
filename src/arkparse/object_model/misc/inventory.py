@@ -6,7 +6,6 @@ from pathlib import Path
 from arkparse.object_model.misc.__parsed_object_base import ParsedObjectBase
 from arkparse.saves.asa_save import AsaSave
 from arkparse.parsing.struct import get_uuid_reference_bytes
-from arkparse.parsing import ArkBinaryParser
 from arkparse.logging import ArkSaveLogger
 
 from .inventory_item import InventoryItem
@@ -16,9 +15,13 @@ from .inventory_item import InventoryItem
 class Inventory(ParsedObjectBase):
     items: Dict[UUID, InventoryItem]
     started_empty: bool = False
-    def __init__(self, uuid: UUID, binary: ArkBinaryParser=None, save: AsaSave = None):
-        super().__init__(uuid, binary=binary, save=save)
+    def __init__(self, uuid: UUID, save: AsaSave = None):
+        super().__init__(uuid, save=save)
         self.items = {}
+
+        if self.object is None:
+            ArkSaveLogger.error_log(f"Inventory object with UUID {uuid} could not be loaded from save, not found")
+            return
 
         item_arr = self.object.get_array_property_value("InventoryItems")
         for item in item_arr:
@@ -31,15 +34,14 @@ class Inventory(ParsedObjectBase):
                 if is_engram is None or not is_engram:
                     self.items[item_uuid] = item
 
-    def add_item(self, item: UUID, save: AsaSave = None, store: bool = True):
+    def add_item(self, item: UUID, store: bool = True):
         if len(self.items) == 0:
             raise ValueError("Currently, adding stuff to empty inventories is not supported!")
             # self.binary.set_property_position("bInitializedMe")
         else:
             self.object.find_property("InventoryItems")
 
-        reader = ArkBinaryParser(save.get_game_obj_binary(item), save.save_context)
-        self.items[item] = InventoryItem(item, reader)
+        self.items[item] = InventoryItem(item, self.save)
         self.items[item].add_self_to_inventory(self.object.uuid)
         
         object_references = []
@@ -53,10 +55,10 @@ class Inventory(ParsedObjectBase):
             self.binary.set_property_position("InventoryItems")
             self.binary.replace_array("InventoryItems", "ObjectProperty", object_references)
 
-        if save is not None and store:
-            save.modify_game_obj(self.object.uuid, self.binary.byte_buffer)
+        if store:
+            self.update_binary()
 
-    def remove_item(self, item: UUID, save: AsaSave = None):
+    def remove_item(self, item: UUID):
         if len(self.items) == 0:
             return
 
@@ -69,10 +71,9 @@ class Inventory(ParsedObjectBase):
         
         self.binary.replace_array("InventoryItems", "ObjectProperty", object_references if len(object_references) > 0 else None)
 
-        if save is not None:
-            save.modify_game_obj(self.object.uuid, self.binary.byte_buffer)
+        self.update_binary()
 
-    def clear_items(self, save: AsaSave = None):
+    def clear_items(self):
         if len(self.items) == 0:
             return
         
@@ -80,8 +81,7 @@ class Inventory(ParsedObjectBase):
         self.binary.set_property_position("InventoryItems")
         self.binary.replace_array("InventoryItems", "ObjectProperty", None)
 
-        if save is not None:
-            save.modify_game_obj(self.object.uuid, self.binary.byte_buffer)
+        self.update_binary()
 
     def store_binary(self, path: Path, name: str = None, prefix: str = "inv_", with_content: bool = True, no_suffix: bool = False):
         super().store_binary(path, name=name, prefix=prefix, no_suffix=no_suffix)

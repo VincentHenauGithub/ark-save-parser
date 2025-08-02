@@ -15,8 +15,8 @@ class Saddle(EquipmentWithArmor):
     def __init_props__(self):
         super().__init_props__()
 
-    def __init__(self, uuid: UUID = None, binary: ArkBinaryParser = None):
-        super().__init__(uuid, binary)
+    def __init__(self, uuid: UUID = None, save: AsaSave = None):
+        super().__init__(uuid, save=save)
         self.class_name = "saddle"             
     
     @staticmethod
@@ -25,8 +25,8 @@ class Saddle(EquipmentWithArmor):
         eq = Equipment._generate_from_template(Saddle, file, class_, save)
         return eq
     
-    def auto_rate(self, save: AsaSave = None):
-        self._auto_rate(0.000926, self.get_average_stat(), save)
+    def auto_rate(self):
+        self._auto_rate(0.000926, self.get_average_stat())
 
     def get_stat_for_rating(self, stat: ArkEquipmentStat, rating: float) -> float:
         value = super()._get_stat_for_rating(stat, rating, 0.000926)

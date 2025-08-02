@@ -43,8 +43,8 @@ class TamedDino(Dino):
         else:
             self.inv_uuid = UUID(inv_uuid.value)
 
-    def __init__(self, uuid: UUID = None, binary: ArkBinaryParser = None, save: AsaSave = None):
-        super().__init__(uuid, binary=binary, save=save)
+    def __init__(self, uuid: UUID = None, save: AsaSave = None):
+        super().__init__(uuid, save=save)
         self.inv_uuid = None
         self.inventory = None
 

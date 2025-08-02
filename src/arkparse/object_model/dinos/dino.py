@@ -39,8 +39,8 @@ class Dino(ParsedObjectBase):
         self.gene_traits = self.object.get_array_property_value("GeneTraits")
         self.location = ActorTransform(vector=self.object.get_property_value("SavedBaseWorldLocation"))
     
-    def __init__(self, uuid: UUID = None, binary: ArkBinaryParser = None, save: AsaSave = None):
-        super().__init__(uuid, binary=binary, save=save)
+    def __init__(self, uuid: UUID = None, save: AsaSave = None):
+        super().__init__(uuid, save=save)
 
         if save is not None and self.object.get_property_value("MyCharacterStatusComponent") is not None:
             stat_uuid = self.object.get_property_value("MyCharacterStatusComponent").value
@@ -88,7 +88,7 @@ class Dino(ParsedObjectBase):
         self.binary.replace_array("GeneTraits", "NameProperty", None)
         self.object = ArkGameObject(self.object.uuid, self.object.blueprint, self.binary)
 
-        save.modify_game_obj(self.object.uuid, self.binary.byte_buffer)
+        self.update_binary()
 
     def remove_gene_trait(self, trait: ArkDinoTrait, save: AsaSave):
         self.gene_traits = [t for t in self.gene_traits if not t.startswith(trait.value)]
@@ -103,8 +103,7 @@ class Dino(ParsedObjectBase):
         self.binary.replace_array("GeneTraits", "NameProperty", new_genes if len(new_genes) > 0 else None)
         self.object = ArkGameObject(self.object.uuid, self.object.blueprint, self.binary)
 
-        save.modify_game_obj(self.object.uuid, self.binary.byte_buffer)
-
+        self.update_binary()
 
     def add_gene_trait(self, trait: ArkDinoTrait, level: int, save: AsaSave):
         self.gene_traits.append(f"{trait.value}[{level}]")
@@ -120,7 +119,7 @@ class Dino(ParsedObjectBase):
         
         self.object = ArkGameObject(self.object.uuid, self.object.blueprint, self.binary)
 
-        save.modify_game_obj(self.object.uuid, self.binary.byte_buffer)
+        self.update_binary()
 
     def get_color_set_indices(self) -> List[int]:
         colorSetIndices: List[int] = []
@@ -226,5 +225,5 @@ class Dino(ParsedObjectBase):
         self.object = ArkGameObject(self.object.uuid, self.object.blueprint, self.binary)
 
         save.modify_actor_transform(self.object.uuid, location.to_bytes())
-        save.modify_game_obj(self.object.uuid, self.binary.byte_buffer)
+        self.update_binary()
         self.location = location

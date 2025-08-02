@@ -7,6 +7,7 @@ from arkparse.object_model.equipment.__equipment import Equipment
 from arkparse.object_model.misc.inventory_item import InventoryItem
 from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.saves.asa_save import AsaSave
+from arkparse.logging import ArkSaveLogger
 from arkparse.object_model.misc.object_crafter import ObjectCrafter
 from arkparse.parsing import GameObjectReaderConfiguration
 from arkparse.enums import ArkItemQuality, ArkEquipmentStat
@@ -30,6 +31,7 @@ class EquipmentApi(GeneralApi):
                                                  
         )
         super().__init__(save, config)
+        self.parsed_objects: Dict[UUID, Equipment] = {}
 
     def __get_cls_filter(self, cls: "EquipmentApi.Classes"):
         if cls == self.Classes.WEAPON:
@@ -134,6 +136,17 @@ class EquipmentApi(GeneralApi):
         
         return armor
     
+    def get_shields(self, classes: List[str] = None, minimum_armor: int = None, minimum_durability: int = None) -> Dict[UUID, Shield]:
+        shields: Dict[UUID, Shield] = self.get_filtered(self.Classes.SHIELD, classes=classes)
+        
+        if minimum_armor is not None:
+            shields = {uuid: shield for uuid, shield in shields.items() if shield.armor >= minimum_armor}
+        
+        if minimum_durability is not None:
+            shields = {uuid: shield for uuid, shield in shields.items() if shield.durability >= minimum_durability}
+        
+        return shields
+    
     def modify_equipment(self, eq_class_ : "EquipmentApi.Classes", equipment: Equipment, target_class: str = None, target_stat: ArkEquipmentStat = None, value: float = None, range: tuple[float, float] = None):
         if eq_class_ == self.Classes.WEAPON:
             equipment: Weapon
@@ -157,7 +170,7 @@ class EquipmentApi(GeneralApi):
         return min_internal, max_internal
 
 
-    def generate_equipment(self, eq_class_ : "EquipmentApi.Classes", blueprint: str, master_stat: ArkEquipmentStat, min_value: float, max_value: float, force_bp: bool = None, from_rating: bool = False, normal_distribution: bool = True, bp_chance: float = 0.3) -> Equipment:
+    def generate_equipment(self, eq_class_ : "EquipmentApi.Classes", blueprint: str, master_stat: ArkEquipmentStat, min_value: float, max_value: float, force_bp: bool = None, from_rating: bool = False, normal_distribution: bool = False, bp_chance: float = 0.3) -> Equipment:
 
         # Generate equipment based on the specified class and blueprint
         bp_chance_yes = bp_chance * 100 if force_bp is None else 0 if force_bp else 100
@@ -166,23 +179,29 @@ class EquipmentApi(GeneralApi):
         equipment: Equipment = eq_class_.generate_from_template(blueprint, self.save, is_bp=is_bp)
 
         if from_rating:
-            # print(f"from rating {min_value} to {max_value} for {master_stat}")
+            ArkSaveLogger.api_log(f"from rating {min_value} to {max_value} for {master_stat}")
             min_value = equipment.get_stat_for_rating(master_stat, min_value)
             max_value = equipment.get_stat_for_rating(master_stat, max_value)
 
-        # print(f"Generating {equipment.class_name} {blueprint} with {master_stat} in range [{min_value}, {max_value}] (is_bp={is_bp})")
         range_min, range_max = self.__get_internal_value_range(equipment, master_stat, min_value, max_value)
-        # print(f"Internal value range for {master_stat} is [{range_min}, {range_max}]")
+        ArkSaveLogger.api_log(f"Internal value range for {master_stat} is [{range_min}, {range_max}]")
         
         if normal_distribution:
-            mu = (range_min + range_max) / 2
-            sigma = (range_max - range_min) / 2
+            mu    = (range_min + range_max) / 2
+            sigma = (range_max - range_min) / (2 * 1.64485)  # ≈ (range_max - range_min) / 3.2897 about 90% 
 
         for stat in equipment.get_implemented_stats():
             if normal_distribution:
-                random_value = random.gauss(mu, sigma)
+                random_value = int(random.gauss(mu, sigma))
             else:
-                random_value = random.uniform(range_min, range_max)
+                random_value = int(random.uniform(range_min, range_max))
+
+            if random_value < range_min:
+                random_value = range_min
+            elif random_value > range_max*1.5:
+                random_value = int(range_max*1.5)
+
+            ArkSaveLogger.api_log(f"Setting {stat} to {random_value} for {equipment.class_name} {"(used normal distribution)" if normal_distribution else "(used uniform distribution)"}")
             equipment.set_stat(stat, equipment.get_actual_value(stat, random_value))
 
         equipment.auto_rate()

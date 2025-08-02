@@ -159,8 +159,8 @@ class DinoStats(ParsedObjectBase):
         self.current_level = self.base_stat_points.get_level() + self.added_stat_points.get_level() + self.mutated_stat_points.get_level()
         self._percentage_imprinted = self.object.get_property_value("DinoImprintingQuality", 0.0) * 100
     
-    def __init__(self, uuid: UUID = None, binary: ArkBinaryParser = None, save: AsaSave = None):
-        super().__init__(uuid, binary=binary, save=save)
+    def __init__(self, uuid: UUID = None, save: AsaSave = None):
+        super().__init__(uuid, save=save)
 
     @staticmethod
     def from_object(obj: ArkGameObject):
@@ -217,16 +217,15 @@ class DinoStats(ParsedObjectBase):
     def get_total_mutations(self):
         return self.mutated_stat_points.get_level() / 2
     
-    def modify_stat_value(self, stat: ArkStat, value: float, save: AsaSave = None):
+    def modify_stat_value(self, stat: ArkStat, value: float):
         setattr(self.stat_values, STAT_POSITION_MAP[stat.value], value)
 
         prop = self.object.find_property("CurrentStatusValues", stat.value)
         self.binary.replace_float(prop, value)
 
-        if save is not None:
-            save.modify_game_obj(self.object.uuid, self.binary.byte_buffer)
+        self.update_binary()
 
-    def modify_stat_points(self, stat: ArkStat, value: int, save: AsaSave = None):
+    def modify_stat_points(self, stat: ArkStat, value: int):
         setattr(self.base_stat_points, STAT_POSITION_MAP[stat.value], value)
 
         prop = self.object.find_property("NumberOfLevelUpPointsApplied", stat.value)
@@ -237,21 +236,17 @@ class DinoStats(ParsedObjectBase):
         prop = self.object.find_property("BaseCharacterLevel")
         self.binary.replace_u32(prop, new_level)
 
-        if save is not None:
-            save.modify_game_obj(self.object.uuid, self.binary.byte_buffer)
+        self.update_binary()
 
-    def modify_experience(self, value: int, save: AsaSave = None):
+    def modify_experience(self, value: int):
         prop = self.object.find_property("ExperiencePoints")
         self.binary.replace_float(prop, value)
 
-        if save is not None:
-            save.modify_game_obj(self.object.uuid, self.binary.byte_buffer)
+        self.update_binary()
 
-    def prevent_level_up(self, save: AsaSave = None):
+    def prevent_level_up(self):
         if self.object.get_property_value("bAllowLevelUps") == True:
             prop = self.object.find_property("bAllowLevelUps")
             self.binary.replace_boolean(prop, False)
 
-            if save is not None:
-                save.modify_game_obj(self.object.uuid, self.binary.byte_buffer)
-            
+            self.update_binary()
