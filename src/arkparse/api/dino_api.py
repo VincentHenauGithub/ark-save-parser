@@ -16,6 +16,7 @@ from arkparse.parsing import GameObjectReaderConfiguration
 from arkparse.parsing.struct.actor_transform import MapCoords
 from arkparse.enums import ArkMap, ArkStat
 from arkparse.utils import TEMP_FILES_DIR
+from arkparse.helpers.dino.is_tamable import is_tamable
 from arkparse.logging import ArkSaveLogger
 
 from importlib.resources import files
@@ -26,12 +27,6 @@ class DinoApi:
         self.all_objects = None
         self.parsed_dinos: Dict[UUID, Dino] = {}
         self.parsed_cryopods: Dict[UUID, Cryopod] = {}
-        package = 'arkparse.assets'
-        try:
-            with open(files(package) / f'tamable_dinos.txt', 'r', encoding='utf-8') as f:
-                self.__tamables = set(line.strip() for line in f if line.strip())
-        except FileNotFoundError:
-            self.__tamables = set()
 
     def get_all_objects(self, config: GameObjectReaderConfiguration = None) -> Dict[UUID, ArkGameObject]:
         reuse = False
@@ -166,8 +161,8 @@ class DinoApi:
     def get_all_wild(self) -> Dict[UUID, Dino]:
         return self.get_all(include_cryos=False, include_tamed=False)
 
-    def get_all_wild_tamables(self) -> Dict[UUID, Dino]:
-        return {key: dino for key, dino in self.get_all_wild().items() if dino.get_short_name() + "_C" in self.__tamables}
+    def get_all_wild_tamables(self, max_tek_level=180, max_level=150) -> Dict[UUID, Dino]:
+        return {key: dino for key, dino in self.get_all_wild().items() if is_tamable(dino, max_tek_level, max_level)}
     
     def get_all_tamed(self, include_cryopodded = True) -> Dict[UUID, TamedDino]:
         return self.get_all(include_cryos=include_cryopodded, include_wild=False, include_tamed=True)
@@ -441,4 +436,3 @@ class DinoApi:
                 return obj
 
         return None
-

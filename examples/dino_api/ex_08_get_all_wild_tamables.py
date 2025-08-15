@@ -13,15 +13,22 @@ save = AsaSave(save_path)                                                       
 dino_api = DinoApi(save)                                                                                        # create a DinoApi object
 
 wild_tamables: Dict[UUID, Dino] = dino_api.get_all_wild_tamables()
+wild_tamables_diff10: Dict[UUID, Dino] = dino_api.get_all_wild_tamables(360, 300)
 wild_dinos: Dict[UUID, Dino] = dino_api.get_all_wild()
 
-wild_tamables_filtered = []
+wild_tamables_filtered = 0
+wild_tamables_diff10_filtered = 0
 for dino in wild_dinos.values():
-    if not is_tamable(dino):
-        continue
+    if is_tamable(dino):
+        wild_tamables_filtered+=1
 
-    wild_tamables_filtered.append(dino)
+    if is_tamable(dino, 360, 300):
+        wild_tamables_diff10_filtered+=1
 
 print(f"Total Wild Dinos: {len(wild_dinos)}")
-print(f"Total Wild Tamables: {len(wild_tamables)}")
-print(f"Total Wild Tamables (after filtering): {len(wild_tamables_filtered)}")
+
+# Results should be same
+print(f"Total Wild Tamables (default difficult): >>{len(wild_tamables)}<< should be equal to >>{wild_tamables_filtered}<<")
+
+# Results should be same
+print(f"Total Wild Tamables (10x difficult): >>{len(wild_tamables_diff10)}<< should be equal to >>{wild_tamables_diff10_filtered}<<")
