@@ -1,4 +1,5 @@
 import logging
+import math
 import sqlite3
 from pathlib import Path
 from typing import Dict, Optional, Collection
@@ -110,6 +111,19 @@ class AsaSave:
         self.save_context.current_day = current_day
 
         ArkSaveLogger.save_log(f"Current time: {self.save_context.current_time}, current day: {self.save_context.current_day}")
+
+    def get_game_time_readable_string(self):
+        current_hours = str(max(0, math.floor(self.save_context.current_time / 3600)))
+        if len(current_hours) < 2:
+            current_hours = f"0{current_hours}"
+        remaining: float = (self.save_context.current_time % 3600)
+        current_minutes = str(max(0, math.floor(remaining / 60)))
+        if len(current_minutes) < 2:
+            current_minutes = f"0{current_minutes}"
+        current_seconds = str(max(0, math.floor(remaining % 60)))
+        if len(current_seconds) < 2:
+            current_seconds = f"0{current_seconds}"
+        return f"Day {self.save_context.current_day}, {current_hours}:{current_minutes}:{current_seconds}"
 
     def read_actor_locations(self):
         actor_transforms = self.get_custom_value("ActorTransforms")

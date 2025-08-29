@@ -457,7 +457,7 @@ class JsonApi:
     def export_save_file_info(self, export_folder_path: str = Path.cwd() / "json_exports"):
         ArkSaveLogger.api_log("Exporting save file info...")
 
-        save_info = { "MapName": self.save.save_context.map_name, "GameTime": self.save.save_context.game_time }
+        save_info = { "MapName": self.save.save_context.map_name, "GameTime": self.save.save_context.game_time, "CurrentDay": self.save.save_context.current_day, "CurrentTime": self.save.save_context.current_time }
 
         # Create json exports folder if it does not exist.
         path_obj = Path(export_folder_path)
