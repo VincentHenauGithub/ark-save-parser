@@ -1,6 +1,6 @@
 import json
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 import random
 
 from arkparse.object_model.misc.__parsed_object_base import ParsedObjectBase
@@ -13,6 +13,7 @@ from arkparse.utils.json_utils import DefaultJsonEncoder
 from .dino_ai_controller import DinoAiController
 
 from .stats import DinoStats
+from ...parsing import ArkBinaryParser
 from ...parsing.struct import ObjectReference
 
 
@@ -42,17 +43,17 @@ class Dino(ParsedObjectBase):
         self.is_dead = self.object.get_property_value("bIsDead", False)
         self.location = ActorTransform(vector=self.object.get_property_value("SavedBaseWorldLocation"))
     
-    def __init__(self, uuid: UUID = None, save: AsaSave = None):
-        super().__init__(uuid, save=save)
+    def __init__(self, uuid: UUID = None, save: AsaSave = None, game_bin: Optional[ArkBinaryParser] = None, game_obj: Optional[ArkGameObject] = None):
+        super().__init__(uuid, save=save, game_bin=game_bin, game_obj=game_obj)
 
         if save is not None and self.object.get_property_value("MyCharacterStatusComponent") is not None:
             stat_uuid = self.object.get_property_value("MyCharacterStatusComponent").value
-            self.stats = DinoStats(UUID(stat_uuid), save=save)
+            self.stats = DinoStats(UUID(stat_uuid), save=save, game_bin=game_bin, game_obj=game_obj)
 
         if save is not None and self.object.get_property_value("Owner") is not None:
             if self.save.is_in_db(UUID(self.object.get_property_value("Owner").value)):
                 ai_uuid = self.object.get_property_value("Owner").value
-                self.ai_controller = DinoAiController(UUID(ai_uuid), save=save)
+                self.ai_controller = DinoAiController(UUID(ai_uuid), save=save, game_bin=game_bin, game_obj=game_obj)
 
     def __str__(self) -> str:
         return "Dino(type={}, lv={})".format(self.get_short_name(), self.stats.current_level)

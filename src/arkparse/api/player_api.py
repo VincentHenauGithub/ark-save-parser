@@ -9,6 +9,7 @@ from arkparse.saves.asa_save import AsaSave
 from arkparse.parsing import ArkBinaryParser
 from arkparse.classes.player import Player
 from arkparse.parsing.game_object_reader_configuration import GameObjectReaderConfiguration
+from arkparse.saves.save_connection import SaveConnection
 from arkparse.utils import TEMP_FILES_DIR
 from arkparse.logging import ArkSaveLogger
 
@@ -62,7 +63,7 @@ class _TribeAndPlayerData:
             self.data.set_position(pos - 20)
             uuid_bytes = self.data.read_bytes(16)
             uuid_pos = self.data.find_byte_sequence(uuid_bytes)
-            tribe_uuid = AsaSave.byte_array_to_uuid(uuid_bytes)
+            tribe_uuid = SaveConnection.byte_array_to_uuid(uuid_bytes)
 
             ArkSaveLogger.api_log(f"Found tribe UUID at position: {uuid_pos[0]}, second UUID position: {uuid_pos[1]}")
             offset = pos - 36
@@ -77,7 +78,7 @@ class _TribeAndPlayerData:
             # Get ID
             self.data.set_position(pos - 20)
             uuid_bytes = self.data.read_bytes(16)
-            player_uuid = AsaSave.byte_array_to_uuid(uuid_bytes)
+            player_uuid = SaveConnection.byte_array_to_uuid(uuid_bytes)
             offset = pos - 36
 
             next_player_data = positions[i + 1] if i + 1 < len(positions) else None
@@ -150,8 +151,8 @@ class PlayerApi:
 
         if self.from_store:
             self.__get_files_from_db()
-        elif save.save_dir is not None:
-            self.get_files_from_directory(save.save_dir)
+        elif save.save_connection.save_dir is not None:
+            self.get_files_from_directory(save.save_connection.save_dir)
 
         if len(self.profile_paths) == 0 and len(self.tribe_paths) == 0 and not self.from_store:
             ArkSaveLogger.api_log("No profile or tribe data found")
@@ -327,8 +328,9 @@ class PlayerApi:
     
     def get_player_with(self, stat: int, stat_type: int = StatType.HIGHEST):
         istat = self.__get_stat(stat)
-        player: ArkPlayer = None
+        player: Optional[ArkPlayer] = None
         value: int = 0
+        player_id: int = -1
         
         if stat_type == self.StatType.LOWEST:
             player_id = min(istat, key=istat.get)
@@ -343,10 +345,11 @@ class PlayerApi:
             player_id = max(istat, key=istat.get)
             value = istat[player_id]
 
-        for p in self.players:
-            if p.id_ == player_id:
-                player = p
-                break
+        if not player_id == -1:
+            for p in self.players:
+                if p.id_ == player_id:
+                    player = p
+                    break
         
         return player, value
     

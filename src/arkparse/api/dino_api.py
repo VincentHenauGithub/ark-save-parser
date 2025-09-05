@@ -1,10 +1,9 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 from uuid import UUID, uuid4
 from pathlib import Path
 import os
 
 from arkparse.object_model.cryopods.cryopod import Cryopod
-from arkparse.object_model.dinos import dino
 from arkparse.object_model.dinos.dino import Dino, DinoStats
 from arkparse.object_model.dinos.tamed_baby import TamedBaby
 from arkparse.object_model.dinos.dino_ai_controller import DinoAiController
@@ -12,7 +11,6 @@ from arkparse.object_model.dinos.baby import Baby
 from arkparse.object_model.dinos.tamed_dino import TamedDino
 from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.object_model.misc.dino_owner import DinoOwner
-from arkparse.ftp.ark_ftp_client import ArkFtpClient
 
 from arkparse.parsing import ArkBinaryParser
 from arkparse.saves.asa_save import AsaSave
@@ -42,7 +40,7 @@ class DinoApi:
             config = GameObjectReaderConfiguration(
                 blueprint_name_filter=lambda name: \
                     name is not None and \
-                        (("Dinos/" in name and "_Character_" in name) or \
+                        (("Dinos/" in name and "_Character_" in name) or
                         ("PrimalItem_WeaponEmptyCryopod_C" in name)))
 
         objects = self.save.get_game_objects(config)
@@ -52,7 +50,7 @@ class DinoApi:
 
         return objects
     
-    def get_by_uuid(self, uuid: UUID) -> Dino:
+    def get_by_uuid(self, uuid: UUID) -> Optional[Dino]:
         object = self.save.get_game_object_by_id(uuid)
 
         if object is None:
@@ -354,17 +352,18 @@ class DinoApi:
 
         return cryopodded
     
-    def modify_dinos(self, dinos: Dict[UUID, TamedDino], new_owner: DinoOwner = None, ftp_client: ArkFtpClient = None):
+    def modify_dinos(self, dinos: Dict[UUID, TamedDino], new_owner: DinoOwner = None): # , ftp_client: ArkFtpClient = None):
         for key, dino in dinos.items():
             if new_owner is not None:
                 dino.owner.replace_with(new_owner, dino.binary)
                 dino.update_binary()
-
+        '''
         if ftp_client is not None:
             self.save.store_db(TEMP_FILES_DIR / "sapi_temp_save.ark")
             ftp_client.connect()
             ftp_client.upload_save_file(TEMP_FILES_DIR / "sapi_temp_save.ark")
             ftp_client.close()
+        '''
 
     def create_heatmap(self, map: ArkMap, resolution: int = 100, dinos: Dict[UUID, TamedDino] = None, classes: List[str] = None, owner: DinoOwner = None, only_tamed: bool = False):
         import math
@@ -444,7 +443,7 @@ class DinoApi:
 
         return None
     
-    def __get_all_files_from_dir_recursive(self, dir_path: Path) -> Dict[str, bytes]:
+    def __get_all_files_from_dir_recursive(self, dir_path: Path) -> list[ImportFile]:
         out = []
         base_file = None
         for root, _, files in os.walk(dir_path):

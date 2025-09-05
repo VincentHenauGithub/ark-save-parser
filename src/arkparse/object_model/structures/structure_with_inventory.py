@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 from pathlib import Path
 
@@ -6,6 +7,9 @@ from arkparse.object_model.misc.inventory import Inventory
 from arkparse.object_model import ArkGameObject
 
 from .structure import Structure
+from ...parsing import ArkBinaryParser
+
+
 class StructureWithInventory(Structure):
     inventory_uuid: UUID
     item_count: int
@@ -13,9 +17,9 @@ class StructureWithInventory(Structure):
 
     _inventory: Inventory
 
-    def __init__(self, uuid: UUID, save: AsaSave, bypass_inventory: bool = False):
+    def __init__(self, uuid: UUID, save: AsaSave, bypass_inventory: bool = False, game_bin: Optional[ArkBinaryParser] = None, game_obj: Optional[ArkGameObject] = None):
         self._inventory = None
-        super().__init__(uuid, save=save)
+        super().__init__(uuid, save=save, game_bin=game_bin, game_obj=game_obj)
         self.save = save
         
         inv_uuid = self.object.get_property_value("MyInventoryComponent")

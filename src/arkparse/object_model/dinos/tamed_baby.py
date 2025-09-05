@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 
 from arkparse.saves.asa_save import AsaSave
@@ -11,8 +12,8 @@ class TamedBaby(TamedDino, Baby):
     def __init_props__(self):
         super().__init_props__()
 
-    def __init__(self, uuid: UUID = None, save: AsaSave = None):
-        super().__init__(uuid, save=save)
+    def __init__(self, uuid: UUID = None, save: AsaSave = None, game_bin: Optional[ArkBinaryParser] = None, game_obj: Optional[ArkGameObject] = None):
+        super().__init__(uuid, save=save, game_bin=game_bin, game_obj=game_obj)
 
     @staticmethod
     def from_object(dino_obj: ArkGameObject, status_obj: ArkGameObject):

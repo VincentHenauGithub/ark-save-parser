@@ -17,6 +17,7 @@ from arkparse.parsing.struct.ark_item_net_id import ArkItemNetId
 from arkparse.parsing.struct import ActorTransform
 from arkparse.parsing.struct import ObjectReference
 from arkparse.saves.asa_save import AsaSave
+from arkparse.saves.save_connection import SaveConnection
 from arkparse.utils.json_utils import DefaultJsonEncoder
 
 from arkparse.enums import ArkEquipmentStat
@@ -412,11 +413,11 @@ class JsonApi:
         # Parse and format items as JSON.
         all_items = []
         query = "SELECT key, value FROM game"
-        with self.save.connection as conn:
+        with self.save.save_connection.connection as conn:
             cursor = conn.execute(query)
             for row in cursor:
                 try:
-                    obj_uuid = self.save.byte_array_to_uuid(row[0])
+                    obj_uuid = SaveConnection.byte_array_to_uuid(row[0])
                     byte_buffer = ArkBinaryParser(row[1], self.save.save_context)
                     class_name = byte_buffer.read_name()
 
@@ -429,7 +430,7 @@ class JsonApi:
                             "/PrimalItemConsumable_" not in class_name:
                         continue
 
-                    obj = self.save.parse_as_predefined_object(obj_uuid, class_name, byte_buffer)
+                    obj = SaveConnection.parse_as_predefined_object(obj_uuid, class_name, byte_buffer)
                     if obj is not None:
                         is_engram = False
                         if obj.has_property("bIsEngram"):

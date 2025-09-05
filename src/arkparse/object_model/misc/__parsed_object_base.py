@@ -5,7 +5,7 @@ from arkparse.parsing import ArkBinaryParser
 from pathlib import Path
 from arkparse.logging import ArkSaveLogger
 from importlib.resources import files
-from typing import Dict, TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from arkparse import AsaSave
@@ -27,11 +27,15 @@ class ParsedObjectBase:
     def __init_props__(self):
         pass
 
-    def __init__(self, uuid: UUID = None, save: "AsaSave" = None):
+    def __init__(self, uuid: UUID = None, save: "AsaSave" = None, game_bin: Optional[ArkBinaryParser] = None, game_obj: Optional[ArkGameObject] = None):
         if uuid is None or save is None:
             return
-        if save is not None:
-            self.save = save
+
+        self.save = save
+        if game_bin is not None and game_obj is not None:
+            self.binary = game_bin
+            self.object = game_obj
+        else:
             if not save.is_in_db(uuid):
                 ArkSaveLogger.error_log(f"Could not find binary for game object {uuid} in save")
             else:

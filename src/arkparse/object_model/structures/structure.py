@@ -1,12 +1,14 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 import json
 from pathlib import Path
 import random
 
+from arkparse.object_model import ArkGameObject
 from arkparse.object_model.misc.__parsed_object_base import ParsedObjectBase
 from arkparse.object_model.misc.object_owner import ObjectOwner
+from arkparse.parsing import ArkBinaryParser
 from arkparse.parsing.struct.object_reference import ObjectReference
 from arkparse.parsing.struct import ActorTransform
 from arkparse import AsaSave
@@ -49,8 +51,8 @@ class Structure(ParsedObjectBase):
     #MyInventoryComponent
     #NetDestructionTime
 
-    def __init__(self, uuid: UUID, save: AsaSave):
-        super().__init__(uuid, save=save)
+    def __init__(self, uuid: UUID, save: AsaSave, game_bin: Optional[ArkBinaryParser] = None, game_obj: Optional[ArkGameObject] = None):
+        super().__init__(uuid, save=save, game_bin=game_bin, game_obj=game_obj)
 
         properties = self.object
         self.owner = ObjectOwner(properties)

@@ -2,7 +2,9 @@ import ftplib
 import logging
 from datetime import datetime
 from io import BytesIO
-from pytz import timezone, UTC
+
+from dateutil.tz import tzfile
+from pytz import UTC
 from pathlib import Path
 import json
 
@@ -17,7 +19,8 @@ SAVE_FILE_EXTENSION = ".ark"
 
 PROFILE_FILE_EXTENSION = ".arkprofile"
 TRIBE_FILE_EXTENSION = ".arktribe"
-LOCAL_TIMEZONE = timezone('Europe/Berlin')
+# UTC_TIME = datetime.now(timezone.utc)
+# LOCAL_TIMEZONE = timezone(name='Europe/Berlin')
 
 class ArkFile:
     path: str
@@ -36,7 +39,7 @@ class ArkFile:
         try:
             dt = datetime.strptime(dt_str, "%Y%m%d%H%M%S")
             dt = UTC.localize(dt)  # Make it timezone-aware as UTC
-            self.last_modified = dt.astimezone(LOCAL_TIMEZONE)  # Convert to local timezone
+            self.last_modified = dt.astimezone(tz=tzfile('Europe/Berlin'))  # Convert to local timezone
         except ValueError as e:
             logging.error(f"Error parsing date '{dt_str}': {e}")
             self.last_modified = None  # Handle invalid date format

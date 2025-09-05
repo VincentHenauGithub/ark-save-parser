@@ -1,7 +1,7 @@
 #TamedTimeStamp
 import json
 from uuid import UUID
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from arkparse.saves.asa_save import AsaSave
 from arkparse.parsing import ArkBinaryParser
@@ -44,10 +44,10 @@ class TamedDino(Dino):
         else:
             self.inv_uuid = UUID(inv_uuid.value)
 
-    def __init__(self, uuid: UUID = None, save: AsaSave = None, bypass_inventory: bool = True):
+    def __init__(self, uuid: UUID = None, save: AsaSave = None, bypass_inventory: bool = True, game_bin: Optional[ArkBinaryParser] = None, game_obj: Optional[ArkGameObject] = None):
         self.inv_uuid = None
         self._inventory = None
-        super().__init__(uuid, save=save)
+        super().__init__(uuid, save=save, game_bin=game_bin, game_obj=game_obj)
 
         if self.inv_uuid is not None and not bypass_inventory:
             self._inventory = Inventory(self.inv_uuid, save=save)
