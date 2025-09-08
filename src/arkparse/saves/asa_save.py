@@ -219,13 +219,13 @@ class AsaSave:
             raise e
         return result
     
-    def add_name_to_name_table(self, name: str):
+    def add_name_to_name_table(self, name: str, id: Optional[int] = None):
         header_data = self.get_custom_value("SaveHeader")
         self.name_count += 1
         header_data.set_position(self.name_offset)
         header_data.replace_bytes(self.name_count.to_bytes(4, byteorder="little"))
         header_data.set_position(self.last_name_end)
-        header_data.insert_uint32(self.save_context.add_new_name(name))
+        header_data.insert_uint32(self.save_context.add_new_name(name, id))
         header_data.insert_string(name)
         self.last_name_end = header_data.position
 

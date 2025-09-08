@@ -60,7 +60,11 @@ class SaveContext:
         
         return None
 
-    def add_new_name(self, name: str) -> int:
+    def add_new_name(self, name: str, id: int = None) -> int:
+        if id is not None:
+            self.names[id] = name
+            return id
+    
         new_id = random.randint(0, int(2**31 - 1))
         while new_id in self.names:
             new_id = random.randint(0, int(2**31 - 1))

@@ -187,12 +187,12 @@ class DinoApi:
 
         return cryod
 
-    def get_all_by_class(self, class_names: List[str]) -> Dict[UUID, Dino]:
+    def get_all_by_class(self, class_names: List[str], include_cryopodded: bool = True) -> Dict[UUID, Dino]:
         config = GameObjectReaderConfiguration(
             blueprint_name_filter=lambda name: name is not None and name in class_names
         )
 
-        dinos = self.get_all(config)
+        dinos = self.get_all(config, include_cryos=include_cryopodded)
         class_dinos = {k: v for k, v in dinos.items() if v.object.blueprint in class_names}
 
         return class_dinos
@@ -202,9 +202,9 @@ class DinoApi:
         wild_dinos = {k: v for k, v in dinos.items() if not isinstance(v, TamedDino)}
 
         return wild_dinos
-    
-    def get_all_tamed_by_class(self, class_name: List[str]) -> Dict[UUID, TamedDino]:
-        dinos = self.get_all_by_class(class_name)
+
+    def get_all_tamed_by_class(self, class_name: List[str], include_cryopodded: bool = True) -> Dict[UUID, TamedDino]:
+        dinos = self.get_all_by_class(class_name, include_cryopodded=include_cryopodded)
         tamed_dinos = {k: v for k, v in dinos.items() if isinstance(v, TamedDino)}
 
         return tamed_dinos

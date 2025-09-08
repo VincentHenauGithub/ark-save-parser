@@ -304,7 +304,7 @@ class ArkBinaryParser(PropertyParser, PropertyReplacer):
         with open(folder / f"{uuid}.bin", "wb") as f:
             f.write(self.byte_buffer)
 
-    def find_names(self, no_print=False, type=0):
+    def find_names(self, no_print=False, type=0, use_id = False):
         if not self.save_context.has_name_table():
             return []
         
@@ -321,7 +321,7 @@ class ArkBinaryParser(PropertyParser, PropertyReplacer):
             name = self.save_context.get_name(int_value)
             
             if name is not None:
-                found[i] = name
+                found[int_value if use_id else i] = name
                 self.set_position(i)
                 if prints < max_prints:
                     if not no_print:
@@ -337,6 +337,7 @@ class ArkBinaryParser(PropertyParser, PropertyReplacer):
         self.set_position(original_position)
 
         return found
+        
     
     # def find_byte_sequence(self, bytes: bytes):
     #     original_position = self.get_position()
