@@ -1,5 +1,6 @@
+import sys
 from pathlib import Path
-from typing import List, Dict, TYPE_CHECKING
+from typing import List, Dict, TYPE_CHECKING, Optional
 from uuid import UUID
 from io import BytesIO
 import zlib
@@ -373,6 +374,7 @@ class ArkBinaryParser(PropertyParser, PropertyReplacer):
     #     self.set_position(original_position)
     #     return found
 
+    '''
     def find_byte_sequence(self, pattern: bytes, adjust_offset: int = -1, print_findings: bool = False) -> List[int]:
         # adjust offset is a temporary fix for off-by-one errors which i still have to figure out
         original_position = self.get_position()
@@ -397,6 +399,25 @@ class ArkBinaryParser(PropertyParser, PropertyReplacer):
         
         self.set_position(original_position)
         return found
+    '''
 
-    
-    
+    def find_byte_sequence(self, pattern: bytes, adjust_offset: int = -1, max_findings_print: int = 0) -> List[int]:
+        # adjust offset is a temporary fix for off-by-one errors which i still have to figure out
+        found: List[int] = []
+        pos: int = 0
+        prints: int = 0
+        buffer_len: int = len(self.byte_buffer)
+        while pos >= 0 and pos < buffer_len:
+            pos = self.byte_buffer.find(pattern, pos, sys.maxsize)
+            found.append(pos + adjust_offset)
+            if prints < max_findings_print:
+                prints += 1
+                ArkSaveLogger.parser_log(f"Found byte sequence at {pos + adjust_offset}")
+            if pos >= 0:
+                pos += len(pattern)
+        return found
+
+    def find_last_byte_sequence_before(self, pattern: bytes, before_pos: int = sys.maxsize, adjust_offset: int = -1) -> Optional[int]:
+        # adjust offset is a temporary fix for off-by-one errors which i still have to figure out
+        pos = self.byte_buffer.rfind(pattern, 0, before_pos)
+        return None if pos == -1 else pos + adjust_offset

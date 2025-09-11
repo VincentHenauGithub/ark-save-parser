@@ -132,8 +132,8 @@ class Cryopod(InventoryItem):
     saddle: Saddle
     costume: any
 
-    def __init__(self, uuid: UUID = None, save: AsaSave = None, game_bin: Optional[ArkBinaryParser] = None, game_obj: Optional[ArkGameObject] = None):
-        super().__init__(uuid, save=save, game_bin=game_bin, game_obj=game_obj)
+    def __init__(self, uuid: UUID = None, save: AsaSave = None):
+        super().__init__(uuid, save=save)
         self.dino = None
         self.saddle = None
         self.costume = None

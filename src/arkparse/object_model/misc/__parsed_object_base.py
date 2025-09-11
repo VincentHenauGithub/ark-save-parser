@@ -27,20 +27,16 @@ class ParsedObjectBase:
     def __init_props__(self):
         pass
 
-    def __init__(self, uuid: UUID = None, save: "AsaSave" = None, game_bin: Optional[ArkBinaryParser] = None, game_obj: Optional[ArkGameObject] = None):
+    def __init__(self, uuid: UUID = None, save: "AsaSave" = None):
         if uuid is None or save is None:
             return
 
         self.save = save
-        if game_bin is not None and game_obj is not None:
-            self.binary = game_bin
-            self.object = game_obj
+        if not save.is_in_db(uuid):
+            ArkSaveLogger.error_log(f"Could not find binary for game object {uuid} in save")
         else:
-            if not save.is_in_db(uuid):
-                ArkSaveLogger.error_log(f"Could not find binary for game object {uuid} in save")
-            else:
-                self.binary = save.get_parser_for_game_object(uuid)
-                self.object = save.get_game_object_by_id(uuid)
+            self.binary = save.get_parser_for_game_object(uuid)
+            self.object = save.get_game_object_by_id(uuid)
 
         self.__init_props__()
 

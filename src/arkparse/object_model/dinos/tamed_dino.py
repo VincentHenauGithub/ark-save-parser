@@ -54,10 +54,10 @@ class TamedDino(Dino):
         else:
             self.inv_uuid = UUID(inv_uuid.value)
 
-    def __init__(self, uuid: UUID = None, save: AsaSave = None, bypass_inventory: bool = True, game_bin: Optional[ArkBinaryParser] = None, game_obj: Optional[ArkGameObject] = None):
+    def __init__(self, uuid: UUID = None, save: AsaSave = None, bypass_inventory: bool = True):
         self.inv_uuid = None
         self._inventory = None
-        super().__init__(uuid, save=save, game_bin=game_bin, game_obj=game_obj)
+        super().__init__(uuid, save=save)
 
         if self.inv_uuid is not None and not bypass_inventory:
             self._inventory = Inventory(self.inv_uuid, save=save)

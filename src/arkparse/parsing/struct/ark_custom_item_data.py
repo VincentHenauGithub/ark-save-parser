@@ -85,19 +85,21 @@ class ArkCustomItemData:
         for name in self.names:
             ArkSaveLogger.parser_log(f"Name: {name}")
 
-    def to_json_obj(self):
-        return {
-            "byte_arrays": self.byte_arrays,
-            "doubles": self.doubles,
-            "floats": self.floats,
-            "strings": self.strings,
-            "classes": self.classes,
-            "objects": self.objects,
-            "painting_id_map": self.painting_id_map,
-            "painting_revision_map": self.painting_revision_map,
-            "custom_data_name": self.custom_data_name,
-            "custom_data_soft_classes": self.custom_data_soft_classes
-        }
+    def to_json_obj(self, include_byte_arrays: bool = False):
+        json_obj = { "doubles": self.doubles,
+                     "floats": self.floats,
+                     "strings": self.strings,
+                     "classes": self.classes,
+                     "objects": self.objects,
+                     "painting_id_map": self.painting_id_map,
+                     "painting_revision_map": self.painting_revision_map,
+                     "custom_data_name": self.custom_data_name,
+                     "custom_data_soft_classes": self.custom_data_soft_classes }
+
+        if include_byte_arrays:
+            json_obj["byte_arrays"] = self.byte_arrays
+
+        return json_obj
 
     def __read_header(self, ark_binary_data: "ArkBinaryParser"):
         total_size = self.__read_struct_start(ark_binary_data, "CustomDataBytes", "CustomItemByteArrays")

@@ -23,8 +23,8 @@ class Baby(Dino):
         self.percentage_matured = self.object.get_property_value("BabyAge", 0.0) * 100
         self.stage = self.__get_stage()
             
-    def __init__(self, uuid: UUID = None, save: AsaSave = None, game_bin: Optional[ArkBinaryParser] = None, game_obj: Optional[ArkGameObject] = None):
-        super().__init__(uuid, save=save, game_bin=game_bin, game_obj=game_obj)
+    def __init__(self, uuid: UUID = None, save: AsaSave = None):
+        super().__init__(uuid, save=save)
 
     def __get_stage(self) -> BabyStage:
         if self.percentage_matured < 10.0:

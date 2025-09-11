@@ -17,9 +17,9 @@ class StructureWithInventory(Structure):
 
     _inventory: Inventory
 
-    def __init__(self, uuid: UUID, save: AsaSave, bypass_inventory: bool = False, game_bin: Optional[ArkBinaryParser] = None, game_obj: Optional[ArkGameObject] = None):
+    def __init__(self, uuid: UUID, save: AsaSave, bypass_inventory: bool = False):
         self._inventory = None
-        super().__init__(uuid, save=save, game_bin=game_bin, game_obj=game_obj)
+        super().__init__(uuid, save=save)
         self.save = save
         
         inv_uuid = self.object.get_property_value("MyInventoryComponent")

@@ -15,5 +15,12 @@ class DinoAiController(ParsedObjectBase):
 
         self.targeting_team = self.object.get_property_value("TargetingTeam", 0)
     
-    def __init__(self, uuid: UUID = None, save: AsaSave = None, game_bin: Optional[ArkBinaryParser] = None, game_obj: Optional[ArkGameObject] = None):
-        super().__init__(uuid, save=save, game_bin=game_bin, game_obj=game_obj)
+    def __init__(self, uuid: UUID = None, save: AsaSave = None):
+        super().__init__(uuid, save=save)
+
+    @staticmethod
+    def from_object(ai_controller_obj: ArkGameObject) -> "DinoAiController":
+        ai_controller: DinoAiController = DinoAiController()
+        ai_controller.object = ai_controller_obj
+        ai_controller.__init_props__()
+        return ai_controller
