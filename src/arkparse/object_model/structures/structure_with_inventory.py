@@ -4,7 +4,7 @@ from pathlib import Path
 
 from arkparse.saves.asa_save import AsaSave
 from arkparse.object_model.misc.inventory import Inventory
-from arkparse.object_model import ArkGameObject
+from arkparse.object_model.ark_game_object import ArkGameObject
 
 from .structure import Structure
 from ...parsing import ArkBinaryParser

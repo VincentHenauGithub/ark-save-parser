@@ -13,7 +13,7 @@ from arkparse.object_model.misc.inventory_item import InventoryItem
 from arkparse.enums import ArkMap
 from arkparse.parsing.struct import ActorTransform
 from arkparse.parsing import ArkBinaryParser
-from arkparse.object_model import ArkGameObject
+from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.utils import ImportFile
 from arkparse.logging import ArkSaveLogger
 

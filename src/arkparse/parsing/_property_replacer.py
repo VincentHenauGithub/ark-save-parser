@@ -1,5 +1,8 @@
+from typing import TYPE_CHECKING
+
 from ._property_insertor import PropertyInsertor
-from arkparse.parsing.ark_property import ArkProperty
+if TYPE_CHECKING:
+    from arkparse.parsing.ark_property import ArkProperty
 from arkparse.logging import ArkSaveLogger
 from typing import Dict, List
 import struct
@@ -9,7 +12,7 @@ class PropertyReplacer(PropertyInsertor):
     def __init__(self, data: bytes, save_context=None):
         super().__init__(data, save_context)
 
-    def __check_property_alignment(self, property: ArkProperty) -> int:
+    def __check_property_alignment(self, property: "ArkProperty") -> int:
         if property.position != 0:
             return property.name_position # can't check alignment if the property is not the fist occurence
         
@@ -44,8 +47,8 @@ class PropertyReplacer(PropertyInsertor):
         ArkSaveLogger.parser_log(f"Property {property_name} not found, returning position {self.position}")
         return None   
 
-    def replace_string(self, property : ArkProperty, value: str):
-        # from arkparse.object_model import ArkGameObject
+    def replace_string(self, property : "ArkProperty", value: str):
+        # from arkparse.object_model.ark_game_object import ArkGameObject
         # ArkSaveLogger.enable_debug = True
         # ArkSaveLogger.set_file(self, "debug.bin")
         # obj = ArkGameObject(uuid='', blueprint='', binary_reader=self)
@@ -73,47 +76,47 @@ class PropertyReplacer(PropertyInsertor):
         self.set_position(original_position)
         # print(f"Replaced string {current_string} (length={current_nr_of_bytes}) at {property_position} with {value} at {string_pos}")
 
-    def replace_u16(self, property : ArkProperty, new_value: int):
+    def replace_u16(self, property : "ArkProperty", new_value: int):
         self.__check_property_alignment(property)
         new_value_bytes = new_value.to_bytes(2, byteorder="little")
         self.replace_bytes(new_value_bytes, position=property.value_position)
     
-    def replace_16(self, property : ArkProperty, new_value: int):
+    def replace_16(self, property : "ArkProperty", new_value: int):
         self.__check_property_alignment(property)
         new_value_bytes = new_value.to_bytes(2, byteorder="little", signed=True)
         self.replace_bytes(new_value_bytes, position=property.value_position)
 
-    def replace_u32(self, property : ArkProperty, new_value: int):
+    def replace_u32(self, property : "ArkProperty", new_value: int):
         self.__check_property_alignment(property)
         new_value_bytes = new_value.to_bytes(4, byteorder="little")
         self.replace_bytes(new_value_bytes, position=property.value_position)
 
-    def replace_u64(self, property : ArkProperty, new_value: int):
+    def replace_u64(self, property : "ArkProperty", new_value: int):
         self.__check_property_alignment(property)
         new_value_bytes = new_value.to_bytes(8, byteorder="little")
         self.replace_bytes(new_value_bytes, position=property.value_position)
 
-    def replace_float(self, property : ArkProperty, new_value: float):
+    def replace_float(self, property : "ArkProperty", new_value: float):
         self.__check_property_alignment(property)
         new_value_bytes = struct.pack('<f', new_value)
         self.replace_bytes(new_value_bytes, position=property.value_position)
 
-    def replace_double(self, property : ArkProperty, new_value: float):
+    def replace_double(self, property : "ArkProperty", new_value: float):
         self.__check_property_alignment(property)
         new_value_bytes = struct.pack('<d', new_value)
         self.replace_bytes(new_value_bytes, position=property.value_position)
     
-    def replace_boolean(self, property : ArkProperty, new_value: bool):
+    def replace_boolean(self, property : "ArkProperty", new_value: bool):
         self.__check_property_alignment(property)
         new_value_bytes = b"\x01" if new_value else b"\x00"
         self.replace_bytes(new_value_bytes, position=property.value_position)
 
-    def replace_byte_property(self, property : ArkProperty, new_value: int):
+    def replace_byte_property(self, property : "ArkProperty", new_value: int):
         self.__check_property_alignment(property)
         new_value_bytes = new_value.to_bytes(1, byteorder="little")
         self.replace_bytes(new_value_bytes, position=property.value_position)
 
-    def replace_struct_property(self, property: ArkProperty, new_value: bytes):
+    def replace_struct_property(self, property: "ArkProperty", new_value: bytes):
         print(property)
         pos = self.__check_property_alignment(property)
         self.set_position(pos)

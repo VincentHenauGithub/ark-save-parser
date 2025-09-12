@@ -3,7 +3,7 @@ from uuid import UUID
 
 from arkparse.saves.asa_save import AsaSave
 from arkparse.parsing import GameObjectReaderConfiguration
-from arkparse.object_model import ArkGameObject
+from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.object_model.misc.object_owner import ObjectOwner
 from arkparse.object_model.structures import Structure, StructureWithInventory
 from arkparse.parsing.struct.actor_transform import MapCoords

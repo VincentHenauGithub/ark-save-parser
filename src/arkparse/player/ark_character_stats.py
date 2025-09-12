@@ -2,7 +2,7 @@ import json
 from typing import List
 from dataclasses import dataclass, field
 
-from arkparse.parsing import ArkProperty
+from arkparse.parsing.ark_property import ArkProperty
 from arkparse.parsing import ArkPropertyContainer
 from arkparse.parsing.struct import ObjectReference
 from arkparse.utils.json_utils import DefaultJsonEncoder

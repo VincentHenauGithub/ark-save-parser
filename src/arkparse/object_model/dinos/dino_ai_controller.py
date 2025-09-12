@@ -1,7 +1,7 @@
 from typing import Optional
 from uuid import UUID
 
-from arkparse.object_model import ArkGameObject
+from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.object_model.misc.__parsed_object_base import ParsedObjectBase
 from arkparse.parsing import ArkBinaryParser
 from arkparse.saves.asa_save import AsaSave

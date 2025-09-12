@@ -4,7 +4,7 @@ from pathlib import Path
 import os
 
 from arkparse.object_model.cryopods.cryopod import Cryopod
-from arkparse.object_model.dinos.dino import Dino, DinoStats
+from arkparse.object_model.dinos.dino import Dino, DinoStats, DinoId
 from arkparse.object_model.dinos.tamed_baby import TamedBaby
 from arkparse.object_model.dinos.dino_ai_controller import DinoAiController
 from arkparse.object_model.dinos.baby import Baby
@@ -22,6 +22,7 @@ from arkparse.logging import ArkSaveLogger
 from arkparse.classes.dinos import Dinos
 from arkparse.object_model.misc.inventory import Inventory
 from arkparse.object_model.misc.inventory_item import InventoryItem
+from arkparse.object_model.dinos.pedigree import Pedigree
 
 class DinoApi:
     _DEFAULT_CONFIG = GameObjectReaderConfiguration(
@@ -79,9 +80,10 @@ class DinoApi:
         objects = self.get_all_objects(config)
         dinos = {}
 
-        ArkSaveLogger.api_log(f"Found {len(objects)} dinos, parsing them... (and retrieving inventories)")
-        for key, obj in objects.items():
+        if len(objects) != len(self.all_objects):
+            ArkSaveLogger.api_log(f"Found {len(objects)} dinos, parsing them... (and retrieving inventories)")
 
+        for key, obj in objects.items():
             try:
                 dino = None
                 if "Dinos/" in obj.blueprint and "_Character_" in obj.blueprint:
@@ -120,6 +122,8 @@ class DinoApi:
                                 dino = self.parsed_cryopods[obj.uuid].dino
                             else:
                                 dino = self.parsed_cryopods[obj.uuid].dino
+                            if dino is not None:
+                                self.parsed_dinos[dino.uuid] = dino
                         else:
                             try:
                                 cryopod = Cryopod(obj.uuid, save=self.save)
@@ -462,6 +466,55 @@ class DinoApi:
                 if file_path.name.endswith(".bin") or file_path.name.startswith("loc_"):
                     out.append(ImportFile(str(file_path)))
         return out
+    
+    def get_by_id(self, dino_id: DinoId, tamed: bool = True) -> Optional[Dino]:
+        for dino in self.get_all(include_wild=(not tamed)).values():
+            if dino.id_ == dino_id:
+                return dino
+        return None
+    
+    def get_childless_tamed_dinos(self) -> Dict[UUID, TamedDino]:
+        tamed = self.get_all_tamed(include_cryopodded=True)
+        childless = {}
+
+        all_ancestors = set()
+        for key, dino in tamed.items():
+            if isinstance(dino, TamedBaby):
+                continue
+
+            ancestors: List[DinoId] = dino.ancestor_ids
+            for anc in ancestors:
+                all_ancestors.add(anc)
+
+        for key, dino in tamed.items():
+            if dino.id_ not in all_ancestors:
+                childless[key] = dino
+
+        return childless
+    
+    def get_all_pedigrees(self, player_api = None, min_generations: int = 2) -> List[Pedigree]:
+        childless = self.get_childless_tamed_dinos()
+
+        pedigrees: List[Pedigree] = []
+
+        for key, dino in childless.items():
+            if dino.generation >= min_generations:
+                existing_ped = None
+                for ped in pedigrees:
+                    if (ped.has_ancestors_in_pedigree(dino) or (dino.id_ in ped.dino_id_map)) and dino.get_short_name() == ped.dino_type:
+                        existing_ped = ped
+                        # print(f"Found overlapping pedigree for {dino}, skipping creation of new pedigree")
+                        break
+                
+                if existing_ped is None:
+                    ped = Pedigree(dino, self, player_api)
+                    pedigrees.append(ped)
+                    ArkSaveLogger.api_log(f"Created new pedigree, current count: {len(pedigrees)}")
+                elif not dino.id_ in existing_ped.dino_id_map:
+                    existing_ped.add_new_dino(dino)
+
+        ArkSaveLogger.api_log(f"Total pedigrees found: {len(pedigrees)}")
+        return pedigrees
 
     def import_dino(self, path: Path, location: ActorTransform = None) -> Dino | TamedDino:
         uuid_translation_map = {}

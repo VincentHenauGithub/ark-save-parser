@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Collection, Optional, Dict
 
 from arkparse.logging import ArkSaveLogger
-from arkparse.object_model import ArkGameObject
+from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.parsing import ArkBinaryParser, GameObjectReaderConfiguration
 from arkparse.saves.header_location import HeaderLocation
 from arkparse.saves.save_context import SaveContext

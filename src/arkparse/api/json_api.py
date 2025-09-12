@@ -10,7 +10,7 @@ from arkparse.object_model.equipment import Weapon, Shield, Armor, Saddle
 from arkparse.object_model.equipment.__equipment_with_armor import EquipmentWithArmor
 from arkparse.object_model.equipment.__equipment_with_durability import EquipmentWithDurability
 from arkparse.object_model.structures import Structure, StructureWithInventory
-from arkparse.object_model import ArkGameObject
+from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.api import EquipmentApi, PlayerApi, StructureApi, DinoApi
 from arkparse.parsing import ArkBinaryParser
 from arkparse.parsing.struct.ark_item_net_id import ArkItemNetId

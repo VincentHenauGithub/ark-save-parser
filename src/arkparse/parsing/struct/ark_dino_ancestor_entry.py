@@ -4,24 +4,33 @@ from typing import TYPE_CHECKING
 
 from arkparse.utils.json_utils import DefaultJsonEncoder
 
+
 if TYPE_CHECKING:
     from arkparse.parsing import ArkBinaryParser
+    from arkparse.object_model.dinos.dino_id import DinoId
 
 class ArkDinoAncestor:
     name: str
-    id1: int
-    id2: int
+    id_: "DinoId"
 
     def __init__(self, name: str, id1: int, id2: int):
+        from arkparse.object_model.dinos.dino_id import DinoId
         self.name = name
-        self.id1 = id1
-        self.id2 = id2
+        self.id_ = DinoId(id1, id2)
+
+    def __repr__(self):
+        return self.__str__()
 
     def __str__(self):
-        return f"Ancestor:(name={self.name}, id=({self.id1}, {self.id2}))"
+        return f"Ancestor:(name={self.name}, {self.id_})"
+    
+    def __eq__(self, other):
+        if not isinstance(other, ArkDinoAncestor):
+            return False
+        return self.name == other.name and self.id_ == other.id_
 
     def to_json_obj(self):
-        return { "name": self.name, "id1": self.id1, "id2": self.id2 }
+        return { "name": self.name, "id1": self.id_.id1, "id2": self.id_.id2 }
 
     def to_json_str(self):
         return json.dumps(self.to_json_obj(), default=lambda o: o.to_json_obj() if hasattr(o, 'to_json_obj') else None, indent=4, cls=DefaultJsonEncoder)
@@ -51,3 +60,8 @@ class ArkDinoAncestorEntry:
 
     def to_json_str(self):
         return json.dumps(self.to_json_obj(), default=lambda o: o.to_json_obj() if hasattr(o, 'to_json_obj') else None, indent=4, cls=DefaultJsonEncoder)
+    
+    def __eq__(self, other):
+        if not isinstance(other, ArkDinoAncestorEntry):
+            return False
+        return self.male == other.male and self.female == other.female

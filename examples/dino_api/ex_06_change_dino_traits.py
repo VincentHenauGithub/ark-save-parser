@@ -9,7 +9,7 @@ from arkparse.saves.asa_save import AsaSave
 from arkparse.object_model.dinos.tamed_dino import TamedDino
 from arkparse.logging import ArkSaveLogger
 from arkparse.parsing import ArkBinaryParser
-from arkparse.object_model import ArkGameObject
+from arkparse.object_model.ark_game_object import ArkGameObject
 
 save_path = ArkFtpClient.from_config('../../ftp_config.json', ArkMap.ABERRATION).download_save_file(Path.cwd()) # or download the save file from an FTP server
 save = AsaSave(save_path)                                                                                       # load the save file

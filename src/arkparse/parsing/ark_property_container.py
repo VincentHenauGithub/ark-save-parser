@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 
 # Import ArkProperty only for type checking to avoid circular import
 if TYPE_CHECKING:
-    from arkparse.parsing import ArkProperty
+    from arkparse.parsing.ark_property import ArkProperty
     from arkparse.parsing import ArkBinaryParser 
 
 from arkparse.logging import ArkSaveLogger

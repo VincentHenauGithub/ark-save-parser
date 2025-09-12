@@ -6,7 +6,6 @@ from .ark_linear_color import ArkLinearColor
 from .ark_my_persistent_buff_datas import ArkMyPersistentBuffDatas
 from .ark_quat import ArkQuat
 from .ark_rotator import ArkRotator
-from .ark_struct_type import ArkStructType
 from .ark_tracked_actor_id_category_pair_with_bool import ArkTrackedActorIdCategoryPairWithBool
 from .ark_tracked_actor_id_category_pair import ArkTrackedActorIdCategoryPair
 from .ark_unique_net_id_repl import ArkUniqueNetIdRepl

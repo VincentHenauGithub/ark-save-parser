@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import random
 
-from arkparse.object_model import ArkGameObject
+from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.object_model.misc.__parsed_object_base import ParsedObjectBase
 from arkparse.object_model.misc.object_owner import ObjectOwner
 from arkparse.parsing import ArkBinaryParser

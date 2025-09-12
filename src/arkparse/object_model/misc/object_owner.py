@@ -5,7 +5,7 @@ from arkparse.logging import ArkSaveLogger
 
 from arkparse.player.ark_player import ArkPlayer
 from arkparse.ark_tribe import ArkTribe
-from arkparse.object_model import ArkGameObject
+from arkparse.object_model.ark_game_object import ArkGameObject
 
 @dataclass
 class ObjectOwner:
