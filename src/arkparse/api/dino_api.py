@@ -80,7 +80,7 @@ class DinoApi:
         objects = self.get_all_objects(config)
         dinos = {}
 
-        if len(objects) != len(self.all_objects):
+        if self.all_objects and len(objects) != len(self.all_objects):
             ArkSaveLogger.api_log(f"Found {len(objects)} dinos, parsing them... (and retrieving inventories)")
 
         for key, obj in objects.items():

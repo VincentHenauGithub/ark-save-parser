@@ -172,6 +172,24 @@ class SaveConnection:
             for r in result:
                 print(f"Found at {row[0]}, index: {r}")
 
+    def replace_value_in_custom_tables(self, search: bytes, replace: bytes):
+        query = "SELECT key, value FROM custom"
+        cursor = self.connection.cursor()
+        cursor.execute(query)
+        for row in cursor:
+            reader = ArkBinaryParser(row[1], self.save_context)
+            result = reader.find_byte_sequence(search, adjust_offset=0)
+
+            for r in result:
+                print(f"Found at {row[0]}, index: {r}")
+                reader.set_position(r)
+                reader.replace_bytes(replace)
+
+                query = "UPDATE custom SET value = ? WHERE key = ?"
+                with self.connection as conn:
+                    conn.execute(query, (reader.byte_buffer, row[0]))
+                    conn.commit()
+
     def get_obj_uuids(self) -> Collection[uuid.UUID]:
         query = "SELECT key FROM game"
         cursor = self.connection.cursor()

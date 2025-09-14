@@ -154,6 +154,10 @@ class AsaSave:
         if self.save_connection is not None:
             self.save_connection.find_value_in_custom_tables(value)
 
+    def replace_value_in_custom_tables(self, search: bytes, replace: bytes):
+        if self.save_connection is not None:
+            self.save_connection.replace_value_in_custom_tables(search, replace)
+
     def get_obj_uuids(self) -> Collection[uuid.UUID]:
         return self.get_obj_uuids()
     

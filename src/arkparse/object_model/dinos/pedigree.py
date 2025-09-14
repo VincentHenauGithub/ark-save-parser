@@ -179,6 +179,7 @@ class Pedigree:
     mixed_ownership: bool
     max_mutations: int
     dino_type: str
+    owner: str
 
     _api: "DinoApi"
     _player_api: PlayerApi
