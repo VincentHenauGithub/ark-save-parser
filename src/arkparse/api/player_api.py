@@ -148,8 +148,8 @@ class PlayerApi:
 
         if self.from_store:
             self.__get_files_from_db()
-        elif save.save_connection.save_dir is not None:
-            self.get_files_from_directory(save.save_connection.save_dir)
+        elif save.save_dir is not None:
+            self.get_files_from_directory(save.save_dir)
 
         if len(self.profile_paths) == 0 and len(self.tribe_paths) == 0 and not self.from_store:
             ArkSaveLogger.api_log("No profile or tribe data found")
