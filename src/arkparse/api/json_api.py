@@ -104,7 +104,7 @@ class JsonApi:
                         "ItemStatValues" not in prop.name:
                     prop_value = obj.get_property_value(prop.name)
                     if "NextSpoilingTime" in prop.name or "SavedDurability" in prop.name:
-                        if math.isnan(prop.value):
+                        if math.isnan(prop.value) or math.isinf(prop.value):
                             prop_value = None
                     json_obj[prop.name] = prop_value
 
