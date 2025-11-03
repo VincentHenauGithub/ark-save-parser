@@ -104,7 +104,7 @@ class JsonApi:
                         "ItemStatValues" not in prop.name:
                     prop_value = obj.get_property_value(prop.name)
                     if "NextSpoilingTime" in prop.name or "SavedDurability" in prop.name:
-                        if math.isnan(prop.value):
+                        if math.isnan(prop.value) or math.isinf(prop.value):
                             prop_value = None
                     json_obj[prop.name] = prop_value
 
@@ -192,7 +192,7 @@ class JsonApi:
 
         ArkSaveLogger.api_log("Shields successfully exported.")
 
-    def export_saddles(self, equipment_api: EquipmentApi = None, export_folder_path: str = Path.cwd() / "json_exports"):
+    def export_saddles(self, equipment_api: EquipmentApi = None, dino_api: DinoApi = None, export_folder_path: str = Path.cwd() / "json_exports"):
         ArkSaveLogger.api_log("Exporting saddles...")
 
         # Get equipment API if not provided.
@@ -200,12 +200,21 @@ class JsonApi:
             equipment_api = EquipmentApi(self.save)
 
         # Get saddles.
-        saddles: Dict[UUID, Saddle] = equipment_api.get_all(EquipmentApi.Classes.SADDLE)
+        saddles: Dict[UUID, Saddle] = equipment_api.get_saddles()
+
+        # Get dino API if not provided.
+        if dino_api is None:
+            dino_api = DinoApi(self.save)
+
+        # Get saddles from cryopods.
+        saddles_from_cryopods: Dict[UUID, Saddle] = dino_api.get_saddles_from_cryopods()
 
         # Format saddles into JSON.
         all_saddles = []
         for saddle in saddles.values():
             all_saddles.append(saddle.to_json_obj())
+        for cryo_saddle in saddles_from_cryopods.values():
+            all_saddles.append(cryo_saddle.to_json_obj())
 
         # Create json exports folder if it does not exist.
         path_obj = Path(export_folder_path)
@@ -407,7 +416,7 @@ class JsonApi:
 
         ArkSaveLogger.api_log("Structures successfully exported.")
 
-    def export_items(self, export_folder_path: str = Path.cwd() / "json_exports", include_engrams: bool = False):
+    def export_items(self, dino_api: DinoApi = None, export_folder_path: str = Path.cwd() / "json_exports", include_engrams: bool = False, include_saddles_from_cryopods: bool = False):
         ArkSaveLogger.api_log("Exporting items...")
 
         # Parse and format items as JSON.
@@ -443,6 +452,15 @@ class JsonApi:
                         ArkSaveLogger.error_log(f"Failed to parse item {UUID(row[0])}: {e}")
                     else:
                         raise e
+
+        # If we need to include saddles from cryopods.
+        if include_saddles_from_cryopods:
+            if dino_api is None:
+                dino_api = DinoApi(self.save)
+            saddles_from_cryopods: Dict[UUID, Saddle] = dino_api.get_saddles_from_cryopods()
+            if saddles_from_cryopods is not None:
+                for saddle in saddles_from_cryopods.values():
+                    all_items.append(JsonApi.primal_item_to_json_obj(saddle.object))
 
         # Create json exports folder if it does not exist.
         path_obj = Path(export_folder_path)

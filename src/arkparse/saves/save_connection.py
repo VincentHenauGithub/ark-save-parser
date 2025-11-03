@@ -50,7 +50,7 @@ class SaveConnection:
         self.close()
 
         # clean up temp file
-        if self.sqlite_db.exists():
+        if self.sqlite_db is not None and self.sqlite_db.exists():
             self.sqlite_db.unlink()
 
     def read_table(self, header_data: 'ArkBinaryParser') -> Dict[int, str]:

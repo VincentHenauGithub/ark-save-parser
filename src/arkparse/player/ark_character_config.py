@@ -132,16 +132,28 @@ class ArkCharacterConfig:
         return "\n".join(parts)
 
     def to_json_obj(self):
-        return { "bIsFemale": self.is_female,
-                 "HeadHairIndex": self.head_hair_index,
-                 "EyebrowIndex": self.eyebrow_index,
-                 "PercentOfFullHeadHairGrowth": self.hair_growth,
-                 "PercentageOfFacialHairGrowth": self.facial_hair_growth,
-                 "PlayerVoiceCollectionIndex": self.voice,
-                 "PlayerSpawnRegionIndex": self.spawn_region,
-                 "BodyColors": self.body_colors,
-                 "RawBoneModifiers": self.bone_modifiers,
-                 "DynamicMaterialBytes": self.dyn_material_values }
+        try:
+            return { "bIsFemale": self.is_female,
+                     "HeadHairIndex": self.head_hair_index,
+                     "EyebrowIndex": self.eyebrow_index,
+                     "PercentOfFullHeadHairGrowth": self.hair_growth,
+                     "PercentageOfFacialHairGrowth": self.facial_hair_growth,
+                     "PlayerVoiceCollectionIndex": self.voice,
+                     "PlayerSpawnRegionIndex": self.spawn_region,
+                     "BodyColors": self.body_colors,
+                     "RawBoneModifiers": self.bone_modifiers,
+                     "DynamicMaterialBytes": self.dyn_material_values }
+        except:
+            return { "bIsFemale": None,
+                     "HeadHairIndex": None,
+                     "EyebrowIndex": None,
+                     "PercentOfFullHeadHairGrowth": None,
+                     "PercentageOfFacialHairGrowth": None,
+                     "PlayerVoiceCollectionIndex": None,
+                     "PlayerSpawnRegionIndex": None,
+                     "BodyColors": None,
+                     "RawBoneModifiers": None,
+                     "DynamicMaterialBytes": None }
 
     def to_json_str(self):
         return json.dumps(self.to_json_obj(), default=lambda o: o.to_json_obj() if hasattr(o, 'to_json_obj') else None, indent=4, cls=DefaultJsonEncoder)

@@ -1,4 +1,5 @@
 import json
+import math
 from uuid import UUID
 import os
 
@@ -196,7 +197,11 @@ class Equipment(InventoryItem):
                         "ItemID" not in prop.name and \
                         "OwnerInventory" not in prop.name and \
                         "CustomItemDatas" not in prop.name:
-                    json_obj[prop.name] = self.object.get_property_value(prop.name)
+                    prop_value = self.object.get_property_value(prop.name)
+                    if "NextSpoilingTime" in prop.name or "SavedDurability" in prop.name:
+                        if math.isnan(prop.value) or math.isinf(prop.value):
+                            prop_value = None
+                    json_obj[prop.name] = prop_value
 
         return json_obj
 

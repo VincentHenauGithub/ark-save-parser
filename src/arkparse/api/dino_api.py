@@ -74,7 +74,7 @@ class DinoApi:
 
         return dino
 
-    def get_all(self, config = None, include_cryos: bool = True, include_wild: bool = True, include_tamed: bool = True, include_babies: bool = True) -> Dict[UUID, Dino]:
+    def get_all(self, config = None, include_cryos: bool = True, include_wild: bool = True, include_tamed: bool = True, include_babies: bool = True, only_cryopodded: bool = False) -> Dict[UUID, Dino]:
         ArkSaveLogger.api_log("Retrieving all dinos from save...")
 
         objects = self.get_all_objects(config)
@@ -86,7 +86,7 @@ class DinoApi:
         for key, obj in objects.items():
             try:
                 dino = None
-                if "Dinos/" in obj.blueprint and "_Character_" in obj.blueprint:
+                if not only_cryopodded and "Dinos/" in obj.blueprint and "_Character_" in obj.blueprint:
                     is_tamed = obj.get_property_value("TamedTimeStamp") is not None
                     is_baby = obj.get_property_value("bIsBaby", False)
 
@@ -177,7 +177,7 @@ class DinoApi:
         return {key: dino for key, dino in self.get_all_wild().items() if dino.get_short_name() + "_C" not in Dinos.non_tameable.all_bps}
     
     def get_all_tamed(self, include_cryopodded = True, only_cryopodded = False) -> Dict[UUID, TamedDino]:
-        all = self.get_all(include_cryos=include_cryopodded, include_wild=False, include_tamed=True)
+        all = self.get_all(include_cryos=include_cryopodded, include_wild=False, include_tamed=True, include_babies=True, only_cryopodded=only_cryopodded)
 
         if only_cryopodded:
             tamed = {key: dino for key, dino in all.items() if isinstance(dino, TamedDino) and dino.cryopod is not None}
@@ -197,7 +197,7 @@ class DinoApi:
         return babies
     
     def get_all_in_cryopod(self) -> Dict[UUID, TamedDino]:
-        tamed = self.get_all_tamed(include_cryopodded=True)
+        tamed = self.get_all_tamed(include_cryopodded=True, only_cryopodded=True)
         cryod = {key: dino for key, dino in tamed.items() if dino.cryopod is not None}
 
         return cryod
@@ -252,7 +252,17 @@ class DinoApi:
                 filtered_dinos[key] = dinos[key]
 
         return filtered_dinos
-    
+
+    def get_saddles_from_cryopods(self) -> Dict[UUID, InventoryItem]:
+        saddles: Dict[UUID, InventoryItem] = {}
+        self.get_all_in_cryopod()
+        # At this point all cryopods should be in self.parsed_cryopods
+        if self.parsed_cryopods is not None:
+            for cryopod in self.parsed_cryopods.values():
+                if cryopod is not None and cryopod.saddle is not None and cryopod.saddle.uuid is not None:
+                    saddles[cryopod.saddle.uuid] = cryopod.saddle
+        return saddles
+
     def get_all_filtered(self, level_lower_bound: int = None, level_upper_bound: int = None, 
                          class_names: List[str] = None, 
                          tamed: bool = None, 

@@ -1,6 +1,9 @@
+import json
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 from struct import pack
+
+from arkparse.utils.json_utils import DefaultJsonEncoder
 
 if TYPE_CHECKING:
     from arkparse.parsing import ArkBinaryParser
@@ -39,3 +42,6 @@ class ArkVector:
 
     def to_json_obj(self):
         return { "x": self.x, "y": self.y, "z": self.z }
+
+    def to_json_str(self):
+        return json.dumps(self.to_json_obj(), default=lambda o: o.to_json_obj() if hasattr(o, 'to_json_obj') else None, indent=4, cls=DefaultJsonEncoder)

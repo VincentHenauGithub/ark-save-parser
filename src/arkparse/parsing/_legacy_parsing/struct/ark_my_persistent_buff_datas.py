@@ -1,5 +1,8 @@
+import json
 from typing import TYPE_CHECKING
 from dataclasses import dataclass
+
+from arkparse.utils.json_utils import DefaultJsonEncoder
 
 if TYPE_CHECKING:
     from ..ark_binary_parser import ArkBinaryParser
@@ -62,4 +65,9 @@ class ArkMyPersistentBuffDatas:
 
     def __str__(self):
         return f"ArkMyPersistentBuffDatas: {self.id_} {self.initialIds}"
-        
+
+    def to_json_obj(self):
+        return { "InitialIDs": self.initialIds, "ID": self.id_ }
+
+    def to_json_str(self):
+        return json.dumps(self.to_json_obj(), default=lambda o: o.to_json_obj() if hasattr(o, 'to_json_obj') else None, indent=4, cls=DefaultJsonEncoder)
