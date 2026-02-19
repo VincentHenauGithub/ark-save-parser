@@ -41,6 +41,7 @@ class ArkGameObject(ArkPropertyContainer):
         self.parser_type = ArkProperty if (isinstance(binary_reader, ArkBinaryParser) or binary_reader is None) else LegacyArkProperty
         self.uuid = uuid
         self.blueprint = blueprint
+        string_name = False
         super().__init__()
         if binary_reader:
             ArkSaveLogger.set_file(binary_reader, "debug.bin")
@@ -51,7 +52,8 @@ class ArkGameObject(ArkPropertyContainer):
                     self.uuid2: UUID = None
                     binary_reader.set_position(0)
 
-                    self.blueprint = binary_reader.read_name()
+                    self.blueprint, string_name = ArkGameObject.read_name(uuid, binary_reader)
+                    ArkSaveLogger.parser_log(f"Read Blueprint: {self.blueprint} (String name: {string_name})")
 
                     sContext : SaveContext = binary_reader.save_context
                     self.location = sContext.get_actor_transform(uuid) or None
@@ -60,11 +62,14 @@ class ArkGameObject(ArkPropertyContainer):
                     self.uuid = binary_reader.read_uuid()
                     self.blueprint = binary_reader.read_string()
                     ArkSaveLogger.parser_log(f"Read UUID: {self.uuid}, Blueprint: {self.blueprint}")
-
+                
                 binary_reader.validate_uint32(0)
+                if string_name:
+                    binary_reader.read_uint16()
 
             try:
-                if not no_header:
+                if not (no_header or string_name):
+                    ArkSaveLogger.parser_log(f"Reading names for object {self.blueprint} ({self.uuid})")
                     offsets = []
                     if not from_custom_bytes:
                         nr_names = binary_reader.read_int()
@@ -100,6 +105,7 @@ class ArkGameObject(ArkPropertyContainer):
                         binary_reader.validate_uint32(0)
 
                 if not from_custom_bytes:
+                    ArkSaveLogger.parser_log(f"Reading properties for object {self.blueprint} ({self.uuid})")
                     self.read_properties(binary_reader, self.parser_type, binary_reader.size())
                     
                     if  binary_reader.size() - binary_reader.position >= 20:
@@ -230,6 +236,33 @@ class ArkGameObject(ArkPropertyContainer):
         name = buffer.read_string()
         buffer.validate_uint32(0)
         return name
+    
+    @staticmethod
+    def read_name(obj_uuid: UUID, reader: ArkBinaryParser) -> str:
+        reader.set_position(0)
+        string_name = False
+
+        try:
+            class_name = reader.read_name()
+        except Exception as e:
+            # Check for string name instead of name table reference, this sometimes happens since Lost Colony
+            # To be ivestigated why this happens
+            reader.set_position(0)
+            try:
+                unknow_id = reader.read_uint32()
+                reader.validate_uint64(0)
+                reader.validate_uint32(1)
+                class_name = reader.read_string()
+                # reader.validate_uint32(0)
+                string_name = True
+                ArkSaveLogger.parser_log(f"Object {obj_uuid} has string class name {class_name} instead of name table reference")
+            except Exception as e:
+                ArkSaveLogger.error_log(f"Error reading class name for object {obj_uuid}: {e}")
+                reader.structured_print(to_default_file=True)
+                input("Press Enter to continue...")
+                class_name = "UnknownClass"
+                
+        return class_name, string_name
     
     def get_short_name(self) -> str:
         to_strip_end = [

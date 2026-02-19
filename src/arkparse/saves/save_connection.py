@@ -354,7 +354,10 @@ class SaveConnection:
             return self.parsed_objects[obj_uuid]
         bin = self.get_game_obj_binary(obj_uuid)
         reader = ArkBinaryParser(bin, self.save_context)
-        obj = SaveConnection.parse_as_predefined_object(obj_uuid, reader.read_name(), reader)
+
+        class_name, string_name = ArkGameObject.read_name(obj_uuid, reader)
+
+        obj = SaveConnection.parse_as_predefined_object(obj_uuid, class_name, reader)
 
         if obj:
             self.parsed_objects[obj_uuid] = obj
@@ -392,11 +395,7 @@ class SaveConnection:
 
                 byte_buffer = ArkBinaryParser(row[1], self.save_context)
                 ArkSaveLogger.set_file(byte_buffer, "game_object.bin")
-                try:
-                    class_name = byte_buffer.read_name()
-                except Exception as e:
-                    ArkSaveLogger.error_log(f"Error reading class name for object {obj_uuid}: {e}")
-                    class_name = "UnknownClass"
+                class_name, string_name =  ArkGameObject.read_name(obj_uuid, byte_buffer)
                 ArkSaveLogger.enter_struct(class_name)
 
                 if reader_config.blueprint_name_filter and not reader_config.blueprint_name_filter(class_name):

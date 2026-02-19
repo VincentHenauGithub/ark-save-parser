@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "arkparse"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
     "rcon>=2.4.9",
     "numpy>=2.3.2",

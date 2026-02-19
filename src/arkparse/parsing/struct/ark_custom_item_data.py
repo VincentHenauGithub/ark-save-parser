@@ -47,6 +47,8 @@ class ArkCustomItemData:
     skins: list[str] = None
 
     def __init__(self, ark_binary_data: "ArkBinaryParser"):
+        ark_binary_data.save_context.generate_unknown = True
+
         total_size = self.__read_header(ark_binary_data)
         data_start = ark_binary_data.position
         ArkSaveLogger.parser_log(f"Reading CustomItemData at position {data_start}, expected size: {total_size} bytes")
@@ -63,16 +65,20 @@ class ArkCustomItemData:
         self.strings = self.__read_custom_data_strings(ark_binary_data)
         self.floats = self._read_custom_data_floats(ark_binary_data)
         if ark_binary_data.peek_name() == "CustomDataObjects": # check if CustomDataObjects is present
+            ArkSaveLogger.parser_log("CustomDataObjects found, reading objects...")
             self.objects = self.__read_custom_data_objects(ark_binary_data)
         self.classes = self.__read_custom_data_classes(ark_binary_data)
         self.names = self.__read_custom_data_names(ark_binary_data)
         
         if ark_binary_data.peek_name() == "UniquePaintingIdMap":  # check if UniquePaintingIdMap is present
+            ArkSaveLogger.parser_log("UniquePaintingIdMap found, reading painting ID map...")
             self.painting_id_map = self.__read_painting_id_map(ark_binary_data)
         if ark_binary_data.peek_name() == "PaintingRevisionMap":  # check if PaintingRevisionMap is present
+            ArkSaveLogger.parser_log("PaintingRevisionMap found, reading painting revision map...")
             self.painting_revision_map = self.__read_painting_revision_map(ark_binary_data)
         self.custom_data_name = self.__read_custom_data_name(ark_binary_data)
         if ark_binary_data.peek_name() == "CustomDataSoftClasses":  # check if CustomDataSoftClasses is present
+            ArkSaveLogger.parser_log("CustomDataSoftClasses found, reading custom data soft classes...")
             self.custom_data_soft_classes = self.__read_custom_data_soft_classes(ark_binary_data)
 
         # Check for any extra strings
@@ -99,6 +105,8 @@ class ArkCustomItemData:
             ArkSaveLogger.parser_log(f"Float: {float_value}")
         for name in self.names:
             ArkSaveLogger.parser_log(f"Name: {name}")
+            
+        ark_binary_data.save_context.generate_unknown = False
 
     def to_json_obj(self, include_byte_arrays: bool = False):
         json_obj = { "doubles": self.doubles,
@@ -318,7 +326,7 @@ class ArkCustomItemData:
         ark_binary_data.validate_name("SoftObjectProperty")
         ark_binary_data.validate_uint32(0)
         data_size = ark_binary_data.read_uint32()
-        ark_binary_data.validate_byte(0)
+        ark_binary_data.validate_byte(0) 
 
         if data_size == 4:
             ark_binary_data.validate_uint32(0)
