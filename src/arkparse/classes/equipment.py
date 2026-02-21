@@ -369,7 +369,7 @@ class ArmaDoggoGear:
     medpack: str = "/Game/Packs/Wasteland/Dinos/CompanionDino/Items/Armor/PrimalItemArmor_DinoCompanion_Gear_Medkit.PrimalItemArmor_DinoCompanion_Gear_Medkit_C"
     camping_gear: str = "/Game/Packs/Wasteland/Dinos/CompanionDino/Items/Armor/PrimalItemArmor_DinoCompanion_Gear_RolledUpSleepingBag.PrimalItemArmor_DinoCompanion_Gear_RolledUpSleepingBag_C"
     picnic_set: str = "/Game/Packs/Wasteland/Dinos/CompanionDino/Items/Armor/PrimalItemArmor_DinoCompanion_Gear_FoodBasket.PrimalItemArmor_DinoCompanion_Gear_FoodBasket_C"
-    battle_spikes: str = "\Game\Packs\Wasteland\Dinos\CompanionDino\Items\Armor\PrimalItemArmor_DinoCompanion_Gear_Spikes.PrimalItemArmor_DinoCompanion_Gear_Spikes_C"
+    battle_spikes: str = "/Game/Packs/Wasteland/Dinos/CompanionDino/Items/Armor/PrimalItemArmor_DinoCompanion_Gear_Spikes.PrimalItemArmor_DinoCompanion_Gear_Spikes_C"
     bait_trap: str = "/Game/Packs/Wasteland/Dinos/CompanionDino/Items/Armor/PrimalItemArmor_DinoCompanion_Gear_MeatSack.PrimalItemArmor_DinoCompanion_Gear_MeatSack_C"
 
 
