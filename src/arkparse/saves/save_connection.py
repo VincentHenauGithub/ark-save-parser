@@ -6,6 +6,7 @@ from typing import Collection, Optional, Dict
 from arkparse.logging import ArkSaveLogger
 from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.parsing import ArkBinaryParser, GameObjectReaderConfiguration
+from arkparse.parsing._fast_shim import contains_any_pattern
 from arkparse.saves.header_location import HeaderLocation
 from arkparse.saves.save_context import SaveContext
 from arkparse.utils import TEMP_FILES_DIR
@@ -423,12 +424,10 @@ class SaveConnection:
                 
                 if obj_uuid not in self.parsed_objects.keys():
                     ark_game_object = None
-                    found = False
-                    for pid in prop_ids:
-                        if byte_buffer.find_byte_sequence(pid, adjust_offset=0):
-                            found = True
+                    # Use fast pattern matching when checking for property IDs
+                    found = len(prop_ids) == 0 or contains_any_pattern(row[1], prop_ids)
 
-                    if found or len(prop_ids) == 0:
+                    if found:
                         ark_game_object = self.parse_as_predefined_object(obj_uuid, class_name, byte_buffer)
 
                         if ark_game_object:
