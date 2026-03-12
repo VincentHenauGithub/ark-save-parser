@@ -9,17 +9,18 @@ from matplotlib.lines import Line2D
 from arkparse import AsaSave
 from arkparse.enums import ArkMap, ArkItemQuality
 from arkparse.ftp.ark_ftp_client import ArkFtpClient
-from arkparse.api.equipment_api import EquipmentApi
+from arkparse.api import EquipmentApi, PlayerApi
 from arkparse.object_model.equipment.__equipment import Equipment
 from arkparse.object_model.equipment import Weapon, Armor, Saddle, Shield
 
 # retrieve the save file (can also retrieve it from a local path)
 # save_path = ArkFtpClient.from_config(
-#     Path("../../ftp_config.json"), ArkMap.ABERRATION).download_save_file(Path.cwd())
-save_path = store_path = Path("D:\\SteamLibrary\\steamapps\\common\\ARK Survival Ascended\\ShooterGame\\Saved\\SavedArksLocal\\Ragnarok_WP\\Ragnarok_WP.ark")
+#     Path("../../ftp_config.json"), ArkMap.LOST_COLONY).download_save_file(Path.cwd())
+save_path = Path.cwd() / "_LostColony_WP.ark"
 save = AsaSave(save_path)
 
 equipment_api = EquipmentApi(save)  # Create Equipment API
+player_api = PlayerApi(save)  # Create Player API to get player data if needed
 
 weapons: Dict[UUID, Weapon] = equipment_api.get_all(EquipmentApi.Classes.WEAPON)
 armors: Dict[UUID, Armor] = equipment_api.get_all(EquipmentApi.Classes.ARMOR)
@@ -27,13 +28,33 @@ shields: Dict[UUID, Shield] = equipment_api.get_all(EquipmentApi.Classes.SHIELD)
 saddles: Dict[UUID, Saddle] = equipment_api.get_all(EquipmentApi.Classes.SADDLE)
 
 ratings = {}
+sorted_per_tribe = {}
+ignore = ["WeaponCrossbow", "WeaponMetalHatchet", "WeaponMetalPick", "WeaponBow", "Chitin", "Hide", "WeaponPike", "WeaponGun", "CLoth"]
+quality_limit = 2
 for d in [weapons, armors, shields, saddles]:
     d: Dict[UUID, Equipment]
     for key, value in d.items():
-        print(value)
-        value: Equipment
-        ratings[key] = [type(value), value.rating, value.get_average_stat(), ArkItemQuality(value.quality), value.is_bp]
+        if value.rating > quality_limit and all(ignored not in value.get_short_name() for ignored in ignore):
+            value.get_owner(player_api)  # Populate owner data for each item
+            # print(value)
+            value: Equipment
+            ratings[key] = [type(value), value.rating, value.get_average_stat(), ArkItemQuality(value.quality), value.is_bp]
 
+            # Sort equipment per tribe
+            if value.tribe is not None:
+                tribe_name = value.tribe.name
+                if tribe_name not in sorted_per_tribe:
+                    sorted_per_tribe[tribe_name] = []
+                sorted_per_tribe[tribe_name].append(value)
+
+for tribe_name, equipment_list in sorted_per_tribe.items():
+    print(f"Tribe: {tribe_name}")
+
+    # sort equipment by quality and then rating
+    equipment_list.sort(key=lambda x: (x.quality, x.rating), reverse=True)
+    for eq in equipment_list:
+        eq: Equipment
+        print(f"  {eq} - {save.get_class_of_uuid(eq.owner_inv_uuid).split('.')[-1].replace("_C", "").replace("PrimalInventoryBP_", "")} ({str(eq.owner_inv_uuid)[:8]})")
 
 # Convert to a Pandas DataFrame
 data = []
