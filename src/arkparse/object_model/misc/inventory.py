@@ -72,14 +72,15 @@ class Inventory(ParsedObjectBase):
         else:
             self.object.find_property("InventoryItems")
 
-        self.items[item] = InventoryItem(item, self.save)
-        self.items[item].add_self_to_inventory(self.object.uuid)
+        self._items[item] = InventoryItem(item, self.save)
+        self._items[item].add_self_to_inventory(self.object.uuid)
+        self.item_classes[item] = self.save.get_class_of_uuid(item)
 
         object_references = []
-        for item in self.items.keys():
+        for item in self._items.keys():
             object_references.append(get_uuid_reference_bytes(item))
 
-        if len(self.items) == 0:
+        if len(self._items) == 0:
             raise ValueError("Inventory cannot be empty when adding items (at this point in time)")
             # self.binary.insert_array("InventoryItems", "ObjectProperty", object_references)
         else:
@@ -93,12 +94,13 @@ class Inventory(ParsedObjectBase):
         if len(self.items) == 0:
             return
 
-        if item in self.items:
-            self.items.pop(item)
+        if item in self._items:
+            self._items.pop(item)
+            self.item_classes.pop(item)
         self.binary.set_property_position("InventoryItems")
 
         object_references = []
-        for item in self.items:
+        for item in self._items:
             object_references.append(get_uuid_reference_bytes(item))
 
         self.binary.replace_array("InventoryItems", "ObjectProperty", object_references if len(object_references) > 0 else None)
@@ -108,7 +110,8 @@ class Inventory(ParsedObjectBase):
         if len(self.items) == 0:
             return
 
-        self.items = []
+        self._items = {}
+        self.item_classes = {}
         self.binary.set_property_position("InventoryItems")
         self.binary.replace_array("InventoryItems", "ObjectProperty", None)
 
