@@ -1,7 +1,10 @@
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 from uuid import UUID
 import random
+
+if TYPE_CHECKING:
+    from arkparse.saves.asa_save import AsaSave
 
 from arkparse.parsing.struct.ark_rotator import ArkRotator
 from arkparse.parsing.ark_property import ArkProperty
@@ -9,7 +12,6 @@ from arkparse.parsing.struct.actor_transform import ActorTransform
 
 from arkparse.parsing.ark_binary_parser import ArkBinaryParser
 from arkparse.parsing.ark_property_container import ArkPropertyContainer
-from arkparse.saves.asa_save import AsaSave
 from arkparse.saves.save_context import SaveContext
 from arkparse.logging import ArkSaveLogger
 
@@ -167,7 +169,8 @@ class ArkGameObject(ArkPropertyContainer):
         binary.set_position(md.offset)
         binary.replace_bytes(new_bytes, nr_to_replace=prev_length)
 
-    def change_class(self, new_class: str, binary: ArkBinaryParser, renumber: bool = True, save: AsaSave = None):
+    def change_class(self, new_class: str, binary: ArkBinaryParser, renumber: bool = True, save: "AsaSave" = None):
+        from arkparse.saves.asa_save import AsaSave
         if renumber:
             self.__replace_name(new_class, binary)
         self.blueprint = new_class
