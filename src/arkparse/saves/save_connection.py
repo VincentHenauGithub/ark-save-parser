@@ -144,7 +144,8 @@ class SaveConnection:
         header_data.set_position(self.name_offset)
         header_data.replace_bytes(self.name_count.to_bytes(4, byteorder="little"))
         header_data.set_position(self.last_name_end)
-        header_data.insert_uint32(self.save_context.add_new_name(name, id))
+        new_id = self.save_context.add_new_name(name, id)
+        header_data.insert_uint32(new_id)
         header_data.insert_string(name)
         self.last_name_end = header_data.position
 
@@ -153,6 +154,8 @@ class SaveConnection:
         with self.connection as conn:
             conn.execute(query, (header_data.byte_buffer,))
             conn.commit()
+
+        return new_id
 
     def find_value_in_game_table_objects(self, value: bytes):
         query = "SELECT key, value FROM game"

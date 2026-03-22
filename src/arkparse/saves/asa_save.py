@@ -142,7 +142,8 @@ class AsaSave:
 
     def add_name_to_name_table(self, name: str, id: Optional[int] = None):
         if self.save_connection is not None:
-            self.save_connection.add_name_to_name_table(name, id)
+            new_id = self.save_connection.add_name_to_name_table(name, id)
+            return new_id
 
     def get_parser_for_game_object(self, obj_uuid: uuid.UUID) -> Optional[ArkBinaryParser]:
         if self.game_obj_binaries is not None and obj_uuid in self.game_obj_binaries:
