@@ -300,8 +300,11 @@ class SaveConnection:
 
     def store_db(self, path: Path):
         path.parent.mkdir(parents=True, exist_ok=True)
-        with sqlite3.connect(path) as new_conn:
+        new_conn = sqlite3.connect(path)
+        try:
             self.connection.backup(new_conn)
+        finally:
+            new_conn.close()
 
         print(f"Database successfully backed up to {path}")
 

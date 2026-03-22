@@ -32,11 +32,11 @@ class EquipmentWithArmor(EquipmentWithDurability):
             return 40
         elif bp in ArmorBps.cloth.all_bps:
             return 10
-        elif bp in ArmorBps.riot.all_bps:
+        elif bp in ArmorBps.riot.all_bps or bp in ArmorBps.cursed_riot.all_bps:
             return 115
-        elif bp in ArmorBps.flak.all_bps:
+        elif bp in ArmorBps.flak.all_bps or bp in ArmorBps.cursed_flak.all_bps:
             return 100
-        elif bp in ArmorBps.tek.all_bps:
+        elif bp in ArmorBps.tek.all_bps or bp in ArmorBps.cursed_tek.all_bps:
             return 180
         elif bp in ArmorBps.scuba.all_bps:
             return 1
