@@ -13,35 +13,43 @@ for handler in logging.root.handlers[:]:
 logging.disable(logging.ERROR)
 
 from arkparse import AsaSave
-from arkparse.api import StructureApi
+from arkparse.api import StructureApi, DinoApi, EquipmentApi
 from arkparse.classes import Classes
+
+
+def benchmark_functions(sapi: StructureApi, dapi: DinoApi, eapi: EquipmentApi):
+    """Run the benchmark functions."""
+    
+    # 1 - Get structures with inventory
+    structures_with_inv = sapi.get_all_with_inventory()
+    print(f"Found {len(structures_with_inv)} structures with inventory")
+
+    # 2 - Get all dinos
+    all_dinos = dapi.get_all()
+    print(f"Found {len(all_dinos)} dinos")
+
+    # 3 - Get all equipment types
+    all_equipment = {}
+    all_equipment.update(eapi.get_all(EquipmentApi.Classes.WEAPON))
+    all_equipment.update(eapi.get_all(EquipmentApi.Classes.ARMOR))
+    all_equipment.update(eapi.get_all(EquipmentApi.Classes.SADDLE))
+    all_equipment.update(eapi.get_all(EquipmentApi.Classes.SHIELD))
+    print(f"Found {len(all_equipment)} equipment items")
+
 
 def profile_parsing():
     """Profile the main parsing operations."""
     
     # Load save file
-    save = AsaSave(Path(r".\Aberration_WP.ark"))
+    save = AsaSave(Path(r"C:\Data\personal\software\ark-save-parser\tests\test_data\set_1\Astraeos_WP\Astraeos_WP.ark"))
     
-    # Create structure API and get objects
+    # Create APIs
     structure_api = StructureApi(save)
-    all_objects = structure_api.get_all_objects()
-    print(f"Found {len(all_objects)} structure objects")
+    dino_api = DinoApi(save)
+    equipment_api = EquipmentApi(save)
     
-    # Get structures with inventory  
-    structures_with_inv = structure_api.get_all_with_inventory()
-    print(f"Found {len(structures_with_inv)} structures with inventory")
-    
-    # Process inventories
-    element_bp = Classes.resources.Basic.element
-    total_element = 0
-    for structure in structures_with_inv.values():
-        if not structure.owner or not structure.owner.tribe_id:
-            continue
-        element_stacks = structure.inventory.get_items_of_class(element_bp)
-        for element in element_stacks.values():
-            total_element += element.quantity
-    
-    print(f"Total element found: {total_element:,}")
+    # Run the benchmarked functions
+    benchmark_functions(structure_api, dino_api, equipment_api)
 
 if __name__ == "__main__":
     profiler = cProfile.Profile()
@@ -53,19 +61,19 @@ if __name__ == "__main__":
     
     # Print stats
     print("\n" + "=" * 80)
-    print("TOP 40 FUNCTIONS BY CUMULATIVE TIME")
+    print("TOP 50 FUNCTIONS BY CUMULATIVE TIME")
     print("=" * 80)
     
     s = StringIO()
     ps = pstats.Stats(profiler, stream=s).sort_stats('cumulative')
-    ps.print_stats(40)
+    ps.print_stats(50)
     print(s.getvalue())
     
     print("\n" + "=" * 80)
-    print("TOP 40 FUNCTIONS BY TOTAL TIME (excluding subcalls)")
+    print("TOP 50 FUNCTIONS BY TOTAL TIME (excluding subcalls)")
     print("=" * 80)
     
     s = StringIO()
     ps = pstats.Stats(profiler, stream=s).sort_stats('tottime')
-    ps.print_stats(40)
+    ps.print_stats(50)
     print(s.getvalue())

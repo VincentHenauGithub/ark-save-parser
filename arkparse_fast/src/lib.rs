@@ -257,6 +257,7 @@ impl FastBinaryReader {
     }
 
     /// Read a UUID (16 bytes) and return as string.
+    /// Matches Python's UUID(bytes=...) format which treats bytes as big-endian.
     fn read_uuid_as_string(&mut self) -> PyResult<String> {
         self.ensure_bytes(16)?;
         let bytes: [u8; 16] = self.data[self.position..self.position + 16]
@@ -264,12 +265,13 @@ impl FastBinaryReader {
             .unwrap();
         self.position += 16;
         
-        // Format as UUID string
+        // Format as UUID string - use big-endian (network byte order) for first 3 fields
+        // to match Python's UUID(bytes=...) behavior per RFC 4122
         Ok(format!(
-            "{:08x}-{:04x}-{:04x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
-            u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]),
-            u16::from_le_bytes([bytes[4], bytes[5]]),
-            u16::from_le_bytes([bytes[6], bytes[7]]),
+            "{:02x}{:02x}{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
+            bytes[0], bytes[1], bytes[2], bytes[3],
+            bytes[4], bytes[5],
+            bytes[6], bytes[7],
             bytes[8], bytes[9],
             bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15]
         ))

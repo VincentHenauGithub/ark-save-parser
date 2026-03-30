@@ -210,8 +210,11 @@ class BaseValueParser(BinaryReaderBase):
                         raise ValueError(f"Name is None, for name index {hex(name_id)} at position {pos}, generate_unknown is {self.save_context.generate_unknown}")
                 
                 # Handle NPCZoneVolume special case
+                # NOTE: For NPCZoneVolume names, the "always_zero" field is actually the hex suffix,
+                # NOT a zero. The Python fallback returns BEFORE reading always_zero.
+                # So we must NOT use new_pos (which skips always_zero), but pos+4 instead.
                 if "NPCZoneVolume" in name or "NPCCountVolume" in name:
-                    self.position = new_pos
+                    self.position = pos + 4  # Only skip name_id, the next 4 bytes are the hex suffix
                     return name + "_" + hex(self.read_int())
                 
                 self.position = new_pos
