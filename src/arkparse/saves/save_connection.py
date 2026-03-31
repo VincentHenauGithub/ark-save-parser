@@ -57,6 +57,8 @@ class SaveConnection:
     failed_parses: Dict[str, int] = {}
 
     def __init__(self, save_context: SaveContext, path: Path = None, contents: bytes = None, read_only: bool = False):
+        # Thread lock for database operations
+        self._db_lock = threading.Lock()
 
         # create temp copy of file
         temp_save_path = TEMP_FILES_DIR / (str(uuid.uuid4()) + ".ark")
@@ -78,7 +80,9 @@ class SaveConnection:
         self.save_context = save_context
 
         conn_str = f"file:{temp_save_path}?mode={'ro' if read_only else 'rw'}"
-        self.connection = sqlite3.connect(conn_str, uri=True)
+        # check_same_thread=False allows connection to be used from multiple threads
+        # This is safe for read operations in parallel parsing
+        self.connection = sqlite3.connect(conn_str, uri=True, check_same_thread=False)
 
         self.list_all_items_in_db()
         self.read_header()
@@ -388,9 +392,10 @@ class SaveConnection:
 
     def get_game_obj_binary(self, obj_uuid: uuid.UUID) -> Optional[bytes]:
         query = "SELECT value FROM game WHERE key = ?"
-        cursor = self.connection.cursor()
-        cursor.execute(query, (SaveConnection.uuid_to_byte_array(obj_uuid),))
-        row = cursor.fetchone()
+        with self._db_lock:
+            cursor = self.connection.cursor()
+            cursor.execute(query, (SaveConnection.uuid_to_byte_array(obj_uuid),))
+            row = cursor.fetchone()
         if not row:
             raise ValueError(f"Object with UUID {obj_uuid} not found in database")
 
@@ -403,10 +408,15 @@ class SaveConnection:
         return ArkBinaryParser(binary, self.save_context)
 
     def is_in_db(self, obj_uuid: uuid.UUID) -> bool:
+        # Check cache first to avoid SQLite lock contention
+        if obj_uuid in self.parsed_objects:
+            return True
         query = "SELECT key FROM game WHERE key = ?"
-        cursor = self.connection.cursor()
-        cursor.execute(query, (SaveConnection.uuid_to_byte_array(obj_uuid),))
-        return cursor.fetchone() is not None
+        with self._db_lock:
+            cursor = self.connection.cursor()
+            cursor.execute(query, (SaveConnection.uuid_to_byte_array(obj_uuid),))
+            result = cursor.fetchone() is not None
+        return result
 
     def get_game_object_by_id(self, obj_uuid: uuid.UUID, reparse: bool = False) -> Optional['ArkGameObject']:
         if obj_uuid in self.parsed_objects and not reparse:
