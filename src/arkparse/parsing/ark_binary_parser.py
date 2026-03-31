@@ -268,8 +268,8 @@ class ArkBinaryParser(PropertyParser, PropertyReplacer):
         name_count = parser.read_uint32()
         for i in range(name_count):
             name_table[i | 0x10000000] = parser.read_string()
-        parser.save_context.names = name_table
-        parser.save_context.constant_name_table = COMPRESSED_BYTES_NAME_CONSTANTS
+        parser.save_context.set_names(name_table)
+        parser.save_context.use_constant_name_table(COMPRESSED_BYTES_NAME_CONSTANTS)
         parser.position = 0
 
         return parser

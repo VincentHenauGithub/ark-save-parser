@@ -39,8 +39,17 @@ class ArkSaveLogger:
     _temp_file_path = TEMP_FILES_DIR
     _file_viewer_enabled = None
     _log_level_states = None
+    # Cached boolean for fast parser_log checks (updated by __init_config and set_log_level)
+    _parser_log_enabled = False
 
     __LOG_CONFIG_FILE_NAME = "logger"
+
+    @staticmethod
+    def _is_log_enabled(log_type: "ArkSaveLogger.LogTypes") -> bool:
+        """Fast check if a log type is enabled (avoids expensive work when logging is off)."""
+        if ArkSaveLogger._log_level_states is None:
+            ArkSaveLogger.__init_config()
+        return ArkSaveLogger._log_level_states.get(log_type.value, False) or ArkSaveLogger._log_level_states["all"]
 
     @staticmethod
     def save_log(message: str):
@@ -48,6 +57,9 @@ class ArkSaveLogger:
 
     @staticmethod
     def parser_log(message: str):
+        # Fast path: check cached boolean directly (no method call overhead)
+        if not ArkSaveLogger._parser_log_enabled:
+            return
         struct_header = ""
         max = 15
         curr = 0
@@ -109,6 +121,11 @@ class ArkSaveLogger:
             ArkSaveLogger._log_level_states = config["levels"]
             ArkSaveLogger._file_viewer_enabled = config["fve"]
             ArkSaveLogger._allow_invalid_objects = config["allow_invalid"]
+        # Update cached parser_log state for fast checks
+        ArkSaveLogger._parser_log_enabled = (
+            ArkSaveLogger._log_level_states.get(ArkSaveLogger.LogTypes.PARSER.value, False) 
+            or ArkSaveLogger._log_level_states.get("all", False)
+        )
 
     @staticmethod
     def __log(message: str, log_type: "ArkSaveLogger.LogTypes", color: "ArkSaveLogger.LogColors" = None):
@@ -130,6 +147,13 @@ class ArkSaveLogger:
         if ArkSaveLogger._log_level_states is None:
             ArkSaveLogger.__init_config()
         ArkSaveLogger._log_level_states[log_type.value] = state
+        
+        # Update cached parser_log state if relevant log type changed
+        if log_type == ArkSaveLogger.LogTypes.PARSER or log_type == ArkSaveLogger.LogTypes.ALL:
+            ArkSaveLogger._parser_log_enabled = (
+                ArkSaveLogger._log_level_states.get(ArkSaveLogger.LogTypes.PARSER.value, False) 
+                or ArkSaveLogger._log_level_states.get("all", False)
+            )
 
         if set_globally:
             global_config = read_config_file(ArkSaveLogger.__LOG_CONFIG_FILE_NAME)

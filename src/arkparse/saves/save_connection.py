@@ -1,5 +1,6 @@
 import sqlite3
 import uuid
+from uuid import UUID
 from pathlib import Path
 from typing import Collection, Optional, Dict
 
@@ -9,6 +10,14 @@ from arkparse.parsing import ArkBinaryParser, GameObjectReaderConfiguration
 from arkparse.saves.header_location import HeaderLocation
 from arkparse.saves.save_context import SaveContext
 from arkparse.utils import TEMP_FILES_DIR
+
+
+def _fast_uuid_from_bytes(b: bytes) -> UUID:
+    """Create UUID from bytes, bypassing __init__ validation for speed."""
+    u = object.__new__(UUID)
+    object.__setattr__(u, 'int', int.from_bytes(b, 'big'))
+    return u
+
 
 class SaveConnection:
 
@@ -106,7 +115,7 @@ class SaveConnection:
 
         # check_uint64(header_data, 0)
         header_data.set_position(name_table_offset)
-        self.save_context.names = self.read_table(header_data)
+        self.save_context.set_names(self.read_table(header_data))
 
     def read_actor_locations(self):
         actor_transforms = self.get_custom_value("ActorTransforms")
@@ -487,7 +496,7 @@ class SaveConnection:
 
     @staticmethod
     def byte_array_to_uuid(byte_array: bytes) -> uuid.UUID:
-        return uuid.UUID(bytes=byte_array)
+        return _fast_uuid_from_bytes(byte_array)
 
     @staticmethod
     def uuid_to_byte_array(obj_uuid: uuid.UUID) -> bytes:
