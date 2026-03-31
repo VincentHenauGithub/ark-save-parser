@@ -58,10 +58,10 @@ def run_benchmark():
     print()
     
     from arkparse import AsaSave
-    from arkparse.api import DinoApi
+    from arkparse.api import DinoApi, StructureApi
     
     # Worker counts to test
-    worker_counts = [1, 2, 3, 4, 6, 8, 10, 12]
+    worker_counts = [1, 4, 6, 8]
     
     # Number of runs per configuration for averaging
     num_runs = 1
@@ -90,7 +90,7 @@ def run_benchmark():
     
     print("\nWarming up DinoApi...")
     dapi = DinoApi(save)
-    warmup_dinos = dapi.get_all(max_workers=1)  # Warm-up run
+    warmup_dinos = dapi.get_all(max_workers=1, bypass_inventory=False)  # Warm-up run
     baseline_count = len(warmup_dinos)  # Use returned dict size, not cache size
     print(f"Found {baseline_count} dinos")
     
@@ -109,7 +109,7 @@ def run_benchmark():
             t0 = time.perf_counter()
             dapi.get_all_objects()  # Force reload of game objects  
             t1 = time.perf_counter()
-            dinos = dapi.get_all(max_workers=workers)
+            dinos = dapi.get_all(max_workers=workers, bypass_inventory=False)
             t2 = time.perf_counter()
             elapsed = time.perf_counter() - start
             times.append(elapsed)
@@ -145,6 +145,70 @@ def run_benchmark():
         'workers': best_dino_workers,
         'speedup': dino_speedup,
     }
+
+    # =====================================================
+    # Benchmark StructureApi
+    # =====================================================
+    print("\n" + "=" * 70)
+    print("StructureApi Benchmark")
+    print("=" * 70)
+
+    results['structure_api'] = {}
+
+    print("\nWarming up StructureApi...")
+    sapi = StructureApi(save)
+    warmup_structs = sapi.get_all(max_workers=1, bypass_inventory=False)
+    baseline_struct_count = len(warmup_structs)
+    print(f"Found {baseline_struct_count} structures")
+
+    for workers in worker_counts:
+        times = []
+        print(f"\nTesting {workers} worker(s)...", end=" ", flush=True)
+
+        for run in range(num_runs):
+            sapi.parsed_structures.clear()
+            sapi.retrieved_all = False
+            save.save_connection._class_cache.clear()
+            gc.collect()
+
+            start = time.perf_counter()
+            t0 = time.perf_counter()
+            sapi.get_all_objects()
+            t1 = time.perf_counter()
+            structs = sapi.get_all(max_workers=workers, bypass_inventory=False)
+            t2 = time.perf_counter()
+            elapsed = time.perf_counter() - start
+            times.append(elapsed)
+
+            print(f"\n  get_all_objects: {t1-t0:.2f}s, get_all: {t2-t1:.2f}s, total: {elapsed:.2f}s")
+
+            if len(structs) != baseline_struct_count:
+                print(f"\nWARNING: Count mismatch! Expected {baseline_struct_count}, got {len(structs)}")
+
+        avg_time = sum(times) / len(times)
+        min_time = min(times)
+        max_time = max(times)
+
+        results['structure_api'][workers] = {
+            'avg_time': avg_time,
+            'min_time': min_time,
+            'max_time': max_time,
+            'times': times,
+        }
+
+        print(f"avg={avg_time:.3f}s (min={min_time:.3f}, max={max_time:.3f})")
+
+    best_struct_workers = min(results['structure_api'].keys(),
+                             key=lambda w: results['structure_api'][w]['avg_time'])
+    baseline_struct_time = results['structure_api'][1]['avg_time']
+    best_struct_time = results['structure_api'][best_struct_workers]['avg_time']
+    struct_speedup = baseline_struct_time / best_struct_time if best_struct_time > 0 else 0
+
+    print(f"\nStructureApi: Best = {best_struct_workers} workers ({struct_speedup:.2f}x speedup)")
+    results['structure_api_best'] = {
+        'workers': best_struct_workers,
+        'speedup': struct_speedup,
+    }
     
     # =====================================================
     # Summary
@@ -152,7 +216,8 @@ def run_benchmark():
     print("\n" + "=" * 70)
     print("Summary")
     print("=" * 70)
-    print(f"DinoApi: Best = {best_dino_workers} workers ({dino_speedup:.2f}x speedup)")
+    print(f"DinoApi:      Best = {best_dino_workers} workers ({dino_speedup:.2f}x speedup)")
+    print(f"StructureApi: Best = {best_struct_workers} workers ({struct_speedup:.2f}x speedup)")
     
     # Save results
     mode = 'nogil' if check_gil_status() else 'gil'
@@ -165,12 +230,13 @@ def run_benchmark():
     print("\n" + "-" * 70)
     print("Timing Table (seconds)")
     print("-" * 70)
-    print(f"{'Workers':<10} {'DinoApi':<15}")
+    print(f"{'Workers':<10} {'DinoApi':<15} {'StructureApi':<15}")
     print("-" * 70)
     
     for workers in worker_counts:
         dino_t = results['dino_api'][workers]['avg_time']
-        print(f"{workers:<10} {dino_t:<15.3f}")
+        struct_t = results['structure_api'][workers]['avg_time']
+        print(f"{workers:<10} {dino_t:<15.3f} {struct_t:<15.3f}")
     
     print("-" * 70)
     

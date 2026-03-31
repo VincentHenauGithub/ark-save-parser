@@ -54,9 +54,9 @@ class DinoApi:
         self.parsed_cryopods: Dict[UUID, Cryopod] = {}
 
     @staticmethod
-    def _create_dino(uuid: UUID, save: AsaSave, is_tamed: bool, is_baby: bool) -> Dino:
+    def _create_dino(uuid: UUID, save: AsaSave, is_tamed: bool, is_baby: bool, bypass_inventory: bool = True) -> Dino:
         if is_tamed:
-            return TamedBaby(uuid, save=save) if is_baby else TamedDino(uuid, save=save)
+            return TamedBaby(uuid, save=save) if is_baby else TamedDino(uuid, save=save, bypass_inventory=bypass_inventory)
         else:
             return Baby(uuid, save=save) if is_baby else Dino(uuid, save=save)
 
@@ -99,7 +99,7 @@ class DinoApi:
 
         return dino
 
-    def get_all(self, config = None, include_cryos: bool = True, include_wild: bool = True, include_tamed: bool = True, include_babies: bool = True, only_cryopodded: bool = False, max_workers: int = 6) -> Dict[UUID, Dino]:
+    def get_all(self, config = None, include_cryos: bool = True, include_wild: bool = True, include_tamed: bool = True, include_babies: bool = True, only_cryopodded: bool = False, max_workers: int = 6, bypass_inventory: bool = True) -> Dict[UUID, Dino]:
         ArkSaveLogger.api_log("Retrieving all dinos from save...")
 
         objects = self.get_all_objects(config)
@@ -134,7 +134,7 @@ class DinoApi:
         
         # Parse dinos - parallel when GIL is disabled
         if dino_objects_to_parse:
-            self._parse_dinos_batch(dino_objects_to_parse, dinos, max_workers)
+            self._parse_dinos_batch(dino_objects_to_parse, dinos, max_workers, bypass_inventory)
         
         # Parse cryopods - parallel when GIL is disabled
         if cryopod_objects_to_parse:
@@ -160,7 +160,7 @@ class DinoApi:
                 dinos[key] = cryopod.dino
                 self.parsed_dinos[cryopod.dino.uuid] = cryopod.dino
 
-    def _parse_dinos_batch(self, dino_objects_to_parse: List[Tuple[UUID, ArkGameObject, bool, bool]], dinos: Dict[UUID, Dino], max_workers: int):
+    def _parse_dinos_batch(self, dino_objects_to_parse: List[Tuple[UUID, ArkGameObject, bool, bool]], dinos: Dict[UUID, Dino], max_workers: int, bypass_inventory: bool = True):
         if _PARALLEL_ENABLED and max_workers > 1:
             ArkSaveLogger.api_log(f"Parsing {len(dino_objects_to_parse)} dinos with {max_workers} workers...")
             save = self.save
@@ -173,7 +173,7 @@ class DinoApi:
                     _worker_initialized.done = True
                 key, obj, is_tamed, is_baby = item
                 try:
-                    return (key, DinoApi._create_dino(obj.uuid, save, is_tamed, is_baby))
+                    return (key, DinoApi._create_dino(obj.uuid, save, is_tamed, is_baby, bypass_inventory))
                 except Exception as e:
                     error_count[0] += 1
                     if error_count[0] <= 3:
@@ -190,7 +190,7 @@ class DinoApi:
         else:
             for key, obj, is_tamed, is_baby in dino_objects_to_parse:
                 try:
-                    dino = DinoApi._create_dino(obj.uuid, self.save, is_tamed, is_baby)
+                    dino = DinoApi._create_dino(obj.uuid, self.save, is_tamed, is_baby, bypass_inventory)
                     dinos[key] = dino
                     self.parsed_dinos[dino.uuid] = dino
                 except Exception as e:

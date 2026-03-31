@@ -63,6 +63,7 @@ class SaveConnection:
         # create temp copy of file
         temp_save_path = TEMP_FILES_DIR / (str(uuid.uuid4()) + ".ark")
         self.parsed_objects: Dict[uuid.UUID, ArkGameObject] = {}
+        self._class_cache: Dict[uuid.UUID, str] = {}
 
         if path is not None:
             with open(path, 'rb') as file:
@@ -164,10 +165,32 @@ class SaveConnection:
             self.connection.close()
             self.connection = None
 
+    def cache_all_classes(self):
+        """Bulk pre-cache UUID -> class_name for all objects in DB.
+        Call before parallel parsing to avoid SQLite lock contention."""
+        if self._class_cache:
+            return
+        query = "SELECT key, value FROM game"
+        with self._db_lock:
+            cursor = self.connection.cursor()
+            cursor.execute(query)
+            rows = cursor.fetchall()
+        for key_bytes, value_bytes in rows:
+            obj_uuid = _fast_uuid_from_bytes(key_bytes)
+            try:
+                reader = ArkBinaryParser(value_bytes, self.save_context)
+                class_name, _ = ArkGameObject.read_name(obj_uuid, reader)
+                self._class_cache[obj_uuid] = class_name
+            except Exception:
+                pass
+
     def get_class_of_uuid(self, obj_uuid: uuid.UUID) -> Optional[str]:
+        if obj_uuid in self._class_cache:
+            return self._class_cache[obj_uuid]
         bin = self.get_game_obj_binary(obj_uuid)
         reader = ArkBinaryParser(bin, self.save_context)
         class_name, string_name = ArkGameObject.read_name(obj_uuid, reader)
+        self._class_cache[obj_uuid] = class_name
         return class_name
 
     def list_all_items_in_db(self):
@@ -408,8 +431,10 @@ class SaveConnection:
         return ArkBinaryParser(binary, self.save_context)
 
     def is_in_db(self, obj_uuid: uuid.UUID) -> bool:
-        # Check cache first to avoid SQLite lock contention
+        # Check caches first to avoid SQLite lock contention
         if obj_uuid in self.parsed_objects:
+            return True
+        if obj_uuid in self._class_cache:
             return True
         query = "SELECT key FROM game WHERE key = ?"
         with self._db_lock:
