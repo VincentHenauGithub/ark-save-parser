@@ -258,7 +258,7 @@ class ArkGameObject(ArkPropertyContainer):
             try:
                 unknow_id = reader.read_uint32()
                 reader.validate_uint64(0)
-                reader.validate_uint32(1)
+                reader.read_int()
                 class_name = reader.read_string()
                 # reader.validate_uint32(0)
                 string_name = True

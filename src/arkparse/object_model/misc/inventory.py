@@ -31,8 +31,9 @@ class Inventory(ParsedObjectBase):
         item_arr = self.object.get_array_property_value("InventoryItems")
         for item in item_arr:
             item_uuid = UUID(item.value)
-            item_class = self.save.get_class_of_uuid(item_uuid)
-            self.item_classes[item_uuid] = item_class
+            if self.save.is_in_db(item_uuid):
+                item_class = self.save.get_class_of_uuid(item_uuid)
+                self.item_classes[item_uuid] = item_class
 
     @property
     def items(self) -> Dict[UUID, InventoryItem]:
