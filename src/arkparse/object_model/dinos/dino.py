@@ -283,6 +283,9 @@ class Dino(ParsedObjectBase):
     def feed(self):
         self.stats.feed()
 
+    def wake_up(self):
+        self.stats.wake_up()
+
     def disable_wandering(self):
         """
         Disables the wandering behavior of the dino.

@@ -55,6 +55,12 @@ class SaveConnection:
         if self.sqlite_db is not None and self.sqlite_db.exists():
             self.sqlite_db.unlink()
 
+    def get_bytes(self) -> Optional[bytes]:
+        if self.sqlite_db is not None and self.sqlite_db.exists():
+            with open(self.sqlite_db, 'rb') as file:
+                return file.read()
+        return None
+
     def read_table(self, header_data: 'ArkBinaryParser') -> Dict[int, str]:
         count = header_data.read_int()
         self.name_count = count

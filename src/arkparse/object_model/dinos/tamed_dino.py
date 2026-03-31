@@ -114,6 +114,9 @@ class TamedDino(Dino):
             ids.add(anc.female.id_)
             ids.add(anc.male.id_)
         return ids
+    
+    def add_experience(self, amount: float):
+        self.stats.add_experience(amount)
 
     @staticmethod
     def from_object(dino_obj: ArkGameObject, status_obj: ArkGameObject, cryopod: "Cryopod" = None):

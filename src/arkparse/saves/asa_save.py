@@ -40,6 +40,11 @@ class AsaSave:
     def __del__(self):
         self.close()
 
+    def get_bytes(self) -> Optional[bytes]:
+        if self.save_connection is not None:
+            return self.save_connection.get_bytes()
+        return None
+
     @property
     def faulty_objects(self) -> Dict[uuid.UUID, ArkGameObject]:
         if self.save_connection is not None:

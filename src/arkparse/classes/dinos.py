@@ -115,10 +115,11 @@ class Flyers:
     tek_quetzal = "/Game/PrimalEarth/Dinos/Quetzalcoatlus/BionicQuetz_Character_BP.BionicQuetz_Character_BP_C"
     hesperornis = "/Game/PrimalEarth/Dinos/Hesperornis/Hesperornis_Character_BP.Hesperornis_Character_BP_C"
     snow_owl = "/Game/Extinction/Dinos/Owl/Owl_Character_BP.Owl_Character_BP_C"
+    desmodus = "/Game/Fjordur/Dinos/Desmodus/Desmodus_Character_BP.Desmodus_Character_BP_C"
 
     all_bps = [argentavis, griffin, ichthyornis, pelagornis, pteranodon,
                 quetzal, rhyniognatha, tapejara, lymantria, phoenix,
-                tek_quetzal, hesperornis, snow_owl] + Wyverns.all_bps
+                tek_quetzal, hesperornis, snow_owl, desmodus] + Wyverns.all_bps
 
 class DlcDinos:
     firemane = "/Game/ASA/Dinos/FireLion/FireLion_Character_BP.FireLion_Character_BP_C"

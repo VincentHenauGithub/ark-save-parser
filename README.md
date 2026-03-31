@@ -18,7 +18,6 @@ I mainly use this package for server management tasks. Some highlights include:
  - Sending random stats of the server to the chat
  - Monitoring player activity like when people log off and on and such
  - Randomly spawning bases with random loot for my friends to raid; probably my favorite feature (and the most complicated)
-If you're curious or want to explore the features yourself, you can find the project here: [ark-server-manager](https://github.com/VincentHenauGithub/ark-server-manager).
 
 Hope you find it useful or inspiring or both! 😊
 
