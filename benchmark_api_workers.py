@@ -59,6 +59,8 @@ def run_benchmark():
     
     from arkparse import AsaSave
     from arkparse.api import DinoApi, StructureApi
+    from arkparse.api.equipment_api import EquipmentApi
+    from arkparse.object_model.equipment import Weapon
     
     # Worker counts to test
     worker_counts = [1, 4, 6, 8]
@@ -209,6 +211,69 @@ def run_benchmark():
         'workers': best_struct_workers,
         'speedup': struct_speedup,
     }
+
+    # =====================================================
+    # Benchmark EquipmentApi (GeneralApi)
+    # =====================================================
+    print("\n" + "=" * 70)
+    print("EquipmentApi (GeneralApi) Benchmark")
+    print("=" * 70)
+
+    results['equipment_api'] = {}
+
+    print("\nWarming up EquipmentApi...")
+    eapi = EquipmentApi(save)
+    warmup_equip = eapi.get_all(Weapon)
+    baseline_equip_count = len(warmup_equip)
+    print(f"Found {baseline_equip_count} weapons")
+
+    for workers in worker_counts:
+        times = []
+        print(f"\nTesting {workers} worker(s)...", end=" ", flush=True)
+
+        for run in range(num_runs):
+            eapi.parsed_objects.clear()
+            eapi.all_objects = None
+            gc.collect()
+
+            start = time.perf_counter()
+            t0 = time.perf_counter()
+            eapi.get_all_objects()
+            t1 = time.perf_counter()
+            equip = eapi.get_all(Weapon, max_workers=workers)
+            t2 = time.perf_counter()
+            elapsed = time.perf_counter() - start
+            times.append(elapsed)
+
+            print(f"\n  get_all_objects: {t1-t0:.2f}s, get_all: {t2-t1:.2f}s, total: {elapsed:.2f}s")
+
+            if len(equip) != baseline_equip_count:
+                print(f"\nWARNING: Count mismatch! Expected {baseline_equip_count}, got {len(equip)}")
+
+        avg_time = sum(times) / len(times)
+        min_time = min(times)
+        max_time = max(times)
+
+        results['equipment_api'][workers] = {
+            'avg_time': avg_time,
+            'min_time': min_time,
+            'max_time': max_time,
+            'times': times,
+        }
+
+        print(f"avg={avg_time:.3f}s (min={min_time:.3f}, max={max_time:.3f})")
+
+    best_equip_workers = min(results['equipment_api'].keys(),
+                             key=lambda w: results['equipment_api'][w]['avg_time'])
+    baseline_equip_time = results['equipment_api'][1]['avg_time']
+    best_equip_time = results['equipment_api'][best_equip_workers]['avg_time']
+    equip_speedup = baseline_equip_time / best_equip_time if best_equip_time > 0 else 0
+
+    print(f"\nEquipmentApi: Best = {best_equip_workers} workers ({equip_speedup:.2f}x speedup)")
+    results['equipment_api_best'] = {
+        'workers': best_equip_workers,
+        'speedup': equip_speedup,
+    }
     
     # =====================================================
     # Summary
@@ -218,6 +283,7 @@ def run_benchmark():
     print("=" * 70)
     print(f"DinoApi:      Best = {best_dino_workers} workers ({dino_speedup:.2f}x speedup)")
     print(f"StructureApi: Best = {best_struct_workers} workers ({struct_speedup:.2f}x speedup)")
+    print(f"EquipmentApi: Best = {best_equip_workers} workers ({equip_speedup:.2f}x speedup)")
     
     # Save results
     mode = 'nogil' if check_gil_status() else 'gil'
@@ -230,13 +296,14 @@ def run_benchmark():
     print("\n" + "-" * 70)
     print("Timing Table (seconds)")
     print("-" * 70)
-    print(f"{'Workers':<10} {'DinoApi':<15} {'StructureApi':<15}")
+    print(f"{'Workers':<10} {'DinoApi':<15} {'StructureApi':<15} {'EquipmentApi':<15}")
     print("-" * 70)
     
     for workers in worker_counts:
         dino_t = results['dino_api'][workers]['avg_time']
         struct_t = results['structure_api'][workers]['avg_time']
-        print(f"{workers:<10} {dino_t:<15.3f} {struct_t:<15.3f}")
+        equip_t = results['equipment_api'][workers]['avg_time']
+        print(f"{workers:<10} {dino_t:<15.3f} {struct_t:<15.3f} {equip_t:<15.3f}")
     
     print("-" * 70)
     
