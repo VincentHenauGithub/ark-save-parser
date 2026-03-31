@@ -151,7 +151,7 @@ impl FastBinaryReader {
         self.ensure_bytes(count)?;
         let slice = &self.data[self.position..self.position + count];
         self.position += count;
-        Ok(PyBytes::new_bound(py, slice))
+        Ok(PyBytes::new(py, slice))
     }
 
     /// Skip `count` bytes.
@@ -288,7 +288,7 @@ impl FastBinaryReader {
     /// Read an array of strings.
     fn read_strings_array<'py>(&mut self, py: Python<'py>) -> PyResult<Bound<'py, PyList>> {
         let count = self.read_uint32()? as usize;
-        let list = PyList::empty_bound(py);
+        let list = PyList::empty(py);
         for _ in 0..count {
             if let Some(s) = self.read_string()? {
                 list.append(s)?;
@@ -389,7 +389,7 @@ fn wildcard_decompress(py: Python<'_>, input: &[u8]) -> PyResult<Py<PyBytes>> {
         output.push(byte);
     }
 
-    Ok(PyBytes::new_bound(py, &output).into())
+    Ok(PyBytes::new(py, &output).into())
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -9,7 +9,7 @@ name = "arkparse_fast"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.22", features = ["extension-module"] }
+pyo3 = { version = "0.28", features = ["extension-module"] }
 byteorder = "1.5"
 
 [profile.release]

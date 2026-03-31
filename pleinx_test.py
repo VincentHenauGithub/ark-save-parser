@@ -716,8 +716,8 @@ def main() -> None:
     global_start = time()
 
     requested = ["tamed", "structures", "wild"]
-    requested = ["tamed", "structures", "wild"]
     save_path = Path(r"C:\Users\Vincent\Downloads\Astraeos_WP\Astraeos_WP.ark")
+    export_folder = Path.cwd() / "pleinx"
 
     results: List[Tuple[str, int]] = []
 
@@ -727,7 +727,7 @@ def main() -> None:
         result_q: mp.Queue = ctx.Queue()
 
         # Prozesse in priorisierter Reihenfolge starten
-        export_folder = Path.cwd() / "pleinx"
+        
         procs: List[mp.Process] = []
         for t in requested:
             p = ctx.Process(
@@ -780,5 +780,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    from arkparse.logging import ArkSaveLogger
+    ArkSaveLogger.disable_all_logs()
     mp.freeze_support()
     main()
