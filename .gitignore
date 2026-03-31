@@ -185,3 +185,4 @@ temp
 **/exports/**
 **/**.ark.gz
 /src/.idea
+.venv**
