@@ -112,7 +112,8 @@ class ArkPlayer:
             inv_comp = pawn.get_property_value("MyInventoryComponent")
             if inv_comp is not None:
                 inv_uuid = UUID(inv_comp.value)
-                self.inventory = Inventory(inv_uuid, save=save)
+                if save.is_in_db(inv_uuid):
+                    self.inventory = Inventory(inv_uuid, save=save)
 
     def __str__(self):
         return f"ArkPlayer: {self.char_name} (platform name=\'{self.name}\') in tribe {self.tribe} (ue5 id {self.unique_id}, ark id {self.id_})"
