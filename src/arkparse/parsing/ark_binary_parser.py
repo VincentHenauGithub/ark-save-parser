@@ -15,7 +15,7 @@ from arkparse.utils.tm_files import TEMP_FILES_DIR
 
 # Try to import fast Rust implementation
 try:
-    from arkparse_fast import wildcard_decompress as _fast_wildcard_decompress
+    from ArkparseFast import wildcard_decompress as _fast_wildcard_decompress
     _HAS_FAST_PARSER = True
 except ImportError:
     _HAS_FAST_PARSER = False

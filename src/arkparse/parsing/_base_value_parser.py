@@ -7,7 +7,7 @@ from arkparse.logging import ArkSaveLogger
 
 # Try to import fast Rust implementation for read_name
 try:
-    from arkparse_fast import read_name_id_at as _read_name_id_at_fast
+    from ArkparseFast import read_name_id_at as _read_name_id_at_fast
     _HAS_FAST_READ_NAME = True
 except ImportError:
     _HAS_FAST_READ_NAME = False

@@ -23,16 +23,16 @@ _batch_extract_class_ids_fast = None
 _filter_objects_by_patterns_fast = None
 
 try:
-    from arkparse_fast import FastBinaryReader as _FastBinaryReader
-    from arkparse_fast import wildcard_decompress as _wildcard_decompress_fast
-    from arkparse_fast import find_all_patterns as _find_all_patterns_fast
-    from arkparse_fast import contains_any_pattern as _contains_any_pattern_fast
-    from arkparse_fast import batch_extract_class_ids as _batch_extract_class_ids_fast
-    from arkparse_fast import filter_objects_by_patterns as _filter_objects_by_patterns_fast
+    from ArkparseFast import FastBinaryReader as _FastBinaryReader
+    from ArkparseFast import wildcard_decompress as _wildcard_decompress_fast
+    from ArkparseFast import find_all_patterns as _find_all_patterns_fast
+    from ArkparseFast import contains_any_pattern as _contains_any_pattern_fast
+    from ArkparseFast import batch_extract_class_ids as _batch_extract_class_ids_fast
+    from ArkparseFast import filter_objects_by_patterns as _filter_objects_by_patterns_fast
     _FAST_AVAILABLE = True
-    _logger.debug("arkparse_fast extension loaded — using Rust parser")
+    _logger.debug("ArkparseFast extension loaded — using Rust parser")
 except ImportError:
-    _logger.debug("arkparse_fast not available — using pure Python parser")
+    _logger.debug("ArkparseFast not available — using pure Python parser")
 
 
 def is_fast_available() -> bool:

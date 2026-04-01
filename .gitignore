@@ -186,3 +186,5 @@ temp
 **/**.ark.gz
 /src/.idea
 .venv**
+arkparse-fast-core/**
+/arkparse-fast-core
