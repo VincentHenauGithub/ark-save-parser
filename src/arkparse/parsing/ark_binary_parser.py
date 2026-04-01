@@ -368,6 +368,9 @@ class ArkBinaryParser(PropertyParser, PropertyReplacer):
             self.set_position(i)
             int_value = self.read_uint32()
             name = self.save_context.get_name(int_value)
+
+            if name is not None and "Unknown_" in name:
+                name = None
             
             if name is not None and int_value != 0:
                 found[int_value if use_id else i] = name

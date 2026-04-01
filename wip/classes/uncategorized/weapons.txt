@@ -3,6 +3,7 @@
 /Game/Extinction/CoreBlueprints/Weapons/WeapEmptyCryopod.WeapEmptyCryopod_C
 /Game/LostColony/Weapons/ClipboardAndHammer/PrimalItem_WeaponBaseClipboardAndHammer.PrimalItem_WeaponBaseClipboardAndHammer_C
 /Game/LostColony/Weapons/HoloDecoy/PrimalItem_HoloDecoy.PrimalItem_HoloDecoy_C
+/Game/Packs/Steampunk/Weapons/GeneScanner/WeapGeneScanner.WeapGeneScanner_C
 /Game/Packs/Wasteland/Weapons/AntiFireGrenade/PrimalItem_AntifireGrenade.PrimalItem_AntifireGrenade_C
 /Game/Packs/Wasteland/Weapons/ExplosiveSpear/PrimalItem_WeaponSpear_Explosive.PrimalItem_WeaponSpear_Explosive_C
 /Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemSkin_Spear_Carrot.PrimalItemSkin_Spear_Carrot_C

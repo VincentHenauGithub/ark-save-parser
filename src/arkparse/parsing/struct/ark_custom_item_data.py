@@ -164,9 +164,9 @@ class ArkCustomItemData:
 
         arr_size = ark_binary_data.read_uint32()
         ark_binary_data.validate_byte(0)
-        arr_start = ark_binary_data.position
+        arr_items = ark_binary_data.position
 
-        return arr_size, arr_start
+        return arr_size, arr_items
     
     def __read_custom_data_doubles(self, ark_binary_data: "ArkBinaryParser"):
         self.__read_struct_start(ark_binary_data, "CustomDataDoubles", "CustomItemDoubles")
@@ -332,14 +332,13 @@ class ArkCustomItemData:
             ark_binary_data.validate_uint32(0)
             return []
 
-        ark_binary_data.read_uint32()
+        nr_of_items = ark_binary_data.read_uint32()
         soft_classes = []
 
-        while ark_binary_data.peek_int() != 0:
+        for _ in range(nr_of_items):
             obj_name = ark_binary_data.read_name()
             soft_classes.append(obj_name)
-        
-        ark_binary_data.validate_uint32(0)
+            ark_binary_data.validate_uint32(0)
 
         return soft_classes
 

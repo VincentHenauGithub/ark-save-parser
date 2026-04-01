@@ -22,6 +22,9 @@ classifiers = [
     # Add additional classifiers as needed
 ]
 
+[project.optional-dependencies]
+fast = ["arkparse-fast-core"]
+
 [project.urls]
 Homepage = "https://github.com/VincentHenauGithub/ark-save-parser"
 

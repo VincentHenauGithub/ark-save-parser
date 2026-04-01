@@ -45,7 +45,7 @@ class DinoApi:
             name is not None and \
                 (("Dinos/" in name and "_Character_" in name) or \
                 ("DinoCharacterStatusComponent" in name) or \
-                ("PrimalItem_WeaponEmptyCryopod" in name or "PrimalItem_SCSCryopod" in name)))
+                ("PrimalItem_WeaponEmptyCryopod" in name or "PrimalItem_SCSCryopod" in name or "ItemDinoball.ItemDinoball_C" in name)))
 
     def __init__(self, save: AsaSave):
         self.save = save
@@ -125,7 +125,7 @@ class DinoApi:
                     if not is_baby or include_babies:
                         dino_objects_to_parse.append((key, obj, is_tamed, is_baby))
             
-            elif ("PrimalItem_SCSCryopod" in obj.blueprint or "PrimalItem_WeaponEmptyCryopod" in obj.blueprint) and include_cryos and include_tamed:
+            elif ("PrimalItem_SCSCryopod" in obj.blueprint or "PrimalItem_WeaponEmptyCryopod" in obj.blueprint or "ItemDinoball.ItemDinoball_C" in obj.blueprint) and include_cryos and include_tamed:
                 if not obj.get_property_value("bIsEngram", default=False) and obj.get_property_value("CustomItemDatas") is not None:
                     if obj.uuid in self.parsed_cryopods:
                         self._collect_cached_cryopod(self.parsed_cryopods[obj.uuid], key, dinos, include_babies)

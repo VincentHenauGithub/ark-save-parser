@@ -37,13 +37,8 @@ _PARALLEL_ENABLED = _is_parallel_enabled()
 
 def _parse_single_object(obj_uuid: UUID, class_name: str, binary_data: bytes, save_context: SaveContext) -> Optional[ArkGameObject]:
     """Parse a single game object. Thread-safe for use in parallel parsing."""
-    try:
-        byte_buffer = ArkBinaryParser(binary_data, save_context)
-        return ArkGameObject(obj_uuid, class_name, byte_buffer)
-    except Exception as e:
-        ArkSaveLogger.warning_log(f"Error parsing object {obj_uuid} of type {class_name}: {e}")
-        return None
-
+    byte_buffer = ArkBinaryParser(binary_data, save_context)
+    return SaveConnection.parse_as_predefined_object(obj_uuid, class_name, byte_buffer)
 
 class SaveConnection:
 
@@ -53,12 +48,12 @@ class SaveConnection:
 
     nr_parsed = 0
     faulty_objects = 0
-
     failed_parses: Dict[str, int] = {}
 
     def __init__(self, save_context: SaveContext, path: Path = None, contents: bytes = None, read_only: bool = False):
         # Thread lock for database operations
         self._db_lock = threading.Lock()
+        self._max_workers = 3  # Default max workers for parallel parsing
 
         # create temp copy of file
         temp_save_path = TEMP_FILES_DIR / (str(uuid.uuid4()) + ".ark")
@@ -87,6 +82,13 @@ class SaveConnection:
 
         self.list_all_items_in_db()
         self.read_header()
+
+    def set_max_workers(self, max_workers: int):
+        """Set maximum workers for parallel parsing. Only applicable if GIL is disabled."""
+        if not _PARALLEL_ENABLED:
+            ArkSaveLogger.warning_log("Parallel parsing is not enabled (GIL is active), set_max_workers has no effect.")
+            return
+        self._max_workers = max_workers
 
     def __del__(self):
         self.close()
@@ -518,9 +520,9 @@ class SaveConnection:
 
         # Parse objects - parallel when GIL disabled, sequential otherwise
         if items_to_parse:
-            if _PARALLEL_ENABLED:
-                # Parallel parsing with 3 workers (optimal for free-threaded Python)
-                ArkSaveLogger.save_log(f"Parsing {len(items_to_parse)} objects with 3 workers...")
+            if _PARALLEL_ENABLED and self._max_workers > 1:
+                # Parallel parsing with _max_workers (optimal for free-threaded Python)
+                ArkSaveLogger.save_log(f"Parsing {len(items_to_parse)} objects with {self._max_workers} workers...")
                 ctx = self.save_context
                 _worker_initialized = threading.local()
                 
@@ -533,7 +535,7 @@ class SaveConnection:
                     obj = _parse_single_object(obj_uuid, class_name, binary_data, ctx)
                     return obj_uuid, obj
                 
-                with ThreadPoolExecutor(max_workers=3) as executor:
+                with ThreadPoolExecutor(max_workers=self._max_workers) as executor:
                     results = list(executor.map(parse_item, items_to_parse))
                 
                 for obj_uuid, obj in results:
@@ -607,6 +609,8 @@ class SaveConnection:
             else:
                 byte_buffer.structured_print(to_default_file=True)
                 ArkSaveLogger.warning_log(f"Error parsing non-standard object of type {class_name}")
+
+                # input("Press Enter to continue...")
 
             SaveConnection.failed_parses[class_name] = SaveConnection.failed_parses.get(class_name, 0) + 1
             ArkSaveLogger.warning_log(f"Failed parses for this class: {SaveConnection.failed_parses[class_name]}")
