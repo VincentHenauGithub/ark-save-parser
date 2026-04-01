@@ -11,6 +11,7 @@ from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.enums import ArkDinoTrait
 from arkparse.utils.json_utils import DefaultJsonEncoder
 from .dino_ai_controller import DinoAiController
+from arkparse.logging import ArkSaveLogger
 
 from .stats import DinoStats
 from ...parsing import ArkBinaryParser
@@ -28,6 +29,12 @@ class GeneTrait:
             name = trait.split("[")[0]
             level = int(trait.split("[")[1][:-1])
             return ArkDinoTrait(name), level
+        else:
+            try:
+                return ArkDinoTrait(trait), 0
+            except ValueError:
+                ArkSaveLogger.error_log(f"Unknown gene trait: {trait}")
+                return None, 0
 
     def __str__(self):
         return f"{self.trait.value}[{self.level}]"
