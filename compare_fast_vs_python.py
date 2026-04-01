@@ -1,7 +1,7 @@
 """
 Comparison script for fast (Rust) vs pure Python parser implementations.
 
-Run this script with and without ArkparseFast to compare:
+Run this script with and without arkparse_fast to compare:
     
     # With fast parser:
     .\\.venv_fast\\Scripts\\Activate.ps1; python compare_fast_vs_python.py
@@ -20,7 +20,7 @@ from arkparse.parsing._fast_shim import is_fast_available, HybridBinaryReader
 
 # Check if fast parser is available
 try:
-    from ArkparseFast import FastBinaryReader, wildcard_decompress as fast_wildcard_decompress
+    from arkparse_fast import FastBinaryReader, wildcard_decompress as fast_wildcard_decompress
     FAST_AVAILABLE = True
     print("=" * 70)
     print("MODE: FAST (Rust) parser enabled")
@@ -28,7 +28,7 @@ try:
 except ImportError:
     FAST_AVAILABLE = False
     print("=" * 70)
-    print("MODE: Pure Python parser (ArkparseFast NOT installed)")
+    print("MODE: Pure Python parser (arkparse_fast NOT installed)")
     print("=" * 70)
 
 def test_real_save_file():
