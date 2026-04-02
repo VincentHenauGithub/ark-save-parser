@@ -147,6 +147,7 @@ class Cryopod(InventoryItem):
         NORMAL = "Normal"
         SCS = "SCS"
         PELAYORIS = "Pelayoris"
+        DINO_DEPOT = "Dino Depot"
         
     embedded_data: EmbeddedCryopodData
     dino: TamedDino
@@ -198,6 +199,8 @@ class Cryopod(InventoryItem):
             self.type = self.CryopodType.SCS
         elif "Mod_C" in self.object.blueprint:
             self.type = self.CryopodType.PELAYORIS
+        elif "ItemDinoball.ItemDinoball_C" in self.object.blueprint:
+            self.type = self.CryopodType.DINO_DEPOT
         else:
             self.type = self.CryopodType.NORMAL
 
