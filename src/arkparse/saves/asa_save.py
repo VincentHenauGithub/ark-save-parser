@@ -40,6 +40,10 @@ class AsaSave:
     def __del__(self):
         self.close()
 
+    def set_max_workers(self, max_workers: int):
+        if self.save_connection is not None:
+            self.save_connection.set_max_workers(max_workers)
+
     def get_bytes(self) -> Optional[bytes]:
         if self.save_connection is not None:
             return self.save_connection.get_bytes()

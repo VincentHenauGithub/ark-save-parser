@@ -48,3 +48,10 @@ ArkSaveLogger.debug_log("This is a debug log.")
 ArkSaveLogger.warning_log("This is a warning log.")
 ArkSaveLogger.parser_log("This is a parser log.")
 ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.ALL, False)
+
+# Worker thread logging can be enabled/disabled.
+# By default, logging is disabled in parallel worker threads for performance.
+# Enable this to see logs from parallel parsing workers (when using free-threaded Python).
+
+ArkSaveLogger.enable_worker_logging(True)  # Enable logging in worker threads
+ArkSaveLogger.enable_worker_logging(False)  # Disable (default)
