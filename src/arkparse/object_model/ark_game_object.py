@@ -1,7 +1,10 @@
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 from uuid import UUID
 import random
+
+if TYPE_CHECKING:
+    from arkparse.saves.asa_save import AsaSave
 
 from arkparse.parsing.struct.ark_rotator import ArkRotator
 from arkparse.parsing.ark_property import ArkProperty
@@ -166,7 +169,8 @@ class ArkGameObject(ArkPropertyContainer):
         binary.set_position(md.offset)
         binary.replace_bytes(new_bytes, nr_to_replace=prev_length)
 
-    def change_class(self, new_class: str, binary: ArkBinaryParser, renumber: bool = True):
+    def change_class(self, new_class: str, binary: ArkBinaryParser, renumber: bool = True, save: "AsaSave" = None):
+        from arkparse.saves.asa_save import AsaSave
         if renumber:
             self.__replace_name(new_class, binary)
         self.blueprint = new_class
@@ -175,7 +179,10 @@ class ArkGameObject(ArkPropertyContainer):
         new_class_id = binary.save_context.get_name_id(new_class)
 
         if new_class_id is None:
-            raise Exception(f"Class {new_class} not found in name table")
+            if save is not None:
+                new_class_id = save.add_name_to_name_table(new_class)
+            else:
+                raise ValueError(f"Cannot change class to {new_class} because it is not in the name table and no save provided to add it to the name table")
 
         binary.set_position(0)
         binary.replace_bytes(new_class_id.to_bytes(4, byteorder="little"))
@@ -251,7 +258,7 @@ class ArkGameObject(ArkPropertyContainer):
             try:
                 unknow_id = reader.read_uint32()
                 reader.validate_uint64(0)
-                reader.validate_uint32(1)
+                reader.read_int()
                 class_name = reader.read_string()
                 # reader.validate_uint32(0)
                 string_name = True

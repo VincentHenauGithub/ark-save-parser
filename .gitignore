@@ -185,3 +185,8 @@ temp
 **/exports/**
 **/**.ark.gz
 /src/.idea
+.venv**
+arkparse-fast-core/**
+/arkparse-fast-core
+
+**.zip

@@ -40,6 +40,15 @@ class AsaSave:
     def __del__(self):
         self.close()
 
+    def set_max_workers(self, max_workers: int):
+        if self.save_connection is not None:
+            self.save_connection.set_max_workers(max_workers)
+
+    def get_bytes(self) -> Optional[bytes]:
+        if self.save_connection is not None:
+            return self.save_connection.get_bytes()
+        return None
+
     @property
     def faulty_objects(self) -> Dict[uuid.UUID, ArkGameObject]:
         if self.save_connection is not None:
@@ -142,7 +151,8 @@ class AsaSave:
 
     def add_name_to_name_table(self, name: str, id: Optional[int] = None):
         if self.save_connection is not None:
-            self.save_connection.add_name_to_name_table(name, id)
+            new_id = self.save_connection.add_name_to_name_table(name, id)
+            return new_id
 
     def get_parser_for_game_object(self, obj_uuid: uuid.UUID) -> Optional[ArkBinaryParser]:
         if self.game_obj_binaries is not None and obj_uuid in self.game_obj_binaries:

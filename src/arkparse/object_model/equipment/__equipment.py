@@ -3,6 +3,8 @@ import math
 from uuid import UUID
 import os
 
+from arkparse.api.player_api import PlayerApi
+from arkparse.ark_tribe import ArkTribe
 from arkparse.logging import ArkSaveLogger
 from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.parsing import ArkBinaryParser
@@ -21,6 +23,7 @@ class Equipment(InventoryItem):
     quality: int = ArkItemQuality.PRIMITIVE.value
     current_durability: float = 1.0
     class_name: str = "Equipment"
+    tribe: ArkTribe = None
 
     def __init_props__(self):
         super().__init_props__()
@@ -102,6 +105,13 @@ class Equipment(InventoryItem):
 
     def is_crafted(self) -> bool:
         return False if self.crafter is None else self.crafter.is_valid()
+    
+    def get_owner(self, player_api: "PlayerApi" = None) -> str:
+        container = self.save.get_container_of_inventory(self.owner_inv_uuid)
+        owner_id = container.get_property_value("TargetingTeam", None) if container is not None else None
+        self.tribe = player_api.get_tribe(owner_id) if owner_id is not None else None
+
+        return self.tribe if self.tribe is not None else None
 
     def set_quality_index(self, quality: ArkItemQuality):
         if self.quality == ArkItemQuality.PRIMITIVE.value:
@@ -157,7 +167,7 @@ class Equipment(InventoryItem):
         return cls(item.object.uuid, parser)
     
     def __str__(self):
-        return f" BP: {self.is_bp} - Quality: {ArkItemQuality(self.quality).name} - Rating: {self.rating:.2f} - Crafted: {self.is_crafted()}"
+        return f" BP: {self.is_bp} - Quality: {ArkItemQuality(self.quality).name} - Rating: {self.rating:.2f} - Crafted: {self.is_crafted()} - Tribe: {self.tribe.name if self.tribe is not None else 'Unknown'}"
 
     def to_json_obj(self):
         json_obj = super().to_json_obj()

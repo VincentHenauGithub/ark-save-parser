@@ -1,5 +1,8 @@
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Tuple
 from uuid import UUID
+import sys
+import threading
+from concurrent.futures import ThreadPoolExecutor
 
 from arkparse.saves.asa_save import AsaSave
 from arkparse.parsing import GameObjectReaderConfiguration
@@ -9,6 +12,16 @@ from arkparse.object_model.structures import Structure, StructureWithInventory
 from arkparse.parsing.struct.actor_transform import MapCoords
 from arkparse.enums.ark_map import ArkMap
 from arkparse.logging import ArkSaveLogger
+from arkparse.logging.ark_save_logger import mark_as_worker_thread
+
+
+def _is_parallel_enabled() -> bool:
+    if hasattr(sys, '_is_gil_enabled'):
+        return not sys._is_gil_enabled()
+    return False
+
+
+_PARALLEL_ENABLED = _is_parallel_enabled()
 
 SKIPPED_STRUCTURE_BPS = []
 
@@ -99,7 +112,50 @@ class StructureApi:
 
         return structure
 
-    def get_all(self, config: GameObjectReaderConfiguration = None, bypass_inventory: bool = True) -> Dict[UUID, Union[Structure, StructureWithInventory]]:
+    def _parse_structures_batch(self, to_parse: List[Tuple[UUID, ArkGameObject]], structures: Dict, bypass_inventory: bool, max_workers: int):
+        if _PARALLEL_ENABLED and max_workers > 1 and len(to_parse) > 0:
+            ArkSaveLogger.api_log(f"Parsing {len(to_parse)} structures with {max_workers} workers...")
+            save = self.save
+            actor_transforms = self.save.save_context.actor_transforms
+            _worker_initialized = threading.local()
+            error_count = [0]
+
+            def parse_single(item):
+                if not getattr(_worker_initialized, 'done', False):
+                    mark_as_worker_thread()
+                    _worker_initialized.done = True
+                key, obj = item
+                try:
+                    if obj.get_property_value("MyInventoryComponent") is not None:
+                        s = StructureWithInventory(obj.uuid, save, bypass_inventory=bypass_inventory)
+                    else:
+                        s = Structure(obj.uuid, save)
+                    if s is not None and obj.uuid in actor_transforms:
+                        s.set_actor_transform(actor_transforms[obj.uuid])
+                    return (key, obj.uuid, s, None)
+                except Exception as e:
+                    error_count[0] += 1
+                    if error_count[0] <= 3:
+                        ArkSaveLogger.error_log(f"Parallel structure parse error #{error_count[0]}: {type(e).__name__}: {e}")
+                    return (key, obj.uuid, None, str(e))
+
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                results = list(executor.map(parse_single, to_parse))
+
+            for key, uuid, structure, error in results:
+                if structure is not None:
+                    structures[uuid] = structure
+                    self.parsed_structures[uuid] = structure
+                elif error is not None:
+                    if not ArkSaveLogger._allow_invalid_objects:
+                        raise RuntimeError(f"Structure parse error for {uuid}: {error}")
+        else:
+            for key, obj in to_parse:
+                structure = self._parse_single_structure(obj, bypass_inventory)
+                if structure is not None:
+                    structures[obj.uuid] = structure
+
+    def get_all(self, config: GameObjectReaderConfiguration = None, bypass_inventory: bool = True, max_workers: int = 6) -> Dict[UUID, Union[Structure, StructureWithInventory]]:
 
         if self.retrieved_all and config is None:
             return self.parsed_structures
@@ -108,16 +164,29 @@ class StructureApi:
 
         structures = {}
 
-        ArkSaveLogger.api_log(f"Parsing structure objects into structure models, total objects to parse: {len(objects)}")
+        # Classify: cached vs to-parse
+        to_parse: List[Tuple[UUID, ArkGameObject]] = []
         for key, obj in objects.items():
-            obj : ArkGameObject = obj
             if obj is None:
                 print(f"Object is None for {key}")
                 continue
-            
-            structure = self._parse_single_structure(obj, bypass_inventory)
+            if obj.uuid in self.parsed_structures:
+                structures[obj.uuid] = self.parsed_structures[obj.uuid]
+            else:
+                to_parse.append((key, obj))
 
-            structures[obj.uuid] = structure
+        ArkSaveLogger.api_log(f"Parsing {len(to_parse)} structure objects ({len(structures)} cached)")
+
+        # Pre-cache UUID→class mappings to avoid SQLite lock contention during parallel inventory parsing
+        if not bypass_inventory and max_workers > 1 and _PARALLEL_ENABLED and len(to_parse) > 0:
+            self.save.save_connection.cache_all_classes()
+
+        self._parse_structures_batch(to_parse, structures, bypass_inventory, max_workers)
+
+        if config is None:
+            self.retrieved_all = True
+
+        return structures
 
         if config is None:
             self.retrieved_all = True

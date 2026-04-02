@@ -35,6 +35,15 @@ class Baby(Dino):
             return BabyStage.JUVENILE
         else:
             return BabyStage.ADOLESCENT
+        
+    def grow_up(self, percentage: float = 100.0):
+        if percentage < 0 or percentage > 100:
+            raise ValueError("Percentage must be between 0 and 100")
+        self.percentage_matured = percentage
+        self.stage = self.__get_stage()
+
+        self.binary.replace_float(self.object.find_property("BabyAge"), percentage / 100.0)
+        self.update_binary()
 
     @staticmethod
     def from_object(dino_obj: ArkGameObject, status_obj: ArkGameObject, baby: "Baby" = None):

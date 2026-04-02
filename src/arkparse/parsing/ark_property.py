@@ -64,6 +64,9 @@ def log_block(title: str):
 
 
 def log_property_read(key: str, vtype: ArkValueType, start_pos: int, data_size: int, value: Any, position: int) -> None:
+    # Fast path: check cached boolean directly (no method call overhead)
+    if not ArkSaveLogger._parser_log_enabled:
+        return
     ArkSaveLogger.parser_log(
         f"[property read: key={key}; type={vtype}; bin_pos={start_pos}; bin_size={data_size}; value={value}; index_pos={position}]"
     )

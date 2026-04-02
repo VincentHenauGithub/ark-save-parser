@@ -268,17 +268,29 @@ class DinoStats(ParsedObjectBase):
 
     def heal(self):
         prop = self.object.find_property("CurrentStatusValues", ArkStat.HEALTH.value)
-        if prop is not None:
+        if prop is not None and self.binary is not None:
             # Set health to a hugely high value, effectively healing the dino since it is capped at max health which is not directly retrievable
             self.binary.replace_float(prop, 999999999999999999999)
             self.update_binary()
 
     def feed(self):
         prop = self.object.find_property("CurrentStatusValues", ArkStat.FOOD.value)
-        if prop is not None:
+        if prop is not None and self.binary is not None:
             # Set food to a hugely high value, effectively feeding the dino since it is capped at max food which is not directly retrievable
             self.binary.replace_float(prop, 999999999999999999999)
             self.update_binary()
+
+    def wake_up(self):
+        prop = self.object.find_property("CurrentStatusValues", ArkStat.TORPIDITY.value)
+        if prop is not None:
+            # Set torpidity to 0, effectively waking up the dino
+            self.binary.replace_float(prop, 0)
+            self.update_binary()
+
+    def add_experience(self, amount: float):
+        current_exp = self.object.get_property_value("ExperiencePoints", 0.0)
+        new_exp = current_exp + amount
+        self.modify_experience(new_exp)
 
     def set_levels(self, levels: int, stat: ArkStat):
         prop = self.object.find_property("NumberOfLevelUpPointsApplied", stat.value)

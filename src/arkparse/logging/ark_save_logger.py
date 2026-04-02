@@ -1,5 +1,6 @@
 import logging
 import subprocess
+import threading
 from pathlib import Path
 from typing import TYPE_CHECKING
 from enum import Enum
@@ -8,6 +9,21 @@ if TYPE_CHECKING:
     from arkparse.parsing import ArkBinaryParser
 
 from arkparse.utils.tm_files import read_config_file, write_config_file, TEMP_FILES_DIR
+
+# Thread-local storage for thread-specific state
+_thread_local = threading.local()
+
+def _get_struct_path() -> list:
+    """Get the current thread's struct path (thread-safe)."""
+    if not hasattr(_thread_local, 'struct_path'):
+        _thread_local.struct_path = []
+    return _thread_local.struct_path
+
+
+def mark_as_worker_thread():
+    """Mark the current thread as a worker thread (used in parallel workers)."""
+    _thread_local.is_worker_thread = True
+
 
 class ArkSaveLogger:
     class LogTypes(Enum):
@@ -32,15 +48,29 @@ class ArkSaveLogger:
         BOLD = "\033[1m"
         RESET = "\033[0m"
 
+    # Legacy class-level attribute for backward compatibility (not thread-safe)
+    # Use _get_struct_path() for thread-safe access
     current_struct_path = []
     _allow_invalid_objects = None
+    _worker_logging_enabled = None  # Whether logging is enabled in worker threads
     _file = ""
     _byte_buffer = None
     _temp_file_path = TEMP_FILES_DIR
     _file_viewer_enabled = None
     _log_level_states = None
+    # Lock for thread-safe config initialization
+    _config_lock = threading.Lock()
+    # Cached boolean for fast parser_log checks (updated by __init_config and set_log_level)
+    _parser_log_enabled = False
 
     __LOG_CONFIG_FILE_NAME = "logger"
+
+    @staticmethod
+    def _is_log_enabled(log_type: "ArkSaveLogger.LogTypes") -> bool:
+        """Fast check if a log type is enabled (avoids expensive work when logging is off)."""
+        if ArkSaveLogger._log_level_states is None:
+            ArkSaveLogger.__init_config()
+        return ArkSaveLogger._log_level_states.get(log_type.value, False) or ArkSaveLogger._log_level_states["all"]
 
     @staticmethod
     def save_log(message: str):
@@ -48,10 +78,14 @@ class ArkSaveLogger:
 
     @staticmethod
     def parser_log(message: str):
+        # Fast path: check cached boolean directly (no method call overhead)
+        if not ArkSaveLogger._parser_log_enabled:
+            return
+        struct_path = _get_struct_path()
         struct_header = ""
         max = 15
         curr = 0
-        for struct in ArkSaveLogger.current_struct_path:
+        for struct in struct_path:
             struct_header += f"[{struct}]"
             curr += 1
             if curr >= max:
@@ -85,33 +119,52 @@ class ArkSaveLogger:
 
     @staticmethod
     def __init_config():
-        config = read_config_file(ArkSaveLogger.__LOG_CONFIG_FILE_NAME)
-        if config is None:
-            ArkSaveLogger._log_level_states = {
-                ArkSaveLogger.LogTypes.PARSER.value: False,
-                ArkSaveLogger.LogTypes.INFO.value: False,
-                ArkSaveLogger.LogTypes.API.value: False,
-                ArkSaveLogger.LogTypes.ERROR.value: False,
-                ArkSaveLogger.LogTypes.DEBUG.value: False,
-                ArkSaveLogger.LogTypes.WARNING.value: False,
-                ArkSaveLogger.LogTypes.OBJECTS.value: False,
-                ArkSaveLogger.LogTypes.SAVE.value: False,
-                "all": False
-            }
-            ArkSaveLogger._file_viewer_enabled = True
-            config = {
-                "levels": ArkSaveLogger._log_level_states,
-                "fve": False,
-                "allow_invalid": True
-            }
-            write_config_file(ArkSaveLogger.__LOG_CONFIG_FILE_NAME, config)
-        else:
-            ArkSaveLogger._log_level_states = config["levels"]
-            ArkSaveLogger._file_viewer_enabled = config["fve"]
-            ArkSaveLogger._allow_invalid_objects = config["allow_invalid"]
+        # Thread-safe config initialization
+        with ArkSaveLogger._config_lock:
+            # Double-check after acquiring lock
+            if ArkSaveLogger._log_level_states is not None:
+                return
+            
+            config = read_config_file(ArkSaveLogger.__LOG_CONFIG_FILE_NAME)
+            if config is None:
+                ArkSaveLogger._log_level_states = {
+                    ArkSaveLogger.LogTypes.PARSER.value: False,
+                    ArkSaveLogger.LogTypes.INFO.value: False,
+                    ArkSaveLogger.LogTypes.API.value: False,
+                    ArkSaveLogger.LogTypes.ERROR.value: False,
+                    ArkSaveLogger.LogTypes.DEBUG.value: False,
+                    ArkSaveLogger.LogTypes.WARNING.value: False,
+                    ArkSaveLogger.LogTypes.OBJECTS.value: False,
+                    ArkSaveLogger.LogTypes.SAVE.value: False,
+                    "all": False
+                }
+                ArkSaveLogger._file_viewer_enabled = True
+                ArkSaveLogger._worker_logging_enabled = False
+                config = {
+                    "levels": ArkSaveLogger._log_level_states,
+                    "fve": False,
+                    "allow_invalid": True,
+                    "worker_logging": False
+                }
+                write_config_file(ArkSaveLogger.__LOG_CONFIG_FILE_NAME, config)
+            else:
+                ArkSaveLogger._log_level_states = config["levels"]
+                ArkSaveLogger._file_viewer_enabled = config["fve"]
+                ArkSaveLogger._allow_invalid_objects = config["allow_invalid"]
+                ArkSaveLogger._worker_logging_enabled = config.get("worker_logging", False)
+            # Update cached parser_log state for fast checks
+            ArkSaveLogger._parser_log_enabled = (
+                ArkSaveLogger._log_level_states.get(ArkSaveLogger.LogTypes.PARSER.value, False) 
+                or ArkSaveLogger._log_level_states.get("all", False)
+            )
 
     @staticmethod
     def __log(message: str, log_type: "ArkSaveLogger.LogTypes", color: "ArkSaveLogger.LogColors" = None):
+        # Fast path: skip logging in worker threads when worker_logging is disabled (default)
+        # Inline check avoids function call overhead - similar to parser_log optimization
+        if not ArkSaveLogger._worker_logging_enabled and getattr(_thread_local, 'is_worker_thread', False):
+            return
+            
         if ArkSaveLogger._log_level_states is None:
             ArkSaveLogger.__init_config()
         
@@ -130,6 +183,13 @@ class ArkSaveLogger:
         if ArkSaveLogger._log_level_states is None:
             ArkSaveLogger.__init_config()
         ArkSaveLogger._log_level_states[log_type.value] = state
+        
+        # Update cached parser_log state if relevant log type changed
+        if log_type == ArkSaveLogger.LogTypes.PARSER or log_type == ArkSaveLogger.LogTypes.ALL:
+            ArkSaveLogger._parser_log_enabled = (
+                ArkSaveLogger._log_level_states.get(ArkSaveLogger.LogTypes.PARSER.value, False) 
+                or ArkSaveLogger._log_level_states.get("all", False)
+            )
 
         if set_globally:
             global_config = read_config_file(ArkSaveLogger.__LOG_CONFIG_FILE_NAME)
@@ -146,7 +206,7 @@ class ArkSaveLogger:
 
     @staticmethod
     def enter_struct(struct_name: str):
-        ArkSaveLogger.current_struct_path.append(struct_name)
+        _get_struct_path().append(struct_name)
 
     @staticmethod
     def allow_invalid_objects(state: bool = True, set_globally: bool = False):
@@ -161,9 +221,27 @@ class ArkSaveLogger:
             write_config_file(ArkSaveLogger.__LOG_CONFIG_FILE_NAME, global_config)
 
     @staticmethod
+    def enable_worker_logging(state: bool = True, set_globally: bool = False):
+        """Enable or disable logging in parallel worker threads.
+        
+        By default, logging is disabled in worker threads for performance.
+        Enable this to see logs from parallel parsing workers.
+        """
+        if ArkSaveLogger._worker_logging_enabled is None:
+            ArkSaveLogger.__init_config()
+
+        ArkSaveLogger._worker_logging_enabled = state
+
+        if set_globally:
+            global_config = read_config_file(ArkSaveLogger.__LOG_CONFIG_FILE_NAME)
+            global_config["worker_logging"] = state
+            write_config_file(ArkSaveLogger.__LOG_CONFIG_FILE_NAME, global_config)
+
+    @staticmethod
     def exit_struct():
-        if len(ArkSaveLogger.current_struct_path) > 0:
-            ArkSaveLogger.current_struct_path.pop()
+        struct_path = _get_struct_path()
+        if len(struct_path) > 0:
+            struct_path.pop()
 
     @staticmethod
     def enable_hex_view(state: bool = True, set_globally: bool = False):
@@ -175,6 +253,9 @@ class ArkSaveLogger:
 
     @staticmethod
     def reset_struct_path():
+        struct_path = _get_struct_path()
+        struct_path.clear()
+        # Also clear legacy class-level attribute for backward compatibility
         ArkSaveLogger.current_struct_path = []
 
     @staticmethod

@@ -18,6 +18,23 @@ def set_print_depth(depth: int) -> None:
 @dataclass
 class ArkPropertyContainer:
     properties: List['ArkProperty'] = field(default_factory=list)
+    # Property name index for O(1) lookups - only built for large containers
+    _prop_index: Optional[Dict[str, List['ArkProperty']]] = field(default=None, repr=False)
+    # List of properties that have nested containers (avoids isinstance checks)
+    _nested_containers: Optional[List['ArkProperty']] = field(default=None, repr=False)
+
+    def _build_index(self) -> None:
+        """Build property name index for fast lookups (only if >= 5 properties)."""
+        if len(self.properties) >= 5:  # Only worth it for containers with many properties
+            self._prop_index = {}
+            self._nested_containers = []
+            for prop in self.properties:
+                if prop.name not in self._prop_index:
+                    self._prop_index[prop.name] = []
+                self._prop_index[prop.name].append(prop)
+                # Track properties with nested containers
+                if isinstance(prop.value, ArkPropertyContainer):
+                    self._nested_containers.append(prop)
 
     def read_properties(self, byte_buffer: "ArkBinaryParser", propertyClass: Type['ArkProperty'], next_object_index: int) -> None:
         last_property_position = byte_buffer.get_position()
@@ -42,6 +59,8 @@ class ArkPropertyContainer:
             # byte_buffer.find_names(type=2)
             raise e
         
+        # Build index after reading all properties
+        self._build_index()
         ArkSaveLogger.parser_log("Finished reading object properties")
 
     def print_properties(self):
@@ -68,9 +87,28 @@ class ArkPropertyContainer:
                 ArkSaveLogger.info_log(f"Property ({property.type}) ({property.position}): {property.name} = {property.value}")
 
     def has_property(self, name: str) -> bool:
+        # Use index if available (post-read_properties), otherwise linear search
+        if self._prop_index is not None:
+            return name in self._prop_index
         return any(property.name == name for property in self.properties)
 
     def find_property(self, name: str, position: int = None) -> Optional['ArkProperty[T]']:
+        # Fast path: use index if available
+        if self._prop_index is not None:
+            if name in self._prop_index:
+                for prop in self._prop_index[name]:
+                    if position is None or prop.position == position:
+                        return prop
+            # Only search nested containers if not found at top level
+            # Use pre-computed list to avoid isinstance checks
+            if self._nested_containers:
+                for property in self._nested_containers:
+                    sub_property = property.value.find_property(name, position)
+                    if sub_property:
+                        return sub_property
+            return None
+        
+        # Fallback: linear search (for containers created without read_properties)
         for property in self.properties:
             if property.name == name and (position is None or property.position == position):
                 return property
@@ -81,18 +119,36 @@ class ArkPropertyContainer:
         return None
     
     def find_all_properties_of_name(self, name: str) -> List['ArkProperty[T]']:
-        props = []
+        # Use index if available
+        if self._prop_index is not None:
+            props = list(self._prop_index.get(name, []))
+            # Also search nested containers using pre-computed list
+            if self._nested_containers:
+                for property in self._nested_containers:
+                    sub_props = property.value.find_all_properties_of_name(name)
+                    if sub_props:
+                        props.extend(sub_props)
+            return props
+        
+        # Fallback: linear search
+        props = [prop for prop in self.properties if prop.name == name]
         for property in self.properties:
-            if property.name == name:
-                props.append(property)
-            elif isinstance(property.value, ArkPropertyContainer):
-                sub_property = property.value.find_all_properties_of_name(name)
-                if sub_property:
-                    props.extend(sub_property)
+            if isinstance(property.value, ArkPropertyContainer):
+                sub_props = property.value.find_all_properties_of_name(name)
+                if sub_props:
+                    props.extend(sub_props)
 
         return props
 
     def find_property_by_position(self, name: str, position: int) -> Optional['ArkProperty[T]']:
+        # Use index if available
+        if self._prop_index is not None and name in self._prop_index:
+            for prop in self._prop_index[name]:
+                if prop.position == position:
+                    return prop
+            return None
+        
+        # Fallback: linear search
         for property in self.properties:
             if property.name == name and property.position == position:
                 return property

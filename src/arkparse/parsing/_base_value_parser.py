@@ -5,6 +5,27 @@ from uuid import UUID
 from ._binary_reader_base import BinaryReaderBase
 from arkparse.logging import ArkSaveLogger
 
+# Try to import fast Rust implementation for read_name
+try:
+    from arkparse_fast import read_name_id_at as _read_name_id_at_fast
+    _HAS_FAST_READ_NAME = True
+except ImportError:
+    _HAS_FAST_READ_NAME = False
+    _read_name_id_at_fast = None
+
+# Pre-compile struct formats for hot paths
+_STRUCT_INT = struct.Struct('<i')
+_STRUCT_UINT32 = struct.Struct('<I')
+_STRUCT_NAME_PAIR = struct.Struct('<Ii')  # name_id (uint32) + always_zero (int32)
+
+def _fast_uuid_from_bytes(b: bytes) -> UUID:
+    """Create UUID from bytes, bypassing __init__ validation for speed."""
+    # Directly set the 'int' slot, avoiding __init__ overhead
+    # This is ~3-4x faster than UUID(bytes=b)
+    u = object.__new__(UUID)
+    object.__setattr__(u, 'int', int.from_bytes(b, 'big'))
+    return u
+    
 class BaseValueParser(BinaryReaderBase):
     def __init__(self, data: bytes, save_context=None):
         super().__init__(data, save_context)
@@ -12,14 +33,14 @@ class BaseValueParser(BinaryReaderBase):
     def read_int(self) -> int:
         if self.position + 4 > len(self.byte_buffer):
             raise IndexError("Buffer underflow: not enough bytes to read an int.")
-        result = struct.unpack_from('<i', self.byte_buffer, self.position)[0]
+        result = _STRUCT_INT.unpack_from(self.byte_buffer, self.position)[0]
         self.position += 4
         return result
 
     def read_uint32(self) -> int:
         if self.position + 4 > len(self.byte_buffer):
             raise IndexError("Buffer underflow: not enough bytes to read an unsigned int.")
-        result = struct.unpack_from('<I', self.byte_buffer, self.position)[0]
+        result = _STRUCT_UINT32.unpack_from(self.byte_buffer, self.position)[0]
         self.position += 4
         return result
 
@@ -128,7 +149,7 @@ class BaseValueParser(BinaryReaderBase):
         return result
 
     def read_uuid(self) -> UUID:
-        return UUID(bytes=self.read_bytes(16))
+        return _fast_uuid_from_bytes(self.read_bytes(16))
     
     def read_uuid_as_string(self) -> str:
         return str(self.read_uuid())
@@ -167,7 +188,42 @@ class BaseValueParser(BinaryReaderBase):
         if not self.save_context.has_name_table():
             return self.read_string()
 
-        pos = self.position    
+        pos = self.position
+        
+        # Fast path: use Rust to read name_id and always_zero in one call
+        if _HAS_FAST_READ_NAME and not is_peek:
+            try:
+                name_id, new_pos = _read_name_id_at_fast(self.byte_buffer, pos)
+                name = self.save_context.get_name(name_id)
+                
+                if name is None:
+                    if default is not None:
+                        self.position = new_pos
+                        return default
+                    elif self.save_context.generate_unknown:
+                        name = f"UnknownName_{name_id:08X}"
+                        ArkSaveLogger.warning_log(f"Name with id {name_id} not found, generating unknown name: {name}")
+                        self.position = new_pos
+                        return name
+                    else:
+                        ArkSaveLogger.open_hex_view()
+                        raise ValueError(f"Name is None, for name index {hex(name_id)} at position {pos}, generate_unknown is {self.save_context.generate_unknown}")
+                
+                # Handle NPCZoneVolume special case
+                # NOTE: For NPCZoneVolume names, the "always_zero" field is actually the hex suffix,
+                # NOT a zero. The Python fallback returns BEFORE reading always_zero.
+                # So we must NOT use new_pos (which skips always_zero), but pos+4 instead.
+                if "NPCZoneVolume" in name or "NPCCountVolume" in name:
+                    self.position = pos + 4  # Only skip name_id, the next 4 bytes are the hex suffix
+                    return name + "_" + hex(self.read_int())
+                
+                self.position = new_pos
+                return name
+            except (IndexError, ValueError):
+                # Fall back to Python implementation on error
+                pass
+        
+        # Original Python implementation (fallback or for is_peek)
         name_id = self.read_uint32()
         name = self.save_context.get_name(name_id)
         # print(f"Reading name with id {name_id} at position {self.position}, name: {name}")

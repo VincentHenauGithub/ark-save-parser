@@ -23,6 +23,7 @@ class SaveContext:
         self.npc_zone_volumes: List["NpcZoneVolume"] = []
         self.all_uuids: List[uuid.UUID] = []
         self.generate_unknown: bool = False
+        self._has_name_table: bool = False  # Cached flag for fast lookup
         self.current_time = 0
         self.current_day = 0
 
@@ -30,7 +31,12 @@ class SaveContext:
         return self.actor_transforms.get(uuid_)
 
     def has_name_table(self) -> bool:
-        return (self.names is not None and len(self.names) != 0) or self.constant_name_table is not None 
+        return self._has_name_table
+    
+    def set_names(self, names: Dict[int, str]) -> None:
+        """Set the name table and update cached flag."""
+        self.names = names
+        self._has_name_table = bool(names) or self.constant_name_table is not None 
 
     def get_name(self, key: int) -> Optional[str]:
         if key in self.names:
@@ -45,6 +51,7 @@ class SaveContext:
 
     def use_constant_name_table(self, constant_name_table: Dict[int, str]):
         self.constant_name_table = constant_name_table
+        self._has_name_table = bool(self.names) or constant_name_table is not None
 
     def is_read_names_as_strings(self) -> bool:
         return self.save_version >= 13

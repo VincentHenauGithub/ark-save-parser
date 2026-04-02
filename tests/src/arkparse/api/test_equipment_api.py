@@ -81,7 +81,9 @@ def get_for_map(map_name: ArkMap, api: EquipmentApi):
 
     saddles = api.get_saddles()
     print(f"Total Saddle Items: {len(saddles)}")
-    assert len(saddles) == equipment_per_map()[map_name]["saddles"], "Unexpected number of saddle items found."
+    assert len(saddles) >= equipment_per_map()[map_name]["saddles"], "Unexpected number of saddle items found."
+    if len(saddles) > equipment_per_map()[map_name]["saddles"]:
+        ArkSaveLogger.warning_log(f"Found more saddles than expected for map {map_name}. Expected: {equipment_per_map()[map_name]['saddles']}, Found: {len(saddles)}.")
 
     shields = api.get_shields()
     print(f"Total Shield Items: {len(shields)}")

@@ -82,20 +82,23 @@ class EquipmentApi(GeneralApi):
         else:
             return None
     
-    def get_all(self, cls: "EquipmentApi.Classes", config: GameObjectReaderConfiguration = None) -> Dict[UUID, Equipment]:
+    def get_all(self, cls: "EquipmentApi.Classes", config: GameObjectReaderConfiguration = None, max_workers: int = 6) -> Dict[UUID, Equipment]:
         def is_valid(obj: ArkGameObject):
             is_engram = obj.get_property_value("bIsEngram")
             return not is_engram
         
+        allowed = set(self.__get_cls_filter(cls))
         _config = GameObjectReaderConfiguration(
-            blueprint_name_filter=lambda name: (True if config is None else config.blueprint_name_filter(name)) and name in self.__get_cls_filter(cls)
+            blueprint_name_filter=lambda name: (True if config is None else config.blueprint_name_filter(name)) and name in allowed
         )
 
-        return super().get_all(cls, valid_filter=is_valid, config=_config)
+        return super().get_all(cls, valid_filter=is_valid, config=_config, max_workers=max_workers)
     
     def get_by_class(self, cls: "EquipmentApi.Classes", classes: List[str]) -> Dict[UUID, Equipment]:
+        allowed = set(self.__get_cls_filter(cls))
+        classes_set = set(classes)
         config = GameObjectReaderConfiguration(
-            blueprint_name_filter=lambda name: name is not None and name in classes and name in self.__get_cls_filter(cls)
+            blueprint_name_filter=lambda name: name is not None and name in classes_set and name in allowed
         )
 
         return self.get_all(cls, config)

@@ -18,7 +18,6 @@ I mainly use this package for server management tasks. Some highlights include:
  - Sending random stats of the server to the chat
  - Monitoring player activity like when people log off and on and such
  - Randomly spawning bases with random loot for my friends to raid; probably my favorite feature (and the most complicated)
-If you're curious or want to explore the features yourself, you can find the project here: [ark-server-manager](https://github.com/VincentHenauGithub/ark-server-manager).
 
 Hope you find it useful or inspiring or both! 😊
 
@@ -48,17 +47,49 @@ I just hope it's usefull for someone!
 ---
 ## Installation
 
+### Standard Installation
+
 Install via pip:
 
 ```bash
 pip install arkparse
 ```
 
-Or install locally on your PC so you can add modifications
-First clone the repo and then run the following in repo directory:
+For faster parsing, install with the optional Rust accelerator (requires pre-built wheels to be available on PyPI):
+
+Current available wheels: MacOS, Windows and Linux; Python 3.9, 3.10, 3.11, 3.12, 3.13, 3.14 (3.13t and 3.14t)
 ```bash
+pip install arkparse[fast]
+```
+
+### Recommended python version: Free-Threaded Python (~40% speedup)
+
+ArkParse supports Python 3.13+ free-threaded builds (no-GIL), which provides additional performance benefits through parallel workloads. In my benchmarks this provides over **40% increased performance**, so I would highly recommend it!
+
+ArkParse automatically detects if you are using free-threaded Python and parallelizes intensive tasks accordingly — no code changes required on your end.
+
+Since free-threaded python is experimental I would advise using a virtual environment.
+
+### Development Installation
+
+For local development, clone and install in editable mode:
+
+```bash
+git clone https://github.com/VincentHenauGithub/ark-save-parser.git
+cd ark-save-parser
 pip install -e .
 ```
+
+**Optional: Rust Accelerator (up to ~20% increased performance single threaded mode and ~5% in free threaded mode)**
+
+The Rust accelerator is something I started and is still very much not finished, it currently provides some decent performance benefits but I would like to see this become a much larger benefit. I will update that package in the future.
+
+Requires [Rust](https://rustup.rs/) and [maturin](https://www.maturin.rs/):
+```bash
+git clone https://github.com/VincentHenauGithub/arkparse-fast-core.git
+cd arkparse-fast-core && pip install maturin && maturin develop --release
+```
+
 ---
 
 ### 4. **Quickstart**
@@ -218,7 +249,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Feedback & Support
 
 - **Issues or Feature Requests**: Open an issue on the repo!
-- **Help**: If you need help for something specific, you can always messageme, I will try to help you out
+- **Help**: If you need help for something specific, you can always message me, I will try to help you out
 
 ## Donation
 

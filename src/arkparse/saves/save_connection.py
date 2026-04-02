@@ -1,14 +1,44 @@
 import sqlite3
+import sys
 import uuid
+from uuid import UUID
 from pathlib import Path
-from typing import Collection, Optional, Dict
+from typing import Collection, Optional, Dict, List, Tuple
+from concurrent.futures import ThreadPoolExecutor
+import threading
 
 from arkparse.logging import ArkSaveLogger
+from arkparse.logging.ark_save_logger import mark_as_worker_thread
 from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.parsing import ArkBinaryParser, GameObjectReaderConfiguration
+from arkparse.parsing._fast_shim import contains_any_pattern
 from arkparse.saves.header_location import HeaderLocation
 from arkparse.saves.save_context import SaveContext
 from arkparse.utils import TEMP_FILES_DIR
+
+
+def _fast_uuid_from_bytes(b: bytes) -> UUID:
+    """Create UUID from bytes, bypassing __init__ validation for speed."""
+    u = object.__new__(UUID)
+    object.__setattr__(u, 'int', int.from_bytes(b, 'big'))
+    return u
+
+
+# Detect if GIL is disabled (free-threaded Python)
+def _is_parallel_enabled() -> bool:
+    """Check if parallel parsing should be enabled (GIL is disabled)."""
+    if hasattr(sys, '_is_gil_enabled'):
+        return not sys._is_gil_enabled()
+    return False
+
+
+_PARALLEL_ENABLED = _is_parallel_enabled()
+
+
+def _parse_single_object(obj_uuid: UUID, class_name: str, binary_data: bytes, save_context: SaveContext) -> Optional[ArkGameObject]:
+    """Parse a single game object. Thread-safe for use in parallel parsing."""
+    byte_buffer = ArkBinaryParser(binary_data, save_context)
+    return SaveConnection.parse_as_predefined_object(obj_uuid, class_name, byte_buffer)
 
 class SaveConnection:
 
@@ -18,14 +48,17 @@ class SaveConnection:
 
     nr_parsed = 0
     faulty_objects = 0
-
     failed_parses: Dict[str, int] = {}
 
     def __init__(self, save_context: SaveContext, path: Path = None, contents: bytes = None, read_only: bool = False):
+        # Thread lock for database operations
+        self._db_lock = threading.Lock()
+        self._max_workers = 3  # Default max workers for parallel parsing
 
         # create temp copy of file
         temp_save_path = TEMP_FILES_DIR / (str(uuid.uuid4()) + ".ark")
         self.parsed_objects: Dict[uuid.UUID, ArkGameObject] = {}
+        self._class_cache: Dict[uuid.UUID, str] = {}
 
         if path is not None:
             with open(path, 'rb') as file:
@@ -43,17 +76,35 @@ class SaveConnection:
         self.save_context = save_context
 
         conn_str = f"file:{temp_save_path}?mode={'ro' if read_only else 'rw'}"
-        self.connection = sqlite3.connect(conn_str, uri=True)
+        # check_same_thread=False allows connection to be used from multiple threads
+        # This is safe for read operations in parallel parsing
+        self.connection = sqlite3.connect(conn_str, uri=True, check_same_thread=False)
 
         self.list_all_items_in_db()
         self.read_header()
+
+    def set_max_workers(self, max_workers: int):
+        """Set maximum workers for parallel parsing. Only applicable if GIL is disabled."""
+        if not _PARALLEL_ENABLED:
+            ArkSaveLogger.warning_log("Parallel parsing is not enabled (GIL is active), set_max_workers has no effect.")
+            return
+        self._max_workers = max_workers
 
     def __del__(self):
         self.close()
 
         # clean up temp file
         if self.sqlite_db is not None and self.sqlite_db.exists():
-            self.sqlite_db.unlink()
+            try:
+                self.sqlite_db.unlink()
+            except PermissionError:
+                pass  # File still locked by SQLite, will be cleaned up later
+
+    def get_bytes(self) -> Optional[bytes]:
+        if self.sqlite_db is not None and self.sqlite_db.exists():
+            with open(self.sqlite_db, 'rb') as file:
+                return file.read()
+        return None
 
     def read_table(self, header_data: 'ArkBinaryParser') -> Dict[int, str]:
         count = header_data.read_int()
@@ -100,7 +151,7 @@ class SaveConnection:
 
         # check_uint64(header_data, 0)
         header_data.set_position(name_table_offset)
-        self.save_context.names = self.read_table(header_data)
+        self.save_context.set_names(self.read_table(header_data))
 
     def read_actor_locations(self):
         actor_transforms = self.get_custom_value("ActorTransforms")
@@ -114,11 +165,34 @@ class SaveConnection:
     def close(self):
         if self.connection:
             self.connection.close()
+            self.connection = None
+
+    def cache_all_classes(self):
+        """Bulk pre-cache UUID -> class_name for all objects in DB.
+        Call before parallel parsing to avoid SQLite lock contention."""
+        if self._class_cache:
+            return
+        query = "SELECT key, value FROM game"
+        with self._db_lock:
+            cursor = self.connection.cursor()
+            cursor.execute(query)
+            rows = cursor.fetchall()
+        for key_bytes, value_bytes in rows:
+            obj_uuid = _fast_uuid_from_bytes(key_bytes)
+            try:
+                reader = ArkBinaryParser(value_bytes, self.save_context)
+                class_name, _ = ArkGameObject.read_name(obj_uuid, reader)
+                self._class_cache[obj_uuid] = class_name
+            except Exception:
+                pass
 
     def get_class_of_uuid(self, obj_uuid: uuid.UUID) -> Optional[str]:
+        if obj_uuid in self._class_cache:
+            return self._class_cache[obj_uuid]
         bin = self.get_game_obj_binary(obj_uuid)
         reader = ArkBinaryParser(bin, self.save_context)
         class_name, string_name = ArkGameObject.read_name(obj_uuid, reader)
+        self._class_cache[obj_uuid] = class_name
         return class_name
 
     def list_all_items_in_db(self):
@@ -144,7 +218,8 @@ class SaveConnection:
         header_data.set_position(self.name_offset)
         header_data.replace_bytes(self.name_count.to_bytes(4, byteorder="little"))
         header_data.set_position(self.last_name_end)
-        header_data.insert_uint32(self.save_context.add_new_name(name, id))
+        new_id = self.save_context.add_new_name(name, id)
+        header_data.insert_uint32(new_id)
         header_data.insert_string(name)
         self.last_name_end = header_data.position
 
@@ -153,6 +228,8 @@ class SaveConnection:
         with self.connection as conn:
             conn.execute(query, (header_data.byte_buffer,))
             conn.commit()
+
+        return new_id
 
     def find_value_in_game_table_objects(self, value: bytes):
         query = "SELECT key, value FROM game"
@@ -300,8 +377,11 @@ class SaveConnection:
 
     def store_db(self, path: Path):
         path.parent.mkdir(parents=True, exist_ok=True)
-        with sqlite3.connect(path) as new_conn:
+        new_conn = sqlite3.connect(path)
+        try:
             self.connection.backup(new_conn)
+        finally:
+            new_conn.close()
 
         print(f"Database successfully backed up to {path}")
 
@@ -337,9 +417,10 @@ class SaveConnection:
 
     def get_game_obj_binary(self, obj_uuid: uuid.UUID) -> Optional[bytes]:
         query = "SELECT value FROM game WHERE key = ?"
-        cursor = self.connection.cursor()
-        cursor.execute(query, (SaveConnection.uuid_to_byte_array(obj_uuid),))
-        row = cursor.fetchone()
+        with self._db_lock:
+            cursor = self.connection.cursor()
+            cursor.execute(query, (SaveConnection.uuid_to_byte_array(obj_uuid),))
+            row = cursor.fetchone()
         if not row:
             raise ValueError(f"Object with UUID {obj_uuid} not found in database")
 
@@ -352,10 +433,17 @@ class SaveConnection:
         return ArkBinaryParser(binary, self.save_context)
 
     def is_in_db(self, obj_uuid: uuid.UUID) -> bool:
+        # Check caches first to avoid SQLite lock contention
+        if obj_uuid in self.parsed_objects:
+            return True
+        if obj_uuid in self._class_cache:
+            return True
         query = "SELECT key FROM game WHERE key = ?"
-        cursor = self.connection.cursor()
-        cursor.execute(query, (SaveConnection.uuid_to_byte_array(obj_uuid),))
-        return cursor.fetchone() is not None
+        with self._db_lock:
+            cursor = self.connection.cursor()
+            cursor.execute(query, (SaveConnection.uuid_to_byte_array(obj_uuid),))
+            result = cursor.fetchone() is not None
+        return result
 
     def get_game_object_by_id(self, obj_uuid: uuid.UUID, reparse: bool = False) -> Optional['ArkGameObject']:
         if obj_uuid in self.parsed_objects and not reparse:
@@ -375,7 +463,6 @@ class SaveConnection:
     def get_game_objects(self, reader_config: GameObjectReaderConfiguration = GameObjectReaderConfiguration()) -> Dict[uuid.UUID, 'ArkGameObject']:
         query = "SELECT key, value FROM game"
         game_objects = {}
-        row_index = 0
         objects = []
         prop_ids = []
 
@@ -386,68 +473,92 @@ class SaveConnection:
 
         ArkSaveLogger.enter_struct("GameObjects")
 
+        # Collect items from SQLite (single-threaded due to SQLite constraints)
+        items_to_parse: List[Tuple[UUID, str, bytes]] = []
+        
         with self.connection as conn:   
             cursor = conn.execute(query)
             for row in cursor:
-                if row_index < 0:
-                    row_index += 1
-                    self.nr_parsed += 1
-                    continue
-
                 obj_uuid = self.byte_array_to_uuid(row[0])
+                binary_data = row[1]
                 self.save_context.all_uuids.append(obj_uuid)
+                
                 if reader_config.uuid_filter and not reader_config.uuid_filter(obj_uuid):
-                    ArkSaveLogger.save_log("Skipping object %s", obj_uuid)
-                    ArkSaveLogger.exit_struct()
                     continue
 
-                byte_buffer = ArkBinaryParser(row[1], self.save_context)
-                ArkSaveLogger.set_file(byte_buffer, "game_object.bin")
-                class_name, string_name =  ArkGameObject.read_name(obj_uuid, byte_buffer)
-                ArkSaveLogger.enter_struct(class_name)
+                byte_buffer = ArkBinaryParser(binary_data, self.save_context)
+                class_name, _ = ArkGameObject.read_name(obj_uuid, byte_buffer)
 
                 if reader_config.blueprint_name_filter and not reader_config.blueprint_name_filter(class_name):
-                    ArkSaveLogger.exit_struct()
                     continue
 
                 if SaveConnection.failed_parses.get(class_name, 0) >= 5:
                     if SaveConnection.failed_parses[class_name] == 5:
                         ArkSaveLogger.warning_log(f"Skipping parsing of class {class_name} due to previous errors")
                     SaveConnection.failed_parses[class_name] += 1
-                    ArkSaveLogger.exit_struct()
                     self.faulty_objects += 1
                     continue
 
                 if class_name not in objects:
                     objects.append(class_name)
                 
-                if obj_uuid not in self.parsed_objects.keys():
-                    ark_game_object = None
-                    found = False
-                    for pid in prop_ids:
-                        if byte_buffer.find_byte_sequence(pid, adjust_offset=0):
-                            found = True
-
-                    if found or len(prop_ids) == 0:
-                        ark_game_object = self.parse_as_predefined_object(obj_uuid, class_name, byte_buffer)
-
-                        if ark_game_object:
-                            game_objects[obj_uuid] = ark_game_object
-                            self.parsed_objects[obj_uuid] = ark_game_object
-
-                            self.nr_parsed += 1
-                            if self.nr_parsed % 25000 == 0:
-                                ArkSaveLogger.save_log(f"Nr parsed: {self.nr_parsed}")
-                        else:
-                            self.faulty_objects += 1
-                else:
-                    found = False or (len(prop_ids) == 0)
+                if obj_uuid in self.parsed_objects:
+                    found = len(prop_ids) == 0
                     for prop in reader_config.property_names:
                         if self.parsed_objects[obj_uuid].has_property(prop):
                             found = True
-
+                            break
                     if found:
                         game_objects[obj_uuid] = self.parsed_objects[obj_uuid]
+                    continue
+                
+                found = len(prop_ids) == 0 or contains_any_pattern(binary_data, prop_ids)
+                if found:
+                    items_to_parse.append((obj_uuid, class_name, binary_data))
+
+        ArkSaveLogger.exit_struct()
+
+        # Parse objects - parallel when GIL disabled, sequential otherwise
+        if items_to_parse:
+            if _PARALLEL_ENABLED and self._max_workers > 1:
+                # Parallel parsing with _max_workers (optimal for free-threaded Python)
+                ArkSaveLogger.save_log(f"Parsing {len(items_to_parse)} objects with {self._max_workers} workers...")
+                ctx = self.save_context
+                _worker_initialized = threading.local()
+                
+                def parse_item(item: Tuple[UUID, str, bytes]) -> Tuple[UUID, Optional[ArkGameObject]]:
+                    # Mark this thread as a worker (once per thread)
+                    if not getattr(_worker_initialized, 'done', False):
+                        mark_as_worker_thread()
+                        _worker_initialized.done = True
+                    obj_uuid, class_name, binary_data = item
+                    obj = _parse_single_object(obj_uuid, class_name, binary_data, ctx)
+                    return obj_uuid, obj
+                
+                with ThreadPoolExecutor(max_workers=self._max_workers) as executor:
+                    results = list(executor.map(parse_item, items_to_parse))
+                
+                for obj_uuid, obj in results:
+                    if obj:
+                        game_objects[obj_uuid] = obj
+                        self.parsed_objects[obj_uuid] = obj
+                        self.nr_parsed += 1
+                    else:
+                        self.faulty_objects += 1
+            else:
+                # Sequential parsing (GIL enabled)
+                for obj_uuid, class_name, binary_data in items_to_parse:
+                    byte_buffer = ArkBinaryParser(binary_data, self.save_context)
+                    ark_game_object = self.parse_as_predefined_object(obj_uuid, class_name, byte_buffer)
+                    
+                    if ark_game_object:
+                        game_objects[obj_uuid] = ark_game_object
+                        self.parsed_objects[obj_uuid] = ark_game_object
+                        self.nr_parsed += 1
+                        if self.nr_parsed % 25000 == 0:
+                            ArkSaveLogger.save_log(f"Nr parsed: {self.nr_parsed}")
+                    else:
+                        self.faulty_objects += 1
         
         if self.faulty_objects > 0:
             ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.ERROR, True)
@@ -475,7 +586,7 @@ class SaveConnection:
 
     @staticmethod
     def byte_array_to_uuid(byte_array: bytes) -> uuid.UUID:
-        return uuid.UUID(bytes=byte_array)
+        return _fast_uuid_from_bytes(byte_array)
 
     @staticmethod
     def uuid_to_byte_array(obj_uuid: uuid.UUID) -> bytes:
@@ -498,6 +609,8 @@ class SaveConnection:
             else:
                 byte_buffer.structured_print(to_default_file=True)
                 ArkSaveLogger.warning_log(f"Error parsing non-standard object of type {class_name}")
+
+                # input("Press Enter to continue...")
 
             SaveConnection.failed_parses[class_name] = SaveConnection.failed_parses.get(class_name, 0) + 1
             ArkSaveLogger.warning_log(f"Failed parses for this class: {SaveConnection.failed_parses[class_name]}")

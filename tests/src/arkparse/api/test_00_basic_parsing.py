@@ -114,7 +114,7 @@ def retrieve_with_api(save: AsaSave, map_name: ArkMap, objects_per_map: dict):
     print(f"Retrieved {len(objects)} objects from {map_name.name.title()} save in {end_time - start_time:.2f} seconds.")
 
     # assert len(objects) == objects_per_map[map_name], f"Expected {objects_per_map[map_name]} objects, but got {len(objects)}"
-    assert end_time - start_time < allowed_time, "Retrieval took too long, check object caching"
+    assert end_time - start_time < allowed_time, f"Retrieval took too long ({end_time - start_time:.3f} seconds), check object caching"
 
 def test_retrieving_ragnarok_object_through_api(ragnarok_save: AsaSave, objects_per_map: dict, enabled_maps: list):
     """

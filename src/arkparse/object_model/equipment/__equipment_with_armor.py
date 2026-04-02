@@ -32,11 +32,11 @@ class EquipmentWithArmor(EquipmentWithDurability):
             return 40
         elif bp in ArmorBps.cloth.all_bps:
             return 10
-        elif bp in ArmorBps.riot.all_bps:
+        elif bp in ArmorBps.riot.all_bps or bp in ArmorBps.cursed_riot.all_bps:
             return 115
-        elif bp in ArmorBps.flak.all_bps:
+        elif bp in ArmorBps.flak.all_bps or bp in ArmorBps.cursed_flak.all_bps:
             return 100
-        elif bp in ArmorBps.tek.all_bps:
+        elif bp in ArmorBps.tek.all_bps or bp in ArmorBps.cursed_tek.all_bps:
             return 180
         elif bp in ArmorBps.scuba.all_bps:
             return 1
@@ -88,7 +88,7 @@ class EquipmentWithArmor(EquipmentWithDurability):
             return super().get_internal_value(stat)
         
     def __str__(self):
-        return f"armor: {self.armor:.2f} -" + super().__str__()
+        return f"armor: {int(self.armor)} -" + super().__str__()
 
     def get_actual_value(self, stat: ArkEquipmentStat, internal_value: int) -> float:
         if stat == ArkEquipmentStat.ARMOR:

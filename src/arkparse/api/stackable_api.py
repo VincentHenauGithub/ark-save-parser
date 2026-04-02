@@ -25,13 +25,13 @@ class StackableApi(GeneralApi):
         config = StackableApi._DEFAULT_CONFIG
         super().__init__(save, config)
     
-    def get_all(self, cls: "StackableApi.Classes", config = None) -> Dict[UUID, InventoryItem]:
+    def get_all(self, cls: "StackableApi.Classes", config = None, max_workers: int = 4) -> Dict[UUID, InventoryItem]:
         def is_valid(obj: ArkGameObject):
             is_bp = obj.get_property_value("bIsBlueprint")
             is_engram = obj.get_property_value("bIsEngram")
             return not (is_bp or is_engram)
 
-        return super().get_all(cls, valid_filter=is_valid, config=config)
+        return super().get_all(cls, valid_filter=is_valid, config=config, max_workers=max_workers)
     
     def get_by_class(self, cls: "StackableApi.Classes", classes: List[str]) -> Dict[UUID, InventoryItem]:
         config = GameObjectReaderConfiguration(

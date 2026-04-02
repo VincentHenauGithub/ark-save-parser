@@ -36,13 +36,14 @@ class ArkValueType(Enum):
 
     @classmethod
     def from_name(cls, name: str) -> Optional["ArkValueType"]:
-        for item in cls:
-            if item._type_name == name:
-                return item
-        return None
+        return _ARK_VALUE_TYPE_LOOKUP.get(name)
 
     def get_property_type(self) -> Type[Any]:
         return self._clazz
+
+
+# Module-level lookup cache for O(1) from_name lookups (built once at import time)
+_ARK_VALUE_TYPE_LOOKUP = {item._type_name: item for item in ArkValueType}
     
 
 def get_bytes_for_value(value_type: ArkValueType, value: Any) -> bytes:
