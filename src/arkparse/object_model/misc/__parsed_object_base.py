@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from arkparse import AsaSave
 
 class ParsedObjectBase:
-    binary: ArkBinaryParser = None
+    _binary: ArkBinaryParser = None
     object: "ArkGameObject" = None
     props_initialized: bool = False
     save: "AsaSave" = None
@@ -36,10 +36,15 @@ class ParsedObjectBase:
         if not save.is_in_db(uuid):
             ArkSaveLogger.error_log(f"Could not find binary for game object {uuid} in save")
         else:
-            self.binary = save.get_parser_for_game_object(uuid)
             self.object = save.get_game_object_by_id(uuid)
 
         self.__init_props__()
+
+    @property
+    def binary(self) -> ArkBinaryParser:
+        if self._binary is None and self.object is not None and self.save is not None:
+            self._binary = self.save.get_parser_for_game_object(self.object.uuid)
+        return self._binary
 
     @staticmethod
     def _generate(save: "AsaSave", template_path: str):
