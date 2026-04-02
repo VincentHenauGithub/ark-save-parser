@@ -57,13 +57,14 @@ pip install arkparse
 
 For faster parsing, install with the optional Rust accelerator (requires pre-built wheels to be available on PyPI):
 
+Current available wheels: MacOS, Windows and Linux; Python 3.9, 3.10, 3.11, 3.12, 3.13, 3.14 (3.13t and 3.14t)
 ```bash
 pip install arkparse[fast]
 ```
 
-### Recommended python version: Free-Threaded Python (~2x speedup)
+### Recommended python version: Free-Threaded Python (~40% speedup)
 
-ArkParse supports Python 3.13+ free-threaded builds (no-GIL), which provides additional performance benefits through parallel workloads. In my benchmarks this almost **doubles the performance** of arkparse, so I would highly recommend it!
+ArkParse supports Python 3.13+ free-threaded builds (no-GIL), which provides additional performance benefits through parallel workloads. In my benchmarks this provides over **40% increased performance**, so I would highly recommend it!
 
 ArkParse automatically detects if you are using free-threaded Python and parallelizes intensive tasks accordingly — no code changes required on your end.
 
@@ -79,9 +80,9 @@ cd ark-save-parser
 pip install -e .
 ```
 
-**Optional: Rust Accelerator (~5% speedup)**
+**Optional: Rust Accelerator (up to ~20% increased performance single threaded mode and ~5% in free threaded mode)**
 
-The Rust accelerator is something I started and is still very much not finished, it currently provides some performance benefit but I would like to see this become a much larger benefit. I will update that package in the future.
+The Rust accelerator is something I started and is still very much not finished, it currently provides some decent performance benefits but I would like to see this become a much larger benefit. I will update that package in the future.
 
 Requires [Rust](https://rustup.rs/) and [maturin](https://www.maturin.rs/):
 ```bash
