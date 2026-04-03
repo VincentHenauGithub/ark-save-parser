@@ -6,6 +6,7 @@ from pathlib import Path
 import json
 from uuid import UUID
 import numpy as np
+import math
 
 if TYPE_CHECKING:
     from arkparse.parsing.ark_binary_parser import ArkBinaryParser
@@ -277,7 +278,7 @@ class ActorTransform:
     roll: float = 0
     in_cryopod: bool = False
 
-    unknown: int = 0
+    quaternion: float = 0.0
 
     def __init__(self, reader: "ArkBinaryParser" = None, vector: ArkVector = None, rotator: ArkRotator = None, from_json: Path = None):
         if reader:
@@ -288,7 +289,7 @@ class ActorTransform:
             self.pitch = reader.read_double()
             self.roll = reader.read_double()
             self.yaw = reader.read_double()
-            self.unknown = reader.read_uint64()
+            self.quaternion = reader.read_double()
         elif vector:
             # Initialize from ArkVector and ArkRotator
             self.x = vector.x
@@ -313,7 +314,7 @@ class ActorTransform:
                 self.pitch = data["pitch"]
                 self.yaw = data["yaw"]
                 self.roll = data["roll"]
-                self.unknown = data["unknown"]
+                self.quaternion = data["quaternion"]
 
     def get_distance_to(self, other: "ActorTransform") -> float:
         if self.in_cryopod or other.in_cryopod:
@@ -366,7 +367,7 @@ class ActorTransform:
             "pitch": self.pitch,
             "yaw": self.yaw,
             "roll": self.roll,
-            "unknown": self.unknown
+            "quaternion": self.quaternion
         }
     
     def update(self, new_x, new_y, new_z):
@@ -383,10 +384,11 @@ class ActorTransform:
         loc.pitch = data["pitch"]
         loc.yaw = data["yaw"]
         loc.roll = data["roll"]
-        loc.unknown = data["unknown"]
+        loc.quaternion = data["quaternion"]
         return loc
     
     def to_bytes(self):
+        self.quaternion = math.sqrt(1-self.pitch**2 - self.yaw**2 - self.roll**2) if (1-self.pitch**2 - self.yaw**2 - self.roll**2) > 0 else 0
         return (
             struct.pack('<d', self.x) +
             struct.pack('<d', self.y) +
@@ -394,7 +396,7 @@ class ActorTransform:
             struct.pack('<d', self.pitch) +
             struct.pack('<d', self.roll) +
             struct.pack('<d', self.yaw) +
-            struct.pack('<Q', self.unknown)
+            struct.pack('<d', self.quaternion)
         )
     
     def store_json(self, folder: Path, name: str = None):
