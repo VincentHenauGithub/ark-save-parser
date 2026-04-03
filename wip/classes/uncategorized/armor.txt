@@ -1,4 +1,5 @@
 
+/Game/ASA/Dinos/Acrocanthosaurus/Saddle/PrimalItemArmor_AcroSaddle.PrimalItemArmor_AcroSaddle_C
 /Game/ASA/Dinos/GrandTortugar/Saddle/PrimalItemArmor_GrandTortugaSaddle.PrimalItemArmor_GrandTortugaSaddle_C
 /Game/ASA/Dinos/GrandTortugar/Saddle/PrimalItemArmor_GrandTortugar_Platform.PrimalItemArmor_GrandTortugar_Platform_C
 /Game/ASA/Dinos/SpiritBear/PrimalItemArmor_ForSBear.PrimalItemArmor_ForSBear_C
