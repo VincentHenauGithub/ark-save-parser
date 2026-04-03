@@ -377,6 +377,8 @@ class Dinos:
     queen_bee = "/Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C"
     rubble_golem = "/Game/ScorchedEarth/Dinos/RockGolem/RubbleGolem_Character_BP.RubbleGolem_Character_BP_C"
     helicoprion = "/Game/ASA/Dinos/Helicoprion/Helicoprion_Character_BP.Helicoprion_Character_BP_C"
+    acrocanthosaurus = "/Game/ASA/Dinos/Acrocanthosaurus/Acrocanthosaurus_Character_BP.Acrocanthosaurus_Character_BP_C"
+    cryolophosaurus = "/Game/ASA/Dinos/Cryolophosaurus/Cryolophosaurus_Character_BP.Cryolophosaurus_Character_BP_C"
 
     abberant = Abberant()
     paleo = Paleo()
@@ -411,7 +413,7 @@ class Dinos:
         dreadnoughtus, maelizard, shastasaurus, gacha, gasbag,
         managarmr, tek_raptor, tek_rex, tek_stego,
         velonosaur, yutyrannus, tek_parasaur, queen_bee,
-        rubble_golem
+        rubble_golem, helicoprion, acrocanthosaurus, cryolophosaurus
     ]  + abberant.all_bps + flyers.all_bps + \
         dlc_dinos.all_bps + shoulder_pets.all_bps + non_tameable.all_bps + \
         paleo.all_bps
