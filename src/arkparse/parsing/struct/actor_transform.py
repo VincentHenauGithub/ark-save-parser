@@ -193,8 +193,7 @@ class MapCoordinateParameters:
         lat = MapCoordinateParameters.lerp(100.0, 0.0, lat_ratio)
         lo = MapCoordinateParameters.lerp(100.0, 0.0, lo_ratio)
 
-        # 2 digits after the comma
-        return round(lat, 2), round(lo, 2)
+        return lat, lo
     
     def transform_from(self, lat: float, lo: float) -> ArkVector:
         origin_y_diff = self.origin_min_y - self.origin_max_y
@@ -287,8 +286,8 @@ class ActorTransform:
             self.y = reader.read_double()
             self.z = reader.read_double()
             self.pitch = reader.read_double()
-            self.yaw = reader.read_double()
             self.roll = reader.read_double()
+            self.yaw = reader.read_double()
             self.unknown = reader.read_uint64()
         elif vector:
             # Initialize from ArkVector and ArkRotator
@@ -393,8 +392,8 @@ class ActorTransform:
             struct.pack('<d', self.y) +
             struct.pack('<d', self.z) +
             struct.pack('<d', self.pitch) +
-            struct.pack('<d', self.yaw) +
             struct.pack('<d', self.roll) +
+            struct.pack('<d', self.yaw) +
             struct.pack('<Q', self.unknown)
         )
     

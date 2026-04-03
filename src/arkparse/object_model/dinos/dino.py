@@ -7,6 +7,7 @@ from arkparse.object_model.misc.__parsed_object_base import ParsedObjectBase
 from arkparse.saves.asa_save import AsaSave
 from arkparse.parsing.struct.actor_transform import ActorTransform
 from arkparse.parsing.struct.ark_vector import ArkVector
+from arkparse.parsing.struct.ark_rotator import ArkRotator
 from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.enums import ArkDinoTrait
 from arkparse.utils.json_utils import DefaultJsonEncoder
@@ -51,6 +52,7 @@ class Dino(ParsedObjectBase):
     gene_traits: List[GeneTrait] = []
     stats: DinoStats = DinoStats()
     _location: ActorTransform = ActorTransform()
+    _rotation: ArkRotator = None
 
     #saddle: Saddle
     def __init_props__(self):
@@ -82,10 +84,24 @@ class Dino(ParsedObjectBase):
             return False
         
         return self.object.uuid == other.object.uuid and self.id_ == other.id_
-    
+
     @property
     def location(self) -> ActorTransform:
+        if self._rotation is None:
+            full_location = self.save.get_actor_transform(self.object.uuid)
+            if full_location is not None:
+                self._location = full_location
+                self._rotation = ArkRotator(pitch=self._location.pitch, roll=self._location.roll, yaw=self._location.yaw)
         return self._location
+    
+    @property
+    def rotation(self) -> ArkRotator:
+        if self._rotation is not None:
+            return self._rotation
+        full_location = self.save.get_actor_transform(self.object.uuid)
+        if full_location is not None:
+            self._location = full_location
+        return ArkRotator(pitch=self._location.pitch, roll=self._location.roll, yaw=self._location.yaw)
 
     @staticmethod
     def from_object(dino_obj: ArkGameObject, status_obj: ArkGameObject, dino: "Dino" = None):
@@ -283,6 +299,7 @@ class Dino(ParsedObjectBase):
         self.save.modify_actor_transform(self.object.uuid, location.to_bytes())
         self.update_binary()
         self._location = location
+        self._rotation = ArkRotator(pitch=location.pitch, roll=location.roll, yaw=location.yaw)
 
     def heal(self):
         self.stats.heal()

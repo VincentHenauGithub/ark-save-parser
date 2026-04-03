@@ -222,7 +222,7 @@ class StructureApi:
 
         return result
     
-    def remove_at_location(self, map: ArkMap, coords: MapCoords, radius: float = 0.3, owner_tribe_id: int = None, owner_tribe_name: str = None):
+    def remove_at_location(self, map: ArkMap, coords: MapCoords, radius: float = 0.3, owner_tribe_id: int | None = None, owner_tribe_name: str | None = None):
         structures = self.get_at_location(map, coords, radius)
         
         removed = []
@@ -236,7 +236,7 @@ class StructureApi:
 
         return removed
 
-    def get_owned_by(self, owner: ObjectOwner = None, owner_tribe_id: int = None, owner_tribe_name: str = None) -> Dict[UUID, Union[Structure, StructureWithInventory]]:
+    def get_owned_by(self, owner: ObjectOwner = None, owner_tribe_id: int | None = None, owner_tribe_name: str | None = None) -> Dict[UUID, Union[Structure, StructureWithInventory]]:
         result = {}
 
         if owner is None and owner_tribe_id is None and owner_tribe_name is None:
