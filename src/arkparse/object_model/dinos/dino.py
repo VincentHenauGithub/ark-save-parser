@@ -101,6 +101,7 @@ class Dino(ParsedObjectBase):
         full_location = self.save.get_actor_transform(self.object.uuid)
         if full_location is not None:
             self._location = full_location
+            self._rotation = ArkRotator(pitch=self._location.pitch, roll=self._location.roll, yaw=self._location.yaw)
         return ArkRotator(pitch=self._location.pitch, roll=self._location.roll, yaw=self._location.yaw)
 
     @staticmethod
