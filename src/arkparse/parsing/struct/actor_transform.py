@@ -278,7 +278,7 @@ class ActorTransform:
     roll: float = 0
     in_cryopod: bool = False
 
-    quaternion: float = 0.0
+    _quaternion: float = 0.0
 
     def __init__(self, reader: "ArkBinaryParser" = None, vector: ArkVector = None, rotator: ArkRotator = None, from_json: Path = None):
         if reader:
@@ -289,7 +289,7 @@ class ActorTransform:
             self.pitch = reader.read_double()
             self.roll = reader.read_double()
             self.yaw = reader.read_double()
-            self.quaternion = reader.read_double()
+            self._quaternion = reader.read_double()
         elif vector:
             # Initialize from ArkVector and ArkRotator
             self.x = vector.x
@@ -314,7 +314,14 @@ class ActorTransform:
                 self.pitch = data["pitch"]
                 self.yaw = data["yaw"]
                 self.roll = data["roll"]
-                self.quaternion = data["quaternion"]
+
+    def __calc_quaterion(self):
+        self._quaternion = math.sqrt(1-self.pitch**2 - self.yaw**2 - self.roll**2) if (1-self.pitch**2 - self.yaw**2 - self.roll**2) > 0 else 0
+
+    @property
+    def quaternion(self):
+        self.__calc_quaterion()
+        return self._quaternion
 
     def get_distance_to(self, other: "ActorTransform") -> float:
         if self.in_cryopod or other.in_cryopod:
@@ -384,11 +391,10 @@ class ActorTransform:
         loc.pitch = data["pitch"]
         loc.yaw = data["yaw"]
         loc.roll = data["roll"]
-        loc.quaternion = data["quaternion"]
+        loc.__calc_quaterion()
         return loc
     
     def to_bytes(self):
-        self.quaternion = math.sqrt(1-self.pitch**2 - self.yaw**2 - self.roll**2) if (1-self.pitch**2 - self.yaw**2 - self.roll**2) > 0 else 0
         return (
             struct.pack('<d', self.x) +
             struct.pack('<d', self.y) +
