@@ -8,7 +8,7 @@ from arkparse.logging import ArkSaveLogger
 from arkparse.parsing.game_object_reader_configuration import GameObjectReaderConfiguration
 from arkparse.parsing.ark_binary_parser import ArkBinaryParser
 from arkparse.object_model.misc.__parsed_object_base import ParsedObjectBase
-
+from arkparse.enums import ArkMap
 from arkparse.object_model.ark_game_object import ArkGameObject
 from .save_connection import SaveConnection
 from .save_context import SaveContext
@@ -17,10 +17,11 @@ class AsaSave:
     # Populate manually if constructor parameter use_connection is False
     
 
-    def __init__(self, path: Path = None, contents: bytes = None, read_only: bool = False, use_connection: bool = True):
+    def __init__(self, path: Path = None, contents: bytes = None, read_only: bool = False, use_connection: bool = True, map: ArkMap = None):
 
         self.save_context = SaveContext()
         self.parsed_objects: Dict[uuid.UUID, ArkGameObject] = {}
+        self._map = map
 
         # Populate manually if constructor parameter use_connection is False
         self.custom_value_GameModeCustomBytes: Optional['ArkBinaryParser'] = None
@@ -39,6 +40,15 @@ class AsaSave:
 
     def __del__(self):
         self.close()
+
+    def set_map(self, map: ArkMap):
+        self._map = map
+
+    @property
+    def map(self) -> Optional[ArkMap]:
+        if self._map is None:
+            raise ValueError("Map not set for save")
+        return self._map
 
     def set_max_workers(self, max_workers: int):
         if self.save_connection is not None:

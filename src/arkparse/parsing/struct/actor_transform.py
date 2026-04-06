@@ -252,13 +252,13 @@ class MapCoords:
         if self.in_cryopod:
             return f"(in cryopod)"
         else:
-            return f"({self.lat}, {self.long})"
+            return f"({self.lat:.2f}, {self.long:.2f})"
         
     def str_short(self) -> str:
         if self.in_cryopod:
             return f"(in cryopod)"
         else:
-            return f"({int(self.lat)}, {int(self.long)})"
+            return f"({self.lat:.2f}, {self.long:.2f})"
         
     def round(self, digits: int = 2):
         self.lat = round(self.lat, digits)

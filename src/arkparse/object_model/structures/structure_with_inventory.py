@@ -26,7 +26,7 @@ class StructureWithInventory(Structure):
         inv_uuid = self.object.get_property_value("MyInventoryComponent")
         self.inventory_uuid = UUID(inv_uuid.value) if inv_uuid is not None else None
         self.item_count = self.object.get_property_value("CurrentItemCount", default=0)
-        self.max_item_count = self.object.get_property_value("MaxItemCount")
+        self.max_item_count = self.object.get_property_value("MaxItemCount", default=1)
 
         if self.inventory_uuid is not None and not bypass_inventory:
             self._inventory = Inventory(self.inventory_uuid, save=self.save)
@@ -36,6 +36,14 @@ class StructureWithInventory(Structure):
         if self._inventory is None and self.inventory_uuid is not None:
             self._inventory = Inventory(self.inventory_uuid, save=self.save)
         return self._inventory
+    
+    @property
+    def open_slots(self) -> int:
+        return self.max_item_count - self.item_count
+    
+    @property
+    def is_empty(self) -> bool:
+        return self.item_count == 0
 
     def set_item_quantity(self, quantity: int):
         if self.item_count != None:
