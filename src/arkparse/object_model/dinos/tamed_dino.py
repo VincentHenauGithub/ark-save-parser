@@ -27,6 +27,7 @@ class TamedDino(Dino):
     tamed_name: str
     percentage_imprinted: float
     cryopod: "Cryopod"
+    neutered: bool
 
     @property
     def percentage_imprinted(self):
@@ -50,6 +51,8 @@ class TamedDino(Dino):
         self.tamed_name = self.object.get_property_value("TamedName")
         inv_uuid: ObjectReference = self.object.get_property_value("MyInventoryComponent")
         self.owner = DinoOwner(self.object)
+        self.neutered = self.object.get_property_value("bNeutered", False)
+
 
         if inv_uuid is None:
             self.inv_uuid = None
@@ -167,6 +170,12 @@ class TamedDino(Dino):
             raise ValueError("Cannot add item to TamedDino without inventory!")
         self.inventory.add_item(item)
         return True
+    
+    def set_neutered(self, neutered: bool):
+        self.binary.replace_boolean(self.object.find_property("bNeutered"), neutered)
+        self.neutered = neutered
+        self.update_binary()
+        self.update_object()
     
     def remove_item(self, item: UUID):
         self.inventory.remove_item(item)

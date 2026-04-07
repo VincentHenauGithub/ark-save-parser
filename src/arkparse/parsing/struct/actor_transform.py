@@ -388,9 +388,9 @@ class ActorTransform:
         loc.x = data["x"]
         loc.y = data["y"]
         loc.z = data["z"]
-        loc.pitch = data["pitch"]
-        loc.yaw = data["yaw"]
-        loc.roll = data["roll"]
+        loc.pitch = data["pitch"] 
+        loc.yaw = data["yaw"] if data.get("unknown", None) is not None else data["roll"]
+        loc.roll = data["roll"] if data.get("unknown", None) is not None else data["yaw"]
         loc.__calc_quaterion()
         return loc
     
