@@ -312,8 +312,8 @@ class ActorTransform:
                 self.y = data["y"]
                 self.z = data["z"]
                 self.pitch = data["pitch"]
-                self.yaw = data["yaw"] if data.get("unknown", None) is not None else data["roll"]
-                self.roll = data["roll"] if data.get("unknown", None) is not None else data["yaw"]
+                self.yaw = data["yaw"] if data.get("unknown", None) is None else data["roll"]
+                self.roll = data["roll"] if data.get("unknown", None) is None else data["yaw"]
 
     def __calc_quaterion(self):
         self._quaternion = math.sqrt(1-self.pitch**2 - self.yaw**2 - self.roll**2) if (1-self.pitch**2 - self.yaw**2 - self.roll**2) > 0 else 0
@@ -389,8 +389,8 @@ class ActorTransform:
         loc.y = data["y"]
         loc.z = data["z"]
         loc.pitch = data["pitch"] 
-        loc.yaw = data["yaw"] if data.get("unknown", None) is not None else data["roll"]
-        loc.roll = data["roll"] if data.get("unknown", None) is not None else data["yaw"]
+        loc.yaw = data["yaw"] if data.get("unknown", None) is None else data["roll"]
+        loc.roll = data["roll"] if data.get("unknown", None) is None else data["yaw"]
         loc.__calc_quaterion()
 
         return loc
