@@ -48,7 +48,7 @@ class TamedDino(Dino):
         super().__init_props__()
 
         self.cryopod = None
-        self.tamed_name = self.object.get_property_value("TamedName")
+        self.tamed_name = self.object.get_property_value("TamedName", "NONE")
         inv_uuid: ObjectReference = self.object.get_property_value("MyInventoryComponent")
         self.owner = DinoOwner(self.object)
         self.neutered = self.object.get_property_value("bNeutered", False)
