@@ -1,6 +1,6 @@
 import struct
 from typing import List
-from uuid import UUID
+from uuid import UUID, SafeUUID
 
 from ._binary_reader_base import BinaryReaderBase
 from arkparse.logging import ArkSaveLogger
@@ -24,6 +24,7 @@ def _fast_uuid_from_bytes(b: bytes) -> UUID:
     # This is ~3-4x faster than UUID(bytes=b)
     u = object.__new__(UUID)
     object.__setattr__(u, 'int', int.from_bytes(b, 'big'))
+    object.__setattr__(u, 'is_safe', SafeUUID.unknown)
     return u
     
 class BaseValueParser(BinaryReaderBase):
