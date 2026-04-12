@@ -146,9 +146,13 @@ class Base:
             ArkSaveLogger.objects_log(f"Padding {turret.get_short_name()} ({turret.object.uuid}) to {amount} bullets")
             self.__set_new_inventory(save, turret, bullet, amount)
 
+            # Correct NumBullets prop
+            prop = turret.object.find_property("NumBullets")
+            if prop is not None:
+                turret.binary.replace_u32(prop, amount)
+
             ArkSaveLogger.objects_log(f"Updating {turret.get_short_name()} and inventory in database")
             turret.update_binary()
-            turret.inventory.update_binary()
 
         return len(turrets)
     

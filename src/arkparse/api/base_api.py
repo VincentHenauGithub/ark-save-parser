@@ -18,9 +18,9 @@ from arkparse.utils import ImportFile
 from arkparse.logging import ArkSaveLogger
 
 class BaseApi(StructureApi):
-    def __init__(self, save, map: ArkMap):
+    def __init__(self, save, map: ArkMap = None):
         super().__init__(save)
-        self.map = map
+        self.map = map if map is not None else self.save.map
 
     def __get_closest_to(self, structures: Dict[UUID, Structure], coords: MapCoords):
         closest = None
