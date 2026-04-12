@@ -299,32 +299,34 @@ class StructureApi:
         return result
     
     def get_connected_structures(self, structures: Dict[UUID, Union[Structure, StructureWithInventory]]) -> Dict[UUID, Union[Structure, StructureWithInventory]]:
+        from collections import deque
+        
         result = structures.copy()
-        new_found = True
-        ignore = []
-        processed = []
-
-        while new_found:
-            new_found = False
-            new_result = result.copy()
-            unprocessed = [s for s in result.values() if s.uuid not in processed]
-            for s in unprocessed:
-                if s.uuid in processed:
+        ignore = set()
+        processed = set()
+        
+        # Initialize queue with all structures to process
+        queue = deque(structures.values())
+        
+        while queue:
+            s = queue.popleft()
+            
+            if s.uuid in processed:
+                continue
+            processed.add(s.uuid)
+            
+            for uuid in s.linked_structure_uuids:
+                if uuid in result or uuid in ignore:
                     continue
-                for uuid in s.linked_structure_uuids:
-                    if uuid not in new_result.keys() and uuid not in ignore and uuid not in processed:
-                        new_found = True
-                        obj = self.get_by_id(uuid)
-                        if obj is not None:
-                            new_result[uuid] = obj
-                        else:
-                            ignore.append(uuid)
-                            ArkSaveLogger.api_log(f"Could not find linked structure {uuid}, ignoring")
-                    processed.append(s.uuid)
-            result = new_result
-
-            # ArkSaveLogger.api_log(f"Connected structures found so far: {len(result)}")
-
+                
+                obj = self.get_by_id(uuid)
+                if obj is not None:
+                    result[uuid] = obj
+                    queue.append(obj)
+                else:
+                    ignore.add(uuid)
+                    ArkSaveLogger.api_log(f"Could not find linked structure {uuid}, ignoring")
+        
         return result
      
     def modify_structures(self, structures: Dict[UUID, Union[Structure, StructureWithInventory]], new_owner: ObjectOwner = None, new_max_health: float = None):
