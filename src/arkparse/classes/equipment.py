@@ -118,6 +118,7 @@ class Saddles:
     pyromane: str = "/Game/ASA/Dinos/FireLion/PrimalItemArmor_Saddle_FireLion.PrimalItemArmor_Saddle_FireLion_C"
     crylophosaurus: str = "/Game/ASA/Dinos/Cryolophosaurus/Saddle/PrimalItemArmor_CryoSaddle.PrimalItemArmor_CryoSaddle_C"
     deinonychus: str = "/Game/Valguero/Dinos/Deinonychus/PrimalItemArmor_DeinonychusSaddle.PrimalItemArmor_DeinonychusSaddle_C"
+    acrocanthosaurus: str = "/Game/ASA/Dinos/Acrocanthosaurus/Saddle/PrimalItemArmor_AcroSaddle.PrimalItemArmor_AcroSaddle_C"
 
 
     all_bps = [yi_ling, archelon, ceratosaurus, deinosuchus, fasolasuchus, gigantoraptor_ASA, 
@@ -135,7 +136,7 @@ class Saddles:
                thorny_dragon, bison, deinotherium, dreadnoughtus, maelizard, gacha, gas_bags,
                snow_owl, ravager, managarmr, velonosaur, helicoprion, gigantoraptor, desmodus,
                soulwyn, gigadesmodus_platform, gigadesmodus, maelwyn, aureliax, ossidon, megaraptor, 
-               pyromane, crylophosaurus, deinonychus]
+               pyromane, crylophosaurus, deinonychus, acrocanthosaurus]
     
 class Hazard:
     boots: str = "/Game/Aberration/CoreBlueprints/Items/Armor/HazardSuit/PrimalItemArmor_HazardSuitBoots.PrimalItemArmor_HazardSuitBoots_C"
