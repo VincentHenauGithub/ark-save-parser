@@ -79,13 +79,16 @@ class Alphas:
     alpha_tuso = "/Game/PrimalEarth/Dinos/Tusoteuthis/Mega_Tusoteuthis_Character_BP.Mega_Tusoteuthis_Character_BP_C"
     alpha_leedsichthys = "/Game/PrimalEarth/Dinos/Leedsichthys/Alpha_Leedsichthys_Character_BP.Alpha_Leedsichthys_Character_BP_C"
     alpha_fire_wyvern = "/Game/ScorchedEarth/Dinos/Wyvern/MegaWyvern_Character_BP_Fire.MegaWyvern_Character_BP_Fire_C"
+    alpha_revenant = "/Game/LostColony/Dinos/Zombie/MegaZombie_Character_BP_Hulking.MegaZombie_Character_BP_Hulking_C"
+    alpha_ossidon = "/Game/LostColony/Dinos/SnowMonster/MegaSnowMonster_Character_BP.MegaSnowMonster_Character_BP_C"
 
     paleo = PaleoAlphas()
 
     all_bps = [
         alpha_reaper_king, alpha_karkinos, alpha_basilisk,
         alpha_carnotaurus, alpha_megalodon, alpha_mosasaurus, alpha_raptor, 
-        alpha_deathworm, alpha_rex, alpha_tuso, alpha_leedsichthys, alpha_fire_wyvern
+        alpha_deathworm, alpha_rex, alpha_tuso, alpha_leedsichthys, alpha_fire_wyvern,
+        alpha_revenant
     ] + paleo.all_bps
 
 class Flyers:

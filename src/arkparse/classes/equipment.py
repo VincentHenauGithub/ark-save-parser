@@ -333,7 +333,8 @@ class Advanced:
     chainsaw: str = "/Game/ScorchedEarth/WeaponChainsaw/PrimalItem_ChainSaw.PrimalItem_ChainSaw_C"
     flamethrower: str = "/Game/ScorchedEarth/WeaponFlamethrower/PrimalItem_WeapFlamethrower.PrimalItem_WeapFlamethrower_C"
     tek_spear: str = "/Game/LostColony/Weapons/TekSpear/PrimalItem_WeaponSpear_Tek.PrimalItem_WeaponSpear_Tek_C"
-    all_bps = [compound_bow, fabricated_pistol, fabricated_shotgun, fabricated_sniper, fabricated_crossbow,longneck, assault_rifle, rocket_launcher, tek_rifle, chainsaw, flamethrower, tek_spear]
+    tek_sword: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponTekSword.PrimalItem_WeaponTekSword_C"
+    all_bps = [compound_bow, fabricated_pistol, fabricated_shotgun, fabricated_sniper, fabricated_crossbow,longneck, assault_rifle, rocket_launcher, tek_rifle, chainsaw, flamethrower, tek_spear, tek_sword]
 
 class CursedWeapons:
     chainsaw: str = "/Game/LostColony/CoreBlueprints/Items/CursedWeapons/PrimalItem_ChainSaw_Cursed.PrimalItem_ChainSaw_Cursed_C"
