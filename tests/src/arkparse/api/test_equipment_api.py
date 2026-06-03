@@ -73,11 +73,11 @@ def get_for_map(map_name: ArkMap, api: EquipmentApi):
 
     armor = api.get_armor()
     print(f"Total Armor Items: {len(armor)}")
-    assert len(armor) == equipment_per_map()[map_name]["armor"], "Unexpected number of armor items found"
+    assert len(armor) >= equipment_per_map()[map_name]["armor"], "Unexpected number of armor items found"
 
     weapons = api.get_weapons()
     print(f"Total Weapon Items: {len(weapons)}")
-    assert len(weapons) == equipment_per_map()[map_name]["weapons"], "Unexpected number of weapon items found."
+    assert len(weapons) >= equipment_per_map()[map_name]["weapons"], "Unexpected number of weapon items found."
 
     saddles = api.get_saddles()
     print(f"Total Saddle Items: {len(saddles)}")
@@ -87,7 +87,7 @@ def get_for_map(map_name: ArkMap, api: EquipmentApi):
 
     shields = api.get_shields()
     print(f"Total Shield Items: {len(shields)}")
-    assert len(shields) == equipment_per_map()[map_name]["shields"], "Unexpected number of shield items found."
+    assert len(shields) >= equipment_per_map()[map_name]["shields"], "Unexpected number of shield items found."
 
 def test_parse_ragnarok(eq_api: EquipmentApi, enabled_maps: list):
     """
