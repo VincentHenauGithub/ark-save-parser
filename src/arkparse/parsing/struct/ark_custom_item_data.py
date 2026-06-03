@@ -335,10 +335,10 @@ class ArkCustomItemData:
         nr_of_items = ark_binary_data.read_uint32()
         soft_classes = []
 
-        for _ in range(nr_of_items):
+        while ark_binary_data.peek_int() != 0:
             obj_name = ark_binary_data.read_name()
             soft_classes.append(obj_name)
-            ark_binary_data.validate_uint32(0)
+        ark_binary_data.validate_uint32(0)
 
         return soft_classes
 
