@@ -24,6 +24,10 @@ class ParsedObjectBase:
     @property
     def blueprint(self) -> str:
         return self.object.blueprint if self.object is not None else None
+    
+    @property
+    def short_name(self) -> str:
+        return self.object.get_short_name() if self.object is not None else None
 
     def __init_props__(self):
         pass

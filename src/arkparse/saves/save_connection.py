@@ -1,7 +1,7 @@
 import sqlite3
 import sys
 import uuid
-from uuid import UUID
+from uuid import UUID, SafeUUID
 from pathlib import Path
 from typing import Collection, Optional, Dict, List, Tuple
 from concurrent.futures import ThreadPoolExecutor
@@ -21,6 +21,7 @@ def _fast_uuid_from_bytes(b: bytes) -> UUID:
     """Create UUID from bytes, bypassing __init__ validation for speed."""
     u = object.__new__(UUID)
     object.__setattr__(u, 'int', int.from_bytes(b, 'big'))
+    object.__setattr__(u, 'is_safe', SafeUUID.unknown)
     return u
 
 

@@ -118,6 +118,7 @@ class Saddles:
     pyromane: str = "/Game/ASA/Dinos/FireLion/PrimalItemArmor_Saddle_FireLion.PrimalItemArmor_Saddle_FireLion_C"
     crylophosaurus: str = "/Game/ASA/Dinos/Cryolophosaurus/Saddle/PrimalItemArmor_CryoSaddle.PrimalItemArmor_CryoSaddle_C"
     deinonychus: str = "/Game/Valguero/Dinos/Deinonychus/PrimalItemArmor_DeinonychusSaddle.PrimalItemArmor_DeinonychusSaddle_C"
+    acrocanthosaurus: str = "/Game/ASA/Dinos/Acrocanthosaurus/Saddle/PrimalItemArmor_AcroSaddle.PrimalItemArmor_AcroSaddle_C"
 
 
     all_bps = [yi_ling, archelon, ceratosaurus, deinosuchus, fasolasuchus, gigantoraptor_ASA, 
@@ -135,7 +136,7 @@ class Saddles:
                thorny_dragon, bison, deinotherium, dreadnoughtus, maelizard, gacha, gas_bags,
                snow_owl, ravager, managarmr, velonosaur, helicoprion, gigantoraptor, desmodus,
                soulwyn, gigadesmodus_platform, gigadesmodus, maelwyn, aureliax, ossidon, megaraptor, 
-               pyromane, crylophosaurus, deinonychus]
+               pyromane, crylophosaurus, deinonychus, acrocanthosaurus]
     
 class Hazard:
     boots: str = "/Game/Aberration/CoreBlueprints/Items/Armor/HazardSuit/PrimalItemArmor_HazardSuitBoots.PrimalItemArmor_HazardSuitBoots_C"
@@ -332,7 +333,8 @@ class Advanced:
     chainsaw: str = "/Game/ScorchedEarth/WeaponChainsaw/PrimalItem_ChainSaw.PrimalItem_ChainSaw_C"
     flamethrower: str = "/Game/ScorchedEarth/WeaponFlamethrower/PrimalItem_WeapFlamethrower.PrimalItem_WeapFlamethrower_C"
     tek_spear: str = "/Game/LostColony/Weapons/TekSpear/PrimalItem_WeaponSpear_Tek.PrimalItem_WeaponSpear_Tek_C"
-    all_bps = [compound_bow, fabricated_pistol, fabricated_shotgun, fabricated_sniper, fabricated_crossbow,longneck, assault_rifle, rocket_launcher, tek_rifle, chainsaw, flamethrower, tek_spear]
+    tek_sword: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponTekSword.PrimalItem_WeaponTekSword_C"
+    all_bps = [compound_bow, fabricated_pistol, fabricated_shotgun, fabricated_sniper, fabricated_crossbow,longneck, assault_rifle, rocket_launcher, tek_rifle, chainsaw, flamethrower, tek_spear, tek_sword]
 
 class CursedWeapons:
     chainsaw: str = "/Game/LostColony/CoreBlueprints/Items/CursedWeapons/PrimalItem_ChainSaw_Cursed.PrimalItem_ChainSaw_Cursed_C"

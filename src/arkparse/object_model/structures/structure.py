@@ -10,7 +10,7 @@ from arkparse.object_model.misc.__parsed_object_base import ParsedObjectBase
 from arkparse.object_model.misc.object_owner import ObjectOwner
 from arkparse.parsing import ArkBinaryParser
 from arkparse.parsing.struct.object_reference import ObjectReference
-from arkparse.parsing.struct import ActorTransform
+from arkparse.parsing.struct import ActorTransform, MapCoords
 from arkparse import AsaSave
 from arkparse.utils.json_utils import DefaultJsonEncoder
 
@@ -156,6 +156,12 @@ class Structure(ParsedObjectBase):
             for linked_structure in self.linked_structure_uuids:
                 result.append(linked_structure.__str__())
         return result
+    
+    @property
+    def map_coordinates(self) -> MapCoords:
+        if self.location is not None:
+            return self.location.as_map_coords(self.save.map)
+        return None
 
     def to_json_obj(self):
         # Grab already set properties

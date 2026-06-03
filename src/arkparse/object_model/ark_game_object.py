@@ -220,8 +220,10 @@ class ArkGameObject(ArkPropertyContainer):
         # self.uuid2 = reader.read_uuid()
 
     def print_properties(self):
+        ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.INFO, True)
         ArkSaveLogger.info_log(f"Properties for {self.blueprint} ({self.uuid}):")
         super().print_properties()
+        ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.INFO, False)
 
     def read_double(self, reader: ArkBinaryParser, property_name: str) -> float:
         reader.validate_name(property_name)
