@@ -43,7 +43,7 @@ class DinoApi:
     _DEFAULT_CONFIG = GameObjectReaderConfiguration(
         blueprint_name_filter=lambda name: \
             name is not None and \
-                (("Dinos/" in name and "_Character_" in name) or \
+                ((("Dinos/" in name or "/SDinoVariants/" in name) and "_Character_" in name) or \
                 ("DinoCharacterStatusComponent" in name) or \
                 ("PrimalItem_WeaponEmptyCryopod" in name or "PrimalItem_SCSCryopod" in name or "ItemDinoball.ItemDinoball_C" in name)))
 
