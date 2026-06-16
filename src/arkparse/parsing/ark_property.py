@@ -398,6 +398,16 @@ class ArkProperty:
         return prop
 
     @staticmethod
+    def _has_struct_reader(struct_type: str) -> bool:
+        """Whether this struct type has a dedicated (fixed-layout) reader.
+
+        Types without one are read generically as a property list; see
+        ``_read_struct_body`` and the guarded array backup in
+        ``read_array_property``.
+        """
+        return ArkStructType.from_type_name(struct_type) in _STRUCT_READERS
+
+    @staticmethod
     def read_array_property(key: str, type_: str, position: int, bb: "ArkBinaryParser", data_size: int) -> Tuple["ArkProperty", int]:
         # V14 no position in array
         bb.set_position(bb.get_position() - 4)
@@ -428,31 +438,51 @@ class ArkProperty:
                 bb.set_position(bb.position - 4)
 
             array_items = bb.read_uint32()
+            array_end = data_start_position + data_size
 
-            # if array_content_type == "PrimalCharacterStatusValueModifier":
-            #     ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.PARSER, True)
+            # Structs without a dedicated reader are read generically as a property
+            # list (see _read_struct_body). That backup is reliable for well-formed,
+            # None-terminated property-list structs but can't be guaranteed for an
+            # arbitrary packed layout, so guard it: if a generic element read raises,
+            # recover by skipping to the array's known end and record the type for
+            # follow-up rather than failing the whole object. A dedicated reader
+            # raising is a real bug, so let that propagate.
+            has_reader = ArkProperty._has_struct_reader(array_content_type)
 
             with log_block(f"Arr({array_content_type})"):
                 ArkSaveLogger.parser_log(
                     f"[STRUCT ARRAY: key='none'; nr_of_value={array_items}; type={array_content_type}; bin_length={data_size}]"
                 )
-                struct_array = [
-                    ArkProperty.read_struct_property(bb, data_size, array_content_type, True)[0]
-                    for _ in range(array_items)
-                ]
+                struct_array = []
+                try:
+                    for _ in range(array_items):
+                        struct_array.append(
+                            ArkProperty.read_struct_property(bb, data_size, array_content_type, True)[0]
+                        )
+                except Exception as exc:
+                    if has_reader:
+                        raise
+                    ArkSaveLogger.warning_log(
+                        f"Generic read of struct array '{array_content_type}' failed after "
+                        f"{len(struct_array)}/{array_items} element(s): {exc}; skipping to end of array"
+                    )
+                    ArkSaveLogger._notify_struct_mismatch(
+                        array_content_type, data_size, data_start_position, bb.position, bb
+                    )
+                    bb.set_position(array_end)
 
             prop = ArkProperty(key, type_, position, 0, struct_array)
-            if bb.position != data_start_position + data_size:
+            if bb.position != array_end:
+                # The read didn't consume exactly the declared size. Record the
+                # mismatch (the testbench captures these) and realign to the end.
                 ArkSaveLogger.warning_log(
-                    f"Array read incorrectly, bytes left to read: {data_start_position + data_size - bb.position}, current position: {bb.position}"
+                    f"Array of struct '{array_content_type}' read incorrectly, "
+                    f"bytes off: {array_end - bb.position}; realigning to end of array"
                 )
-                ArkSaveLogger.warning_log(f"Skipping to the end of the struct, type: {array_content_type}")
-                bb.set_position(data_start_position + data_size)
-                bb.structured_print(to_default_file=True)
-                ArkSaveLogger.open_hex_view(True)
-
-            # if array_content_type == "PrimalCharacterStatusValueModifier":
-            #     ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.PARSER, False)
+                ArkSaveLogger._notify_struct_mismatch(
+                    array_content_type, data_size, data_start_position, bb.position, bb
+                )
+                bb.set_position(array_end)
 
             return prop, start_values_pos
 
@@ -549,17 +579,19 @@ class ArkProperty:
                 ArkSaveLogger.parser_log(f"Reading struct {struct_type} with data size {data_size}")
                 return _STRUCT_READERS[ark_struct_type](bb, data_size)
             if in_array:
+                # No dedicated reader for this struct type. Fall through to the
+                # generic property-list read below — the designed backup for unknown
+                # structs in arrays. It reads cleanly for well-formed, None-terminated
+                # property-list structs, and read_array_property validates the array's
+                # total size and recovers from any type it can't fully consume, so
+                # this is not by itself an error. Record the type once (quietly) so it
+                # is discoverable without the noise of a per-type warning.
                 if struct_type not in UNSUPPORTED_STRUCTS:
-                    ArkSaveLogger.warning_log(f"Unsupported struct type {struct_type} in array")
+                    ArkSaveLogger.parser_log(
+                        f"No dedicated reader for struct '{struct_type}' in array; "
+                        f"reading generically as a property list"
+                    )
                     UNSUPPORTED_STRUCTS.append(struct_type)
-                
-                # uncomment the lines below if you want to make objects of unknown structs
-                # ArkSaveLogger.parser_log(f"Reading struct {struct_type} as array")
-                # bb.structured_print(to_default_file=True)
-                # bb.store()
-                # ArkSaveLogger.error_log(f"Unsupported struct type {struct_type} in array")
-                # ArkSaveLogger.open_hex_view(True)
-                # raise ValueError(f"Unsupported struct type {struct_type}")
 
         ArkSaveLogger.parser_log(f"Reading struct {struct_type} with data size {data_size} as property list at position {bb.get_position()}")
         # Fallback: struct as property list
