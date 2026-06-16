@@ -173,7 +173,7 @@ class ArkProperty:
     # Public API
     # ---------------------------------------------------------------------------------------------
     @staticmethod
-    def read_property(byte_buffer: "ArkBinaryParser", in_array: bool = False) -> Optional["ArkProperty"]:
+    def read_property(byte_buffer: "ArkBinaryParser", in_array: bool = False, struct_end: int = -1) -> Optional["ArkProperty"]:
         name_position = byte_buffer.get_position()
         value_position = 0
         byte_buffer.save_context.generate_unknown = True
@@ -185,7 +185,12 @@ class ArkProperty:
             ArkSaveLogger.parser_log("Exiting struct (None marker) (pos = " + str(byte_buffer.get_position()) + " (hex: " + hex(byte_buffer.get_position()) + "))")
             ArkSaveLogger.exit_struct()
 
-            if byte_buffer.size() - byte_buffer.position >= 4 and byte_buffer.peek_int() == 0:
+            # Only skip the 4 trailing zeros if we haven't already reached the
+            # declared struct boundary. When struct_end is known and we're right
+            # at it, those zeros belong to the outer stream, not this struct.
+            if (struct_end == -1 or byte_buffer.position < struct_end) \
+                    and byte_buffer.size() - byte_buffer.position >= 4 \
+                    and byte_buffer.peek_int() == 0:
                 byte_buffer.skip_bytes(4)
             return None
 
@@ -291,6 +296,18 @@ class ArkProperty:
         if key_type == ArkValueType.Struct:
             value_type = bb.read_name()
         else:
+            if key_type == ArkValueType.Byte:
+                # Enum-keyed map (e.g. TMap<TEnumAsByte<EFoo>, ...>): the key's
+                # enum type is serialized as a descriptor block before the value
+                # type: [enum name][int][enum path][int]. Consume it so the value
+                # type is read from the correct offset.
+                enum_key_type = bb.read_name()
+                bb.read_int()
+                enum_key_path = bb.read_name()
+                bb.read_int()
+                ArkSaveLogger.parser_log(
+                    f"Enum-keyed map: enum={enum_key_type} ({enum_key_path})"
+                )
             value_type = bb.read_value_type_by_name()
             struct_names = bb.read_int()
             if struct_names > 0:
@@ -342,7 +359,13 @@ class ArkProperty:
     @staticmethod
     def read_struct_map(key_type: ArkValueType, bb: "ArkBinaryParser", map_name: str) -> "ArkProperty":
         props: List[ArkProperty] = []
-        key_name = ArkProperty.read_property_value(key_type, bb)
+        if key_type == ArkValueType.Byte:
+            # Enum-keyed map entry: the key is the enum value name (e.g.
+            # E_ActorType_AAT::NewEnumerator0), serialized as a name reference
+            # rather than a single byte.
+            key_name = bb.read_name()
+        else:
+            key_name = ArkProperty.read_property_value(key_type, bb)
         with log_block(f"Map({key_name}:{map_name})"):
             while bb.has_more():
                 p = ArkProperty.read_property(bb)
@@ -511,7 +534,12 @@ class ArkProperty:
         ark_struct_type = ArkStructType.from_type_name(struct_type)
         
         if (ark_struct_type is not None) or in_array:
-            if in_array and bb.peek_name() == "None":
+            # Known fixed-layout structs (LinearColor/Vector/Color/...) are packed
+            # primitives with no None terminator. In archive parsing there is no name
+            # table, so peek_name() falls back to read_string() and would mis-read their
+            # packed float bytes as a string length, overflowing the buffer. Skip the
+            # None probe for these and let the dedicated reader consume the exact bytes.
+            if in_array and ark_struct_type not in _STRUCT_READERS and bb.peek_name() == "None":
                 ArkSaveLogger.parser_log("Exiting struct (None marker)")
                 return bb.read_name()
             if data_size <= 4:
@@ -536,19 +564,21 @@ class ArkProperty:
         ArkSaveLogger.parser_log(f"Reading struct {struct_type} with data size {data_size} as property list at position {bb.get_position()}")
         # Fallback: struct as property list
         position = bb.get_position()
-        props = ArkProperty.read_struct_properties(bb)
+        props = ArkProperty.read_struct_properties(bb, struct_end=position + data_size)
         if bb.get_position() != position + data_size and not in_array:
             ArkSaveLogger.warning_log(f"WARNING: Struct reading position mismatch for type {struct_type}")
             ArkSaveLogger.warning_log(
                 f"StructType: {struct_type}, DataSize: {data_size}, Position: {position}, CurrentPosition: {bb.get_position()}"
             )
+            # Notify any registered debug handler (e.g. the testbench recorder).
+            ArkSaveLogger._notify_struct_mismatch(struct_type, data_size, position, bb.get_position(), bb)
             bb.set_position(position + data_size)
         return props
 
     @staticmethod
-    def read_struct_properties(bb: "ArkBinaryParser") -> ArkPropertyContainer:
+    def read_struct_properties(bb: "ArkBinaryParser", struct_end: int = -1) -> ArkPropertyContainer:
         props: List[ArkProperty] = []
-        struct_property = ArkProperty.read_property(bb)
+        struct_property = ArkProperty.read_property(bb, struct_end=struct_end)
         if struct_property is not None:
             ArkSaveLogger.parser_log(
                 f"Struct properties: {struct_property.name} {struct_property.type} {struct_property.value}"
@@ -556,7 +586,7 @@ class ArkProperty:
         while struct_property:
             props.append(struct_property)
             if bb.has_more():
-                struct_property = ArkProperty.read_property(bb)
+                struct_property = ArkProperty.read_property(bb, struct_end=struct_end)
                 if struct_property is not None:
                     ArkSaveLogger.parser_log(
                         f"Struct properties: {struct_property.name} {struct_property.type} {struct_property.value}"

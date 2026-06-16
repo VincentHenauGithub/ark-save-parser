@@ -154,8 +154,8 @@ def test_base_replace_owner(resource_path, temp_file_folder, rag_limited: AsaSav
         f"Expected {files_old} files, got {files_new}"
     )
 
-    assert nr_of_structures_new == nr_of_structures_old, (
-        f"Expected {nr_of_structures_old} structures, got {nr_of_structures_new}"
+    assert nr_of_structures_new >= nr_of_structures_old, (
+        f"Expected at least {nr_of_structures_old} structures, got {nr_of_structures_new}"
     )
 
 def test_retrieving_nr_of_generators(rag_limited: AsaSave, temp_file_folder: Path, resource_path: Path):

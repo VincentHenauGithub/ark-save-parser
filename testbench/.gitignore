@@ -1,0 +1,15 @@
+# The save under test is local-only — never commit it.
+# Keep the folder and its placeholder, ignore everything else inside.
+test_save/*
+!test_save/PUT_YOUR_SAVE_HERE.md
+
+# Snapshots are per-save and machine-local; uncomment to commit baselines.
+snapshots/
+
+# Per-run dumps of objects that failed to parse (binary + diagnostics).
+debug_dumps/
+
+# pytest / python cruft
+.pytest_cache/
+__pycache__/
+__saves/

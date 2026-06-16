@@ -73,6 +73,12 @@ class ArkArchive:
             except Exception as e:
                 ArkSaveLogger.error_log(f"Error reading properties for object \'{obj.class_name}\' at {self.data.get_position()}: {e}")
                 self.data.structured_print()
+                # Notify any registered debug handler (e.g. the testbench dumper).
+                # Archives reload from their raw bytes via ArkArchive(data, from_store).
+                ArkSaveLogger._notify_object_failure(
+                    None, obj.class_name, self.data, e,
+                    kind="archive", reload_hint={"from_store": from_store},
+                )
                 raise e
             ArkSaveLogger.exit_struct()
 

@@ -92,7 +92,19 @@ class ArkCustomItemData:
         #         ark_binary_data.validate_uint32(0)
         #         self.skins.append([bp, shorthand])
 
-        ark_binary_data.validate_name("None")        
+        ark_binary_data.validate_name("None")
+
+        # Some modded CustomItemData (e.g. the Cryopods mod) append extra empty
+        # trailing sections, each serialized as a [uint32 0][None] pair. Vanilla
+        # data has none of these, so this loop is a no-op there; the next array
+        # element starts with a real name ("CustomDataBytes") whose first 4 bytes
+        # are non-zero, which stops the loop.
+        while (ark_binary_data.size() - ark_binary_data.position) >= 12 \
+                and ark_binary_data.peek_int() == 0 \
+                and ark_binary_data.peek_name(4) == "None":
+            ark_binary_data.read_uint32()   # 0
+            ark_binary_data.read_name()     # None
+            ArkSaveLogger.parser_log("Consumed trailing [0][None] padding in CustomItemData")
 
         ArkSaveLogger.parser_log(f"CustomItemData of type {self.custom_data_name} read successfully, total size: {total_size} bytes")
         for string in self.strings:
@@ -335,10 +347,17 @@ class ArkCustomItemData:
         nr_of_items = ark_binary_data.read_uint32()
         soft_classes = []
 
-        while ark_binary_data.peek_int() != 0:
-            obj_name = ark_binary_data.read_name()
-            soft_classes.append(obj_name)
-        ark_binary_data.validate_uint32(0)
+        # Each soft-class entry is an FSoftObjectPath.
+        # - With name table (game saves): single FName (name_id + always_zero) + SubPathString.
+        # - Without name table (archives, UE 5.5): FTopLevelAssetPath — PackageName string
+        #   + AssetName string — followed by SubPathString.
+        has_name_table = ark_binary_data.save_context.has_name_table()
+        for _ in range(nr_of_items):
+            pkg_name = ark_binary_data.read_name()    # PackageName (or full path when name table)
+            if not has_name_table:
+                ark_binary_data.read_name()           # AssetName (archives only)
+            ark_binary_data.read_string()             # SubPathString (usually empty)
+            soft_classes.append(pkg_name)
 
         return soft_classes
 
