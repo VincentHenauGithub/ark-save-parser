@@ -618,7 +618,7 @@ class SaveConnection:
                 # input("Press Enter to continue...")
 
             # Notify any registered debug handler (e.g. the testbench dumper).
-            ArkSaveLogger._notify_object_failure(obj_uuid, class_name, byte_buffer, e)
+            ArkSaveLogger._notify_object_failure(obj_uuid, class_name, byte_buffer, e, kind="game")
 
             SaveConnection.failed_parses[class_name] = SaveConnection.failed_parses.get(class_name, 0) + 1
             ArkSaveLogger.warning_log(f"Failed parses for this class: {SaveConnection.failed_parses[class_name]}")

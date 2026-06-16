@@ -75,6 +75,46 @@ except Exception as e:
 # ArkGameObject(OBJ_UUID, CLASS_NAME, ArkBinaryParser(data))
 '''
 
+# Player/tribe archives (.arkprofile / .arktribe) are self-contained — their name
+# table is inline — so they reload directly from object.bin via ArkArchive.
+_REPARSE_TEMPLATE_ARCHIVE = '''\
+"""Re-parse a failed player/tribe archive object for debugging.
+
+Run:  python reparse.py
+
+Archives carry their own names inline, so this reloads object.bin directly via
+ArkArchive and re-parses with PARSER logging — faithful to the original parse.
+Edit the arkparse source, re-run, repeat.
+
+(Note: for pre-Unreal-5.5 "old" saves the dumped bytes may be offset-stripped;
+this loop targets 5.5+ archives, the common case.)
+"""
+from pathlib import Path
+
+from arkparse.logging import ArkSaveLogger
+from arkparse.parsing.ark_archive import ArkArchive
+
+HERE = Path(__file__).parent
+CLASS_NAME = "{class_name}"
+FROM_STORE = {from_store}
+
+ArkSaveLogger.disable_all_logs()
+ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.PARSER, True)
+ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.ERROR, True)
+ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.WARNING, True)
+ArkSaveLogger.allow_invalid_objects(False)
+ArkSaveLogger.allow_invalid_mod_objects(False)
+
+data = (HERE / "object.bin").read_bytes()
+print(f"Re-parsing archive containing {{CLASS_NAME}} from {{len(data)}} bytes (from_store={{FROM_STORE}})...")
+try:
+    archive = ArkArchive(data, from_store=FROM_STORE)
+    print("Parsed OK:", len(archive.objects), "objects in archive")
+except Exception as e:
+    print("FAILED again:", e)
+    raise
+'''
+
 
 class FailedObjectDumper:
     """Stateful handler registered with ArkSaveLogger; dedupes by uuid."""
@@ -85,8 +125,19 @@ class FailedObjectDumper:
         self.seen: set[str] = set()
         self.dumped: list[Path] = []
 
-    def __call__(self, obj_uuid, class_name, byte_buffer, error) -> None:
-        key = str(obj_uuid)
+    def __call__(self, obj_uuid, class_name, byte_buffer, error,
+                 kind: str = "game", reload_hint: dict | None = None) -> None:
+        raw = getattr(byte_buffer, "byte_buffer", None)
+
+        # Game objects key off their uuid; archives have no per-object uuid, so
+        # key off a content hash (dedupes identical failures, separates distinct).
+        if obj_uuid is not None:
+            key = str(obj_uuid)
+        else:
+            import hashlib
+            digest = hashlib.sha1(raw or b"").hexdigest()[:12]
+            key = f"{kind}_{digest}"
+
         if key in self.seen:
             return
         self.seen.add(key)
@@ -96,7 +147,6 @@ class FailedObjectDumper:
         out.mkdir(parents=True, exist_ok=True)
 
         # 1. raw binary
-        raw = getattr(byte_buffer, "byte_buffer", None)
         if raw is not None:
             (out / "object.bin").write_bytes(raw)
 
@@ -138,6 +188,7 @@ class FailedObjectDumper:
 
         # 4. info
         (out / "info.txt").write_text(
+            f"kind:  {kind}\n"
             f"uuid:  {obj_uuid}\n"
             f"class: {class_name}\n"
             f"error: {error}\n"
@@ -146,18 +197,23 @@ class FailedObjectDumper:
             encoding="utf-8",
         )
 
-        # 5. reparse script (reloads from the save for a faithful re-parse)
-        (out / "reparse.py").write_text(
-            _REPARSE_TEMPLATE.format(
+        # 5. reparse script — game objects reload from the save; archives reload
+        # from their own (self-contained) bytes.
+        if kind == "archive":
+            from_store = bool((reload_hint or {}).get("from_store", True))
+            reparse = _REPARSE_TEMPLATE_ARCHIVE.format(
+                class_name=class_name, from_store=from_store
+            )
+        else:
+            reparse = _REPARSE_TEMPLATE.format(
                 uuid=obj_uuid,
                 class_name=class_name,
                 save_path=self.save_path or "SET_ME",
-            ),
-            encoding="utf-8",
-        )
+            )
+        (out / "reparse.py").write_text(reparse, encoding="utf-8")
 
         self.dumped.append(out)
-        print(f"  [debug] dumped failed object -> {out}")
+        print(f"  [debug] dumped failed object ({kind}) -> {out}")
 
 
 def _safe_name(class_name: str) -> str:

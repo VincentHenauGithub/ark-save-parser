@@ -347,10 +347,14 @@ class ArkCustomItemData:
         nr_of_items = ark_binary_data.read_uint32()
         soft_classes = []
 
-        while ark_binary_data.peek_int() != 0:
+        # Each soft-class entry is a name (8 bytes) followed by its SubPathString,
+        # which is an empty FString here (uint32 length 0). The old peek_int()-based
+        # loop stopped on the first entry's own trailing 0, so it only ever read a
+        # single entry; iterate by count and consume the trailing 0 per entry.
+        for _ in range(nr_of_items):
             obj_name = ark_binary_data.read_name()
+            ark_binary_data.validate_uint32(0)
             soft_classes.append(obj_name)
-        ark_binary_data.validate_uint32(0)
 
         return soft_classes
 

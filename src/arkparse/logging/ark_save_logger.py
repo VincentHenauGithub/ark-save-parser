@@ -258,12 +258,18 @@ class ArkSaveLogger:
         ArkSaveLogger._object_failure_handler = handler
 
     @staticmethod
-    def _notify_object_failure(obj_uuid, class_name, byte_buffer, error):
+    def _notify_object_failure(obj_uuid, class_name, byte_buffer, error, **kwargs):
+        """Forward a parse failure to the registered handler.
+
+        ``kwargs`` carries optional context (e.g. ``kind`` of "game"/"archive" and
+        a ``reload_hint`` dict) so the handler can capture and reload different
+        object types appropriately. Handlers should accept ``**kwargs``.
+        """
         handler = ArkSaveLogger._object_failure_handler
         if handler is None:
             return
         try:
-            handler(obj_uuid, class_name, byte_buffer, error)
+            handler(obj_uuid, class_name, byte_buffer, error, **kwargs)
         except Exception as e:  # never let debug tooling break parsing
             ArkSaveLogger.warning_log(f"object_failure_handler raised: {e}")
 
