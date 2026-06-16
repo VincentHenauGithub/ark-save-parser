@@ -20,7 +20,7 @@ from arkparse import AsaSave
 from arkparse.logging import ArkSaveLogger
 
 from snapshot import Snapshot
-from debug import FailedObjectDumper, DEBUG_DIR
+from debug import FailedObjectDumper, StructMismatchRecorder, DEBUG_DIR
 
 # --------------------------------------------------------------------------- #
 # Logging: errors/warnings on, the noisy levels off, strict object validation.
@@ -68,17 +68,26 @@ def save_file() -> Path:
 
 @pytest.fixture(scope="session")
 def dumper():
-    """Registers the failed-object dumper and clears last run's dumps.
+    """Registers the failed-object dumper + struct-mismatch recorder and clears
+    last run's dumps.
 
-    Every object that fails to parse is captured to ``debug_dumps/`` (binary +
-    structured print + names + a standalone reparse.py). See debug.py.
+    - Objects that fail to parse are captured to ``debug_dumps/<class>/<key>/``
+      (binary + structured print + names + a standalone reparse.py).
+    - Non-fatal struct size mismatches are recorded under
+      ``debug_dumps/_struct_mismatches/`` (deduped by struct type + a summary).
+    See debug.py.
     """
     if DEBUG_DIR.exists():
         shutil.rmtree(DEBUG_DIR)
     d = FailedObjectDumper()
+    recorder = StructMismatchRecorder()
     ArkSaveLogger.set_object_failure_handler(d)
+    ArkSaveLogger.set_struct_mismatch_handler(recorder)
+    d.struct_mismatches = recorder  # expose for tests/inspection
     yield d
+    recorder.flush()
     ArkSaveLogger.set_object_failure_handler(None)
+    ArkSaveLogger.set_struct_mismatch_handler(None)
 
 
 @pytest.fixture(scope="session")

@@ -59,6 +59,9 @@ class ArkSaveLogger:
     #   (obj_uuid, class_name, byte_buffer, error) -> None
     # Used by tooling (e.g. the testbench) to capture failing objects for debug.
     _object_failure_handler = None
+    # Optional callback invoked on a (non-fatal) struct size mismatch. Signature:
+    #   (struct_type, data_size, start_position, end_position, byte_buffer) -> None
+    _struct_mismatch_handler = None
     _worker_logging_enabled = None  # Whether logging is enabled in worker threads
     _file = ""
     _byte_buffer = None
@@ -272,6 +275,27 @@ class ArkSaveLogger:
             handler(obj_uuid, class_name, byte_buffer, error, **kwargs)
         except Exception as e:  # never let debug tooling break parsing
             ArkSaveLogger.warning_log(f"object_failure_handler raised: {e}")
+
+    @staticmethod
+    def set_struct_mismatch_handler(handler):
+        """Register a callback invoked on a non-fatal struct size mismatch (a
+        struct parsed as a property list that didn't consume exactly data_size).
+
+        The handler receives ``(struct_type, data_size, start_position,
+        end_position, byte_buffer)``. Pass ``None`` to clear it. Exceptions are
+        swallowed. Intended for debug tooling to record under-/over-read structs.
+        """
+        ArkSaveLogger._struct_mismatch_handler = handler
+
+    @staticmethod
+    def _notify_struct_mismatch(struct_type, data_size, start_position, end_position, byte_buffer):
+        handler = ArkSaveLogger._struct_mismatch_handler
+        if handler is None:
+            return
+        try:
+            handler(struct_type, data_size, start_position, end_position, byte_buffer)
+        except Exception as e:  # never let debug tooling break parsing
+            ArkSaveLogger.warning_log(f"struct_mismatch_handler raised: {e}")
 
     @staticmethod
     def enable_worker_logging(state: bool = True, set_globally: bool = False):

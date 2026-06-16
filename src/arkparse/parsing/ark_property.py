@@ -529,7 +529,12 @@ class ArkProperty:
         ark_struct_type = ArkStructType.from_type_name(struct_type)
         
         if (ark_struct_type is not None) or in_array:
-            if in_array and bb.peek_name() == "None":
+            # Known fixed-layout structs (LinearColor/Vector/Color/...) are packed
+            # primitives with no None terminator. In archive parsing there is no name
+            # table, so peek_name() falls back to read_string() and would mis-read their
+            # packed float bytes as a string length, overflowing the buffer. Skip the
+            # None probe for these and let the dedicated reader consume the exact bytes.
+            if in_array and ark_struct_type not in _STRUCT_READERS and bb.peek_name() == "None":
                 ArkSaveLogger.parser_log("Exiting struct (None marker)")
                 return bb.read_name()
             if data_size <= 4:
@@ -560,6 +565,8 @@ class ArkProperty:
             ArkSaveLogger.warning_log(
                 f"StructType: {struct_type}, DataSize: {data_size}, Position: {position}, CurrentPosition: {bb.get_position()}"
             )
+            # Notify any registered debug handler (e.g. the testbench recorder).
+            ArkSaveLogger._notify_struct_mismatch(struct_type, data_size, position, bb.get_position(), bb)
             bb.set_position(position + data_size)
         return props
 

@@ -21,6 +21,8 @@ import io
 import traceback
 from pathlib import Path
 
+from arkparse.parsing.ark_binary_parser import ArkBinaryParser
+
 DEBUG_DIR = Path(__file__).parent / "debug_dumps"
 
 _REPARSE_TEMPLATE = '''\
@@ -220,3 +222,67 @@ def _safe_name(class_name: str) -> str:
     # /AwesomeAdminTools/.../BP_X.BP_X_C  ->  BP_X.BP_X_C  ->  filesystem-safe
     leaf = class_name.rstrip("/").split("/")[-1]
     return "".join(c if (c.isalnum() or c in "._-") else "_" for c in leaf) or "unknown"
+
+
+# Where non-fatal struct mismatches are recorded.
+STRUCT_MISMATCH_DIR = DEBUG_DIR / "_struct_mismatches"
+
+
+class StructMismatchRecorder:
+    """Records non-fatal struct size mismatches (a struct parsed as a property
+    list that under-/over-read its declared data_size, after which the parser
+    realigns). These don't fail the parse but mark structs arkparse can't fully
+    read. Deduped by struct type; the first occurrence of each type dumps the
+    struct's bytes + structured print, and a summary tallies all of them.
+    """
+
+    def __init__(self, root: Path = STRUCT_MISMATCH_DIR):
+        self.root = root
+        self.counts: dict[str, int] = {}
+        self.deltas: dict[str, int] = {}
+
+    def __call__(self, struct_type, data_size, start_position, end_position, byte_buffer) -> None:
+        self.counts[struct_type] = self.counts.get(struct_type, 0) + 1
+        # delta > 0 => under-read (parser stopped short); < 0 => over-read.
+        self.deltas[struct_type] = (start_position + data_size) - end_position
+
+        if self.counts[struct_type] == 1:  # full dump on first sighting of a type
+            out = self.root / _safe_name(struct_type)
+            out.mkdir(parents=True, exist_ok=True)
+
+            raw = getattr(byte_buffer, "byte_buffer", None)
+            if raw is not None:
+                struct_bytes = raw[start_position:start_position + data_size]
+                (out / "struct.bin").write_bytes(struct_bytes)
+                # Structured print of just the struct region, with the same context.
+                try:
+                    ctx = getattr(byte_buffer, "save_context", None)
+                    sub = ArkBinaryParser(struct_bytes, ctx) if ctx is not None else ArkBinaryParser(struct_bytes)
+                    buf = io.BytesIO()
+                    sub.structured_print(to_file=buf, to_default_file=False)
+                    (out / "structured_print.txt").write_bytes(buf.getvalue())
+                except Exception as e:
+                    (out / "structured_print.txt").write_text(
+                        f"structured_print failed: {e}\n", encoding="utf-8"
+                    )
+
+            (out / "info.txt").write_text(
+                f"struct_type:   {struct_type}\n"
+                f"data_size:     {data_size}\n"
+                f"start_position:{start_position}\n"
+                f"end_position:  {end_position}\n"
+                f"delta (declared_end - actual): {(start_position + data_size) - end_position}\n",
+                encoding="utf-8",
+            )
+
+    def flush(self) -> None:
+        if not self.counts:
+            return
+        self.root.mkdir(parents=True, exist_ok=True)
+        lines = ["struct_type\tcount\tdelta(bytes)"]
+        for st in sorted(self.counts, key=lambda s: -self.counts[s]):
+            lines.append(f"{st}\t{self.counts[st]}\t{self.deltas[st]}")
+        (self.root / "summary.txt").write_text("\n".join(lines), encoding="utf-8")
+        total = sum(self.counts.values())
+        print(f"  [debug] recorded {total} struct mismatch(es) across "
+              f"{len(self.counts)} type(s) -> {self.root}")
