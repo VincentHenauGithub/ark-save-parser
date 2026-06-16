@@ -347,14 +347,17 @@ class ArkCustomItemData:
         nr_of_items = ark_binary_data.read_uint32()
         soft_classes = []
 
-        # Each soft-class entry is a name (8 bytes) followed by its SubPathString,
-        # which is an empty FString here (uint32 length 0). The old peek_int()-based
-        # loop stopped on the first entry's own trailing 0, so it only ever read a
-        # single entry; iterate by count and consume the trailing 0 per entry.
+        # Each soft-class entry is an FSoftObjectPath.
+        # - With name table (game saves): single FName (name_id + always_zero) + SubPathString.
+        # - Without name table (archives, UE 5.5): FTopLevelAssetPath — PackageName string
+        #   + AssetName string — followed by SubPathString.
+        has_name_table = ark_binary_data.save_context.has_name_table()
         for _ in range(nr_of_items):
-            obj_name = ark_binary_data.read_name()
-            ark_binary_data.validate_uint32(0)
-            soft_classes.append(obj_name)
+            pkg_name = ark_binary_data.read_name()    # PackageName (or full path when name table)
+            if not has_name_table:
+                ark_binary_data.read_name()           # AssetName (archives only)
+            ark_binary_data.read_string()             # SubPathString (usually empty)
+            soft_classes.append(pkg_name)
 
         return soft_classes
 
