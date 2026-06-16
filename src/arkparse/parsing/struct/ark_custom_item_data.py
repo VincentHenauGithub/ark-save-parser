@@ -92,7 +92,19 @@ class ArkCustomItemData:
         #         ark_binary_data.validate_uint32(0)
         #         self.skins.append([bp, shorthand])
 
-        ark_binary_data.validate_name("None")        
+        ark_binary_data.validate_name("None")
+
+        # Some modded CustomItemData (e.g. the Cryopods mod) append extra empty
+        # trailing sections, each serialized as a [uint32 0][None] pair. Vanilla
+        # data has none of these, so this loop is a no-op there; the next array
+        # element starts with a real name ("CustomDataBytes") whose first 4 bytes
+        # are non-zero, which stops the loop.
+        while (ark_binary_data.size() - ark_binary_data.position) >= 12 \
+                and ark_binary_data.peek_int() == 0 \
+                and ark_binary_data.peek_name(4) == "None":
+            ark_binary_data.read_uint32()   # 0
+            ark_binary_data.read_name()     # None
+            ArkSaveLogger.parser_log("Consumed trailing [0][None] padding in CustomItemData")
 
         ArkSaveLogger.parser_log(f"CustomItemData of type {self.custom_data_name} read successfully, total size: {total_size} bytes")
         for string in self.strings:
