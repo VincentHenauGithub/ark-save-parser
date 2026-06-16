@@ -52,6 +52,13 @@ class ArkSaveLogger:
     # Use _get_struct_path() for thread-safe access
     current_struct_path = []
     _allow_invalid_objects = None
+    # Governs mod-namespace objects (not /Game/ or /Script/). Defaults to True
+    # (skip & continue) for backward compatibility; set to False to hard-fail.
+    _allow_invalid_mod_objects = None
+    # Optional callback invoked when an object fails to parse. Signature:
+    #   (obj_uuid, class_name, byte_buffer, error) -> None
+    # Used by tooling (e.g. the testbench) to capture failing objects for debug.
+    _object_failure_handler = None
     _worker_logging_enabled = None  # Whether logging is enabled in worker threads
     _file = ""
     _byte_buffer = None
@@ -140,10 +147,13 @@ class ArkSaveLogger:
                 }
                 ArkSaveLogger._file_viewer_enabled = True
                 ArkSaveLogger._worker_logging_enabled = False
+                ArkSaveLogger._allow_invalid_objects = True
+                ArkSaveLogger._allow_invalid_mod_objects = True
                 config = {
                     "levels": ArkSaveLogger._log_level_states,
                     "fve": False,
                     "allow_invalid": True,
+                    "allow_invalid_mod": True,
                     "worker_logging": False
                 }
                 write_config_file(ArkSaveLogger.__LOG_CONFIG_FILE_NAME, config)
@@ -151,6 +161,7 @@ class ArkSaveLogger:
                 ArkSaveLogger._log_level_states = config["levels"]
                 ArkSaveLogger._file_viewer_enabled = config["fve"]
                 ArkSaveLogger._allow_invalid_objects = config["allow_invalid"]
+                ArkSaveLogger._allow_invalid_mod_objects = config.get("allow_invalid_mod", True)
                 ArkSaveLogger._worker_logging_enabled = config.get("worker_logging", False)
             # Update cached parser_log state for fast checks
             ArkSaveLogger._parser_log_enabled = (
@@ -219,6 +230,42 @@ class ArkSaveLogger:
             global_config = read_config_file(ArkSaveLogger.__LOG_CONFIG_FILE_NAME)
             global_config["allow_invalid"] = state
             write_config_file(ArkSaveLogger.__LOG_CONFIG_FILE_NAME, global_config)
+
+    @staticmethod
+    def allow_invalid_mod_objects(state: bool = True, set_globally: bool = False):
+        """Governs parsing failures for mod-namespace objects (anything whose
+        class is not under /Game/ or /Script/). When False, such failures are
+        reraised instead of skipped. Defaults to True (skip & continue)."""
+        if ArkSaveLogger._allow_invalid_mod_objects is None:
+            ArkSaveLogger.__init_config()
+
+        ArkSaveLogger._allow_invalid_mod_objects = state
+
+        if set_globally:
+            global_config = read_config_file(ArkSaveLogger.__LOG_CONFIG_FILE_NAME)
+            global_config["allow_invalid_mod"] = state
+            write_config_file(ArkSaveLogger.__LOG_CONFIG_FILE_NAME, global_config)
+
+    @staticmethod
+    def set_object_failure_handler(handler):
+        """Register a callback invoked whenever an object fails to parse.
+
+        The handler receives ``(obj_uuid, class_name, byte_buffer, error)``. Pass
+        ``None`` to clear it. Exceptions raised by the handler are swallowed so
+        debug tooling can never break parsing. Intended for capturing failing
+        objects (binary + structured dump) for offline debugging.
+        """
+        ArkSaveLogger._object_failure_handler = handler
+
+    @staticmethod
+    def _notify_object_failure(obj_uuid, class_name, byte_buffer, error):
+        handler = ArkSaveLogger._object_failure_handler
+        if handler is None:
+            return
+        try:
+            handler(obj_uuid, class_name, byte_buffer, error)
+        except Exception as e:  # never let debug tooling break parsing
+            ArkSaveLogger.warning_log(f"object_failure_handler raised: {e}")
 
     @staticmethod
     def enable_worker_logging(state: bool = True, set_globally: bool = False):

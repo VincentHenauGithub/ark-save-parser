@@ -291,6 +291,18 @@ class ArkProperty:
         if key_type == ArkValueType.Struct:
             value_type = bb.read_name()
         else:
+            if key_type == ArkValueType.Byte:
+                # Enum-keyed map (e.g. TMap<TEnumAsByte<EFoo>, ...>): the key's
+                # enum type is serialized as a descriptor block before the value
+                # type: [enum name][int][enum path][int]. Consume it so the value
+                # type is read from the correct offset.
+                enum_key_type = bb.read_name()
+                bb.read_int()
+                enum_key_path = bb.read_name()
+                bb.read_int()
+                ArkSaveLogger.parser_log(
+                    f"Enum-keyed map: enum={enum_key_type} ({enum_key_path})"
+                )
             value_type = bb.read_value_type_by_name()
             struct_names = bb.read_int()
             if struct_names > 0:
@@ -342,7 +354,13 @@ class ArkProperty:
     @staticmethod
     def read_struct_map(key_type: ArkValueType, bb: "ArkBinaryParser", map_name: str) -> "ArkProperty":
         props: List[ArkProperty] = []
-        key_name = ArkProperty.read_property_value(key_type, bb)
+        if key_type == ArkValueType.Byte:
+            # Enum-keyed map entry: the key is the enum value name (e.g.
+            # E_ActorType_AAT::NewEnumerator0), serialized as a name reference
+            # rather than a single byte.
+            key_name = bb.read_name()
+        else:
+            key_name = ArkProperty.read_property_value(key_type, bb)
         with log_block(f"Map({key_name}:{map_name})"):
             while bb.has_more():
                 p = ArkProperty.read_property(bb)

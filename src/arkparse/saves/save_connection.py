@@ -609,9 +609,16 @@ class SaveConnection:
                 ArkSaveLogger.warning_log(f"Error parsing object {obj_uuid} of type {class_name}, skipping...")
             else:
                 byte_buffer.structured_print(to_default_file=True)
+                if ArkSaveLogger._allow_invalid_mod_objects is False:
+                    byte_buffer.find_names(type=2)
+                    ArkSaveLogger.error_log(f"Error parsing mod object {obj_uuid} of type {class_name}: {e}")
+                    reraise = True
                 ArkSaveLogger.warning_log(f"Error parsing non-standard object of type {class_name}")
 
                 # input("Press Enter to continue...")
+
+            # Notify any registered debug handler (e.g. the testbench dumper).
+            ArkSaveLogger._notify_object_failure(obj_uuid, class_name, byte_buffer, e)
 
             SaveConnection.failed_parses[class_name] = SaveConnection.failed_parses.get(class_name, 0) + 1
             ArkSaveLogger.warning_log(f"Failed parses for this class: {SaveConnection.failed_parses[class_name]}")
