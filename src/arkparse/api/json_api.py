@@ -455,7 +455,12 @@ class JsonApi:
                 try:
                     obj_uuid = SaveConnection.byte_array_to_uuid(row[0])
                     byte_buffer = ArkBinaryParser(row[1], self.save.save_context)
-                    class_name = byte_buffer.read_name()
+                    # Use the string-name-aware reader: some objects store their
+                    # class as an inline string instead of a name-table id, which
+                    # a raw read_name() can't resolve (raises when generate_unknown
+                    # is off). Those are never items, so they fall through the
+                    # filter below.
+                    class_name, *_ = ArkGameObject.read_name(obj_uuid, byte_buffer)
 
                     if "/PrimalItemArmor_" not in class_name and \
                             "/PrimalItem_" not in class_name and \

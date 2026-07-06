@@ -182,7 +182,7 @@ class SaveConnection:
             obj_uuid = _fast_uuid_from_bytes(key_bytes)
             try:
                 reader = ArkBinaryParser(value_bytes, self.save_context)
-                class_name, _ = ArkGameObject.read_name(obj_uuid, reader)
+                class_name, *_ = ArkGameObject.read_name(obj_uuid, reader)
                 self._class_cache[obj_uuid] = class_name
             except Exception:
                 pass
@@ -192,7 +192,7 @@ class SaveConnection:
             return self._class_cache[obj_uuid]
         bin = self.get_game_obj_binary(obj_uuid)
         reader = ArkBinaryParser(bin, self.save_context)
-        class_name, string_name = ArkGameObject.read_name(obj_uuid, reader)
+        class_name, *_ = ArkGameObject.read_name(obj_uuid, reader)
         self._class_cache[obj_uuid] = class_name
         return class_name
 
@@ -402,7 +402,10 @@ class SaveConnection:
             cursor = conn.execute(query)
             for row in cursor:
                 byte_buffer = ArkBinaryParser(row[0], self.save_context)
-                class_name = byte_buffer.read_name()
+                # String-name-aware read: some objects store their class as an
+                # inline string instead of a name-table id, which a raw
+                # read_name() can't resolve (raises when generate_unknown is off).
+                class_name, *_ = ArkGameObject.read_name(None, byte_buffer)
                 if class_name not in classes:
                     classes.append(class_name)
         return classes
@@ -452,7 +455,7 @@ class SaveConnection:
         bin = self.get_game_obj_binary(obj_uuid)
         reader = ArkBinaryParser(bin, self.save_context)
 
-        class_name, string_name = ArkGameObject.read_name(obj_uuid, reader)
+        class_name, *_ = ArkGameObject.read_name(obj_uuid, reader)
 
         obj = SaveConnection.parse_as_predefined_object(obj_uuid, class_name, reader)
 
@@ -488,7 +491,7 @@ class SaveConnection:
                     continue
 
                 byte_buffer = ArkBinaryParser(binary_data, self.save_context)
-                class_name, _ = ArkGameObject.read_name(obj_uuid, byte_buffer)
+                class_name, *_ = ArkGameObject.read_name(obj_uuid, byte_buffer)
 
                 if reader_config.blueprint_name_filter and not reader_config.blueprint_name_filter(class_name):
                     continue
