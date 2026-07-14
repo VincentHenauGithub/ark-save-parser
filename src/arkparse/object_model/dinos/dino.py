@@ -267,7 +267,7 @@ class Dino(ParsedObjectBase):
 
         # Grab gene traits if they exists
         if self.gene_traits is not None:
-            json_obj["GeneTraits"] = self.gene_traits
+            json_obj["GeneTraits"] = [str(t) for t in self.gene_traits]
 
         # Grab colors if they exists
         color_set_indices = self.get_color_set_indices()
