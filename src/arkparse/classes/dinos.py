@@ -139,7 +139,11 @@ class DlcDinos:
     malwyn = "/Game/LostColony/Dinos/SnowDragon/SnowDragon_Character_BP.SnowDragon_Character_BP_C"
     ossidon = "/Game/LostColony/Dinos/SnowMonster/SnowMonster_Character_BP.SnowMonster_Character_BP_C"
     gloon = "/Game/LostColony/Dinos/LostChargePet/LostCharge_LanternPet_Char_BP.LostCharge_LanternPet_Char_BP_C"
-    all_bps = [firemane, archelon, dread_mare, oasisaur, train, helper_bot, zeppelin, doggo, veilwyn, elderclaw, solwyn, malwyn, ossidon, gloon]
+    lumina = "/Game/Dragontopia/Dragons/Eclipsar/Lumina/Lumina_Character_BP.Lumina_Character_BP_C"
+    umbra = "/Game/Dragontopia/Dragons/Eclipsar/Umbra/Umbra_Character_BP.Umbra_Character_BP_C"
+    brig_ship = "/Game/Water/Vessels/Brig/BrigShipBP.BrigShipBP_C"
+    sloop_ship = "/Game/Water/Vessels/Sloop/SloopShipBP.SloopShipBP_C"
+    all_bps = [firemane, archelon, dread_mare, oasisaur, train, helper_bot, zeppelin, doggo, veilwyn, elderclaw, solwyn, malwyn, ossidon, gloon, lumina, umbra, brig_ship, sloop_ship]
 
 class ShoulderPets:
     glowtail = "/Game/Aberration/Dinos/LanternLizard/LanternLizard_Character_BP.LanternLizard_Character_BP_C"
@@ -223,6 +227,8 @@ class NonTameable:
     tek_giga = "/Game/PrimalEarth/Dinos/Giganotosaurus/BionicGigant_Character_BP.BionicGigant_Character_BP_C"
     leedsichthys = "/Game/PrimalEarth/Dinos/Leedsichthys/Leedsichthys_Character_BP.Leedsichthys_Character_BP_C"
     yeti = "/Game/PrimalEarth/Dinos/Bigfoot/Yeti_Character_BP.Yeti_Character_BP_C"
+    insect_swarm = "/Game/Genesis/Dinos/Swarms/InsectSwarmChar_BP.InsectSwarmChar_BP_C"
+    microbe_swarm = "/Game/Genesis/Dinos/Swarms/MicrobeSwarmChar_BP.MicrobeSwarmChar_BP_C"
     corrupted = Corrupted()
     alpha = Alphas()
     event = event()
@@ -233,7 +239,7 @@ class NonTameable:
         coelacanth_ocean, leech, leech_diseased, piranha, 
         sabertooth_salmon, trilobite, death_worm, jugbug_oil, jugbug_water,
         enforcer, scout, defence_unit, polar_bear, iceworm, tek_giga,
-        leedsichthys, yeti
+        leedsichthys, yeti, insect_swarm, microbe_swarm
     ] + corrupted.all_bps + alpha.all_bps + event.all_bps
 
 class Paleo:
@@ -382,6 +388,7 @@ class Dinos:
     helicoprion = "/Game/ASA/Dinos/Helicoprion/Helicoprion_Character_BP.Helicoprion_Character_BP_C"
     acrocanthosaurus = "/Game/ASA/Dinos/Acrocanthosaurus/Acrocanthosaurus_Character_BP.Acrocanthosaurus_Character_BP_C"
     cryolophosaurus = "/Game/ASA/Dinos/Cryolophosaurus/Cryolophosaurus_Character_BP.Cryolophosaurus_Character_BP_C"
+    magmasaur = "/Game/Genesis/Dinos/Cherufe/Cherufe_Character_BP"
 
     abberant = Abberant()
     paleo = Paleo()
@@ -416,7 +423,7 @@ class Dinos:
         dreadnoughtus, maelizard, shastasaurus, gacha, gasbag,
         managarmr, tek_raptor, tek_rex, tek_stego,
         velonosaur, yutyrannus, tek_parasaur, queen_bee,
-        rubble_golem, helicoprion, acrocanthosaurus, cryolophosaurus
+        rubble_golem, helicoprion, acrocanthosaurus, cryolophosaurus, magmasaur
     ]  + abberant.all_bps + flyers.all_bps + \
         dlc_dinos.all_bps + shoulder_pets.all_bps + non_tameable.all_bps + \
         paleo.all_bps

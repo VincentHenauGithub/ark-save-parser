@@ -96,8 +96,9 @@ class Crafting:
     cooking_pot = "/Game/PrimalEarth/Structures/CookingPot.CookingPot_C"
     grill = "/Game/PrimalEarth/Structures/Grill.Grill_C"
     chembench = "/Game/PrimalEarth/Structures/StorageBox_ChemBench.StorageBox_ChemBench_C"
+    blood_forge = "/Game/LostColony/Structures/Bloodforge/Inventory/InventoryComponent_Bloodforge.InventoryComponent_Bloodforge_C"
 
-    all_bps = [forge, mortar_and_pestle, compost_bin, campfire, cooking_pot, grill, chembench]
+    all_bps = [forge, mortar_and_pestle, compost_bin, campfire, cooking_pot, grill, chembench, blood_forge]
 
 class Utility:
     simple_bed = "/Game/PrimalEarth/Structures/SimpleBed.SimpleBed_C"
@@ -112,9 +113,11 @@ class Utility:
     toilet = "/Game/PrimalEarth/Structures/Furniture/StructureBP_Toilet.StructureBP_Toilet_C"
     cryofridge = "/Game/Extinction/Structures/Cryofridge/CryoFridge.CryoFridge_C"
     deathitemcache = "/Game/PrimalEarth/Structures/DeathItemCache.DeathItemCache_C"
+    cryo_hospital = "/Game/LostColony/Structures/CryoHospital/Inventory/InventoryComponent_CryoHospital.InventoryComponent_CryoHospital_C"
+    medical_stand = "/Game/LostColony/Structures/MedicalStand/Inventories/InventoryComponent_MedicalStand.InventoryComponent_MedicalStand_C"
 
     all_bps = [simple_bed, sleeping_bag, anvil_bench, small_storage_box, large_bear_trap, large_storage_box,
-               bunk_bed, vault, sleeping_pod, toilet, cryofridge, deathitemcache]
+               bunk_bed, vault, sleeping_pod, toilet, cryofridge, deathitemcache, cryo_hospital, medical_stand]
     
 class TributeTerminals:
     tribute_terminal_purple = "/Game/PrimalEarth/Structures/TributeTerminal_Purple.TributeTerminal_Purple_C"
