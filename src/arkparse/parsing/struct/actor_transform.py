@@ -155,10 +155,11 @@ class MapCoordinateParameters:
                 return data
         return self.map_data[0]
 
-    def _get_map_data_by_sub_name(self, sub_name: str) -> Optional[MapData]:
-        for map_data in self.map_data:
-            if map_data.sub_map_name.casefold() == sub_name.casefold():
-                return map_data
+    def _get_map_data_by_sub_name(self, sub_name: Optional[str]) -> Optional[MapData]:
+        if sub_name is not None:
+            for map_data in self.map_data:
+                if map_data.sub_map_name is not None and map_data.sub_map_name.casefold() == sub_name.casefold():
+                    return map_data
         return self.map_data[0]
 
     def transform_to(self, x: float, y: float, z: float = 0.0) -> tuple[float, float, Optional[str]]:
