@@ -14,13 +14,13 @@ from arkparse.object_model.equipment.__equipment import Equipment
 from arkparse.object_model.equipment import Weapon, Armor, Saddle, Shield
 
 # retrieve the save file (can also retrieve it from a local path)
-# save_path = ArkFtpClient.from_config(
-#     Path("../../ftp_config.json"), ArkMap.LOST_COLONY).download_save_file(Path.cwd())
-save_path = Path.cwd() / "_LostColony_WP.ark"
+save_path = ArkFtpClient.from_config(
+    Path("../../ftp_config.json"), ArkMap.LOST_COLONY).download_save_file(Path.cwd())
+# save_path = Path.cwd() / "_LostColony_WP.ark"
 save = AsaSave(save_path)
 
 equipment_api = EquipmentApi(save)  # Create Equipment API
-player_api = PlayerApi(save)  # Create Player API to get player data if needed
+player_api = PlayerApi(save, ignore_error=True)  # Create Player API to get player data if needed
 
 weapons: Dict[UUID, Weapon] = equipment_api.get_all(EquipmentApi.Classes.WEAPON)
 armors: Dict[UUID, Armor] = equipment_api.get_all(EquipmentApi.Classes.ARMOR)
@@ -30,11 +30,11 @@ saddles: Dict[UUID, Saddle] = equipment_api.get_all(EquipmentApi.Classes.SADDLE)
 ratings = {}
 sorted_per_tribe = {}
 ignore = ["WeaponCrossbow", "WeaponMetalHatchet", "WeaponMetalPick", "WeaponBow", "Chitin", "Hide", "WeaponPike", "WeaponGun", "CLoth"]
-quality_limit = 2
+quality_limit = 3
 for d in [weapons, armors, shields, saddles]:
     d: Dict[UUID, Equipment]
     for key, value in d.items():
-        if value.rating > quality_limit and all(ignored not in value.get_short_name() for ignored in ignore):
+        if value.rating > quality_limit and all(ignored not in value.get_short_name() for ignored in ignore) and not value.is_crafted():
             value.get_owner(player_api)  # Populate owner data for each item
             # print(value)
             value: Equipment
@@ -54,7 +54,13 @@ for tribe_name, equipment_list in sorted_per_tribe.items():
     equipment_list.sort(key=lambda x: (x.quality, x.rating), reverse=True)
     for eq in equipment_list:
         eq: Equipment
-        print(f"  {eq} - {save.get_class_of_uuid(eq.owner_inv_uuid).split('.')[-1].replace("_C", "").replace("PrimalInventoryBP_", "")} ({str(eq.owner_inv_uuid)[:8]})")
+        WHITE = '\033[97m'
+        RESET = '\033[0m'
+        BLUE = '\033[94m'
+        color = WHITE
+        if eq.is_bp:
+            color = BLUE
+        print(f"  {color}{eq}- {save.get_class_of_uuid(eq.owner_inv_uuid).split('.')[-1].replace("_C", "").replace("PrimalInventoryBP_", "")} ({str(eq.owner_inv_uuid)[:8]}){RESET} ")
 
 # Convert to a Pandas DataFrame
 data = []

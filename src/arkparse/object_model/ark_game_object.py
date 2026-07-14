@@ -45,6 +45,8 @@ class ArkGameObject(ArkPropertyContainer):
         self.uuid = uuid
         self.blueprint = blueprint
         string_name = False
+        string_names: List[str] = []
+        string_name_offsets: List[int] = []
         super().__init__()
         if binary_reader:
             ArkSaveLogger.set_file(binary_reader, "debug.bin")
@@ -55,7 +57,7 @@ class ArkGameObject(ArkPropertyContainer):
                     self.uuid2: UUID = None
                     binary_reader.set_position(0)
 
-                    self.blueprint, string_name = ArkGameObject.read_name(uuid, binary_reader)
+                    self.blueprint, string_name, string_names, string_name_offsets = ArkGameObject.read_name(uuid, binary_reader)
                     ArkSaveLogger.parser_log(f"Read Blueprint: {self.blueprint} (String name: {string_name})")
 
                     sContext : SaveContext = binary_reader.save_context
@@ -69,6 +71,14 @@ class ArkGameObject(ArkPropertyContainer):
                 binary_reader.validate_uint32(0)
                 if string_name:
                     binary_reader.read_uint16()
+                    # Names embedded in a string-name header are stored as
+                    # strings (never as name-table refs), mirroring what the
+                    # regular names block below would produce.
+                    self.names = string_names
+                    self.name_metadata = [
+                        _NameMetadata(name, offset, True)
+                        for name, offset in zip(string_names, string_name_offsets)
+                    ]
 
             try:
                 if not (no_header or string_name):
@@ -220,8 +230,10 @@ class ArkGameObject(ArkPropertyContainer):
         # self.uuid2 = reader.read_uuid()
 
     def print_properties(self):
+        ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.INFO, True)
         ArkSaveLogger.info_log(f"Properties for {self.blueprint} ({self.uuid}):")
         super().print_properties()
+        ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.INFO, False)
 
     def read_double(self, reader: ArkBinaryParser, property_name: str) -> float:
         reader.validate_name(property_name)
@@ -248,6 +260,8 @@ class ArkGameObject(ArkPropertyContainer):
     def read_name(obj_uuid: UUID, reader: ArkBinaryParser) -> str:
         reader.set_position(0)
         string_name = False
+        extra_names: List[str] = []
+        extra_offsets: List[int] = []
 
         try:
             class_name = reader.read_name()
@@ -258,18 +272,26 @@ class ArkGameObject(ArkPropertyContainer):
             try:
                 unknow_id = reader.read_uint32()
                 reader.validate_uint64(0)
-                reader.read_int()
+                name_count = reader.read_int()
                 class_name = reader.read_string()
                 # reader.validate_uint32(0)
                 string_name = True
+                # The string-name header carries a name count: the first string is
+                # the class, any further strings are the object's names (e.g. the
+                # instance name of a DeathItemCache) that the name-table format
+                # would store separately. Consume them so the trailing padding
+                # lines up (otherwise validate_uint32(0) hits the next length).
+                for _ in range(max(0, name_count - 1)):
+                    extra_offsets.append(reader.position + 4)
+                    extra_names.append(reader.read_string())
                 ArkSaveLogger.parser_log(f"Object {obj_uuid} has string class name {class_name} instead of name table reference")
             except Exception as e:
                 ArkSaveLogger.error_log(f"Error reading class name for object {obj_uuid}: {e}")
                 reader.structured_print(to_default_file=True)
                 # input("Press Enter to continue...")
                 class_name = "UnknownClass"
-                
-        return class_name, string_name
+
+        return class_name, string_name, extra_names, extra_offsets
     
     def get_short_name(self) -> str:
         to_strip_end = [

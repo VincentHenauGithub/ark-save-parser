@@ -21,12 +21,12 @@ class ArkRotator:
             binary_data.validate_uint32(0x18)
             binary_data.validate_byte(8)
             self.pitch = binary_data.read_double()
-            self.yaw = binary_data.read_double()
             self.roll = binary_data.read_double()
+            self.yaw = binary_data.read_double()
         elif binary_data is not None:
             self.pitch = binary_data.read_double()
-            self.yaw = binary_data.read_double()
             self.roll = binary_data.read_double()
+            self.yaw = binary_data.read_double()
         else:
             self.pitch = pitch
             self.yaw = yaw

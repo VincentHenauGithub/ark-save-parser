@@ -188,5 +188,6 @@ temp
 .venv**
 arkparse-fast-core/**
 /arkparse-fast-core
-
+.serena/
 **.zip
+.claude/

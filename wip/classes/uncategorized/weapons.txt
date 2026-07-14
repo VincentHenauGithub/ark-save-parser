@@ -8,7 +8,6 @@
 /Game/Packs/Wasteland/Weapons/ExplosiveSpear/PrimalItem_WeaponSpear_Explosive.PrimalItem_WeaponSpear_Explosive_C
 /Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemSkin_Spear_Carrot.PrimalItemSkin_Spear_Carrot_C
 /Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponLasso.PrimalItem_WeaponLasso_C
-/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponTekSword.PrimalItem_WeaponTekSword_C
 /Game/PrimalEarth/CoreBlueprints/Weapons/WeapCompoundBow.WeapCompoundBow_C
 /Game/PrimalEarth/CoreBlueprints/Weapons/WeapCrossbow_Tranq.WeapCrossbow_Tranq_C
 /Game/PrimalEarth/CoreBlueprints/Weapons/WeapMachinedSniper_Scope.WeapMachinedSniper_Scope_C

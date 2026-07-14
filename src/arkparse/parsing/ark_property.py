@@ -173,7 +173,7 @@ class ArkProperty:
     # Public API
     # ---------------------------------------------------------------------------------------------
     @staticmethod
-    def read_property(byte_buffer: "ArkBinaryParser", in_array: bool = False) -> Optional["ArkProperty"]:
+    def read_property(byte_buffer: "ArkBinaryParser", in_array: bool = False, struct_end: int = -1) -> Optional["ArkProperty"]:
         name_position = byte_buffer.get_position()
         value_position = 0
         byte_buffer.save_context.generate_unknown = True
@@ -185,7 +185,12 @@ class ArkProperty:
             ArkSaveLogger.parser_log("Exiting struct (None marker) (pos = " + str(byte_buffer.get_position()) + " (hex: " + hex(byte_buffer.get_position()) + "))")
             ArkSaveLogger.exit_struct()
 
-            if byte_buffer.size() - byte_buffer.position >= 4 and byte_buffer.peek_int() == 0:
+            # Only skip the 4 trailing zeros if we haven't already reached the
+            # declared struct boundary. When struct_end is known and we're right
+            # at it, those zeros belong to the outer stream, not this struct.
+            if (struct_end == -1 or byte_buffer.position < struct_end) \
+                    and byte_buffer.size() - byte_buffer.position >= 4 \
+                    and byte_buffer.peek_int() == 0:
                 byte_buffer.skip_bytes(4)
             return None
 
@@ -291,6 +296,18 @@ class ArkProperty:
         if key_type == ArkValueType.Struct:
             value_type = bb.read_name()
         else:
+            if key_type == ArkValueType.Byte:
+                # Enum-keyed map (e.g. TMap<TEnumAsByte<EFoo>, ...>): the key's
+                # enum type is serialized as a descriptor block before the value
+                # type: [enum name][int][enum path][int]. Consume it so the value
+                # type is read from the correct offset.
+                enum_key_type = bb.read_name()
+                bb.read_int()
+                enum_key_path = bb.read_name()
+                bb.read_int()
+                ArkSaveLogger.parser_log(
+                    f"Enum-keyed map: enum={enum_key_type} ({enum_key_path})"
+                )
             value_type = bb.read_value_type_by_name()
             struct_names = bb.read_int()
             if struct_names > 0:
@@ -342,7 +359,13 @@ class ArkProperty:
     @staticmethod
     def read_struct_map(key_type: ArkValueType, bb: "ArkBinaryParser", map_name: str) -> "ArkProperty":
         props: List[ArkProperty] = []
-        key_name = ArkProperty.read_property_value(key_type, bb)
+        if key_type == ArkValueType.Byte:
+            # Enum-keyed map entry: the key is the enum value name (e.g.
+            # E_ActorType_AAT::NewEnumerator0), serialized as a name reference
+            # rather than a single byte.
+            key_name = bb.read_name()
+        else:
+            key_name = ArkProperty.read_property_value(key_type, bb)
         with log_block(f"Map({key_name}:{map_name})"):
             while bb.has_more():
                 p = ArkProperty.read_property(bb)
@@ -375,6 +398,16 @@ class ArkProperty:
         return prop
 
     @staticmethod
+    def _has_struct_reader(struct_type: str) -> bool:
+        """Whether this struct type has a dedicated (fixed-layout) reader.
+
+        Types without one are read generically as a property list; see
+        ``_read_struct_body`` and the guarded array backup in
+        ``read_array_property``.
+        """
+        return ArkStructType.from_type_name(struct_type) in _STRUCT_READERS
+
+    @staticmethod
     def read_array_property(key: str, type_: str, position: int, bb: "ArkBinaryParser", data_size: int) -> Tuple["ArkProperty", int]:
         # V14 no position in array
         bb.set_position(bb.get_position() - 4)
@@ -405,31 +438,51 @@ class ArkProperty:
                 bb.set_position(bb.position - 4)
 
             array_items = bb.read_uint32()
+            array_end = data_start_position + data_size
 
-            # if array_content_type == "PrimalCharacterStatusValueModifier":
-            #     ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.PARSER, True)
+            # Structs without a dedicated reader are read generically as a property
+            # list (see _read_struct_body). That backup is reliable for well-formed,
+            # None-terminated property-list structs but can't be guaranteed for an
+            # arbitrary packed layout, so guard it: if a generic element read raises,
+            # recover by skipping to the array's known end and record the type for
+            # follow-up rather than failing the whole object. A dedicated reader
+            # raising is a real bug, so let that propagate.
+            has_reader = ArkProperty._has_struct_reader(array_content_type)
 
             with log_block(f"Arr({array_content_type})"):
                 ArkSaveLogger.parser_log(
                     f"[STRUCT ARRAY: key='none'; nr_of_value={array_items}; type={array_content_type}; bin_length={data_size}]"
                 )
-                struct_array = [
-                    ArkProperty.read_struct_property(bb, data_size, array_content_type, True)[0]
-                    for _ in range(array_items)
-                ]
+                struct_array = []
+                try:
+                    for _ in range(array_items):
+                        struct_array.append(
+                            ArkProperty.read_struct_property(bb, data_size, array_content_type, True)[0]
+                        )
+                except Exception as exc:
+                    if has_reader:
+                        raise
+                    ArkSaveLogger.warning_log(
+                        f"Generic read of struct array '{array_content_type}' failed after "
+                        f"{len(struct_array)}/{array_items} element(s): {exc}; skipping to end of array"
+                    )
+                    ArkSaveLogger._notify_struct_mismatch(
+                        array_content_type, data_size, data_start_position, bb.position, bb
+                    )
+                    bb.set_position(array_end)
 
             prop = ArkProperty(key, type_, position, 0, struct_array)
-            if bb.position != data_start_position + data_size:
+            if bb.position != array_end:
+                # The read didn't consume exactly the declared size. Record the
+                # mismatch (the testbench captures these) and realign to the end.
                 ArkSaveLogger.warning_log(
-                    f"Array read incorrectly, bytes left to read: {data_start_position + data_size - bb.position}, current position: {bb.position}"
+                    f"Array of struct '{array_content_type}' read incorrectly, "
+                    f"bytes off: {array_end - bb.position}; realigning to end of array"
                 )
-                ArkSaveLogger.warning_log(f"Skipping to the end of the struct, type: {array_content_type}")
-                bb.set_position(data_start_position + data_size)
-                bb.structured_print(to_default_file=True)
-                ArkSaveLogger.open_hex_view(True)
-
-            # if array_content_type == "PrimalCharacterStatusValueModifier":
-            #     ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.PARSER, False)
+                ArkSaveLogger._notify_struct_mismatch(
+                    array_content_type, data_size, data_start_position, bb.position, bb
+                )
+                bb.set_position(array_end)
 
             return prop, start_values_pos
 
@@ -511,7 +564,12 @@ class ArkProperty:
         ark_struct_type = ArkStructType.from_type_name(struct_type)
         
         if (ark_struct_type is not None) or in_array:
-            if in_array and bb.peek_name() == "None":
+            # Known fixed-layout structs (LinearColor/Vector/Color/...) are packed
+            # primitives with no None terminator. In archive parsing there is no name
+            # table, so peek_name() falls back to read_string() and would mis-read their
+            # packed float bytes as a string length, overflowing the buffer. Skip the
+            # None probe for these and let the dedicated reader consume the exact bytes.
+            if in_array and ark_struct_type not in _STRUCT_READERS and bb.peek_name() == "None":
                 ArkSaveLogger.parser_log("Exiting struct (None marker)")
                 return bb.read_name()
             if data_size <= 4:
@@ -521,34 +579,38 @@ class ArkProperty:
                 ArkSaveLogger.parser_log(f"Reading struct {struct_type} with data size {data_size}")
                 return _STRUCT_READERS[ark_struct_type](bb, data_size)
             if in_array:
+                # No dedicated reader for this struct type. Fall through to the
+                # generic property-list read below — the designed backup for unknown
+                # structs in arrays. It reads cleanly for well-formed, None-terminated
+                # property-list structs, and read_array_property validates the array's
+                # total size and recovers from any type it can't fully consume, so
+                # this is not by itself an error. Record the type once (quietly) so it
+                # is discoverable without the noise of a per-type warning.
                 if struct_type not in UNSUPPORTED_STRUCTS:
-                    ArkSaveLogger.warning_log(f"Unsupported struct type {struct_type} in array")
+                    ArkSaveLogger.parser_log(
+                        f"No dedicated reader for struct '{struct_type}' in array; "
+                        f"reading generically as a property list"
+                    )
                     UNSUPPORTED_STRUCTS.append(struct_type)
-                
-                # uncomment the lines below if you want to make objects of unknown structs
-                # ArkSaveLogger.parser_log(f"Reading struct {struct_type} as array")
-                # bb.structured_print(to_default_file=True)
-                # bb.store()
-                # ArkSaveLogger.error_log(f"Unsupported struct type {struct_type} in array")
-                # ArkSaveLogger.open_hex_view(True)
-                # raise ValueError(f"Unsupported struct type {struct_type}")
 
         ArkSaveLogger.parser_log(f"Reading struct {struct_type} with data size {data_size} as property list at position {bb.get_position()}")
         # Fallback: struct as property list
         position = bb.get_position()
-        props = ArkProperty.read_struct_properties(bb)
+        props = ArkProperty.read_struct_properties(bb, struct_end=position + data_size)
         if bb.get_position() != position + data_size and not in_array:
             ArkSaveLogger.warning_log(f"WARNING: Struct reading position mismatch for type {struct_type}")
             ArkSaveLogger.warning_log(
                 f"StructType: {struct_type}, DataSize: {data_size}, Position: {position}, CurrentPosition: {bb.get_position()}"
             )
+            # Notify any registered debug handler (e.g. the testbench recorder).
+            ArkSaveLogger._notify_struct_mismatch(struct_type, data_size, position, bb.get_position(), bb)
             bb.set_position(position + data_size)
         return props
 
     @staticmethod
-    def read_struct_properties(bb: "ArkBinaryParser") -> ArkPropertyContainer:
+    def read_struct_properties(bb: "ArkBinaryParser", struct_end: int = -1) -> ArkPropertyContainer:
         props: List[ArkProperty] = []
-        struct_property = ArkProperty.read_property(bb)
+        struct_property = ArkProperty.read_property(bb, struct_end=struct_end)
         if struct_property is not None:
             ArkSaveLogger.parser_log(
                 f"Struct properties: {struct_property.name} {struct_property.type} {struct_property.value}"
@@ -556,7 +618,7 @@ class ArkProperty:
         while struct_property:
             props.append(struct_property)
             if bb.has_more():
-                struct_property = ArkProperty.read_property(bb)
+                struct_property = ArkProperty.read_property(bb, struct_end=struct_end)
                 if struct_property is not None:
                     ArkSaveLogger.parser_log(
                         f"Struct properties: {struct_property.name} {struct_property.type} {struct_property.value}"

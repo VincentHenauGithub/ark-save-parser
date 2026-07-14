@@ -6,6 +6,7 @@ from pathlib import Path
 import json
 from uuid import UUID
 import numpy as np
+import math
 
 if TYPE_CHECKING:
     from arkparse.parsing.ark_binary_parser import ArkBinaryParser
@@ -193,8 +194,7 @@ class MapCoordinateParameters:
         lat = MapCoordinateParameters.lerp(100.0, 0.0, lat_ratio)
         lo = MapCoordinateParameters.lerp(100.0, 0.0, lo_ratio)
 
-        # 2 digits after the comma
-        return round(lat, 2), round(lo, 2)
+        return lat, lo
     
     def transform_from(self, lat: float, lo: float) -> ArkVector:
         origin_y_diff = self.origin_min_y - self.origin_max_y
@@ -252,13 +252,13 @@ class MapCoords:
         if self.in_cryopod:
             return f"(in cryopod)"
         else:
-            return f"({self.lat}, {self.long})"
+            return f"({self.lat:.2f}, {self.long:.2f})"
         
     def str_short(self) -> str:
         if self.in_cryopod:
             return f"(in cryopod)"
         else:
-            return f"({int(self.lat)}, {int(self.long)})"
+            return f"({self.lat:.2f}, {self.long:.2f})"
         
     def round(self, digits: int = 2):
         self.lat = round(self.lat, digits)
@@ -278,7 +278,7 @@ class ActorTransform:
     roll: float = 0
     in_cryopod: bool = False
 
-    unknown: int = 0
+    _quaternion: float = 0.0
 
     def __init__(self, reader: "ArkBinaryParser" = None, vector: ArkVector = None, rotator: ArkRotator = None, from_json: Path = None):
         if reader:
@@ -287,9 +287,9 @@ class ActorTransform:
             self.y = reader.read_double()
             self.z = reader.read_double()
             self.pitch = reader.read_double()
-            self.yaw = reader.read_double()
             self.roll = reader.read_double()
-            self.unknown = reader.read_uint64()
+            self.yaw = reader.read_double()
+            self._quaternion = reader.read_double()
         elif vector:
             # Initialize from ArkVector and ArkRotator
             self.x = vector.x
@@ -312,9 +312,16 @@ class ActorTransform:
                 self.y = data["y"]
                 self.z = data["z"]
                 self.pitch = data["pitch"]
-                self.yaw = data["yaw"]
-                self.roll = data["roll"]
-                self.unknown = data["unknown"]
+                self.yaw = data["yaw"] if data.get("unknown", None) is None else data["roll"]
+                self.roll = data["roll"] if data.get("unknown", None) is None else data["yaw"]
+
+    def __calc_quaterion(self):
+        self._quaternion = math.sqrt(1-self.pitch**2 - self.yaw**2 - self.roll**2) if (1-self.pitch**2 - self.yaw**2 - self.roll**2) > 0 else 0
+
+    @property
+    def quaternion(self):
+        self.__calc_quaterion()
+        return self._quaternion
 
     def get_distance_to(self, other: "ActorTransform") -> float:
         if self.in_cryopod or other.in_cryopod:
@@ -367,7 +374,7 @@ class ActorTransform:
             "pitch": self.pitch,
             "yaw": self.yaw,
             "roll": self.roll,
-            "unknown": self.unknown
+            "quaternion": self.quaternion
         }
     
     def update(self, new_x, new_y, new_z):
@@ -381,10 +388,11 @@ class ActorTransform:
         loc.x = data["x"]
         loc.y = data["y"]
         loc.z = data["z"]
-        loc.pitch = data["pitch"]
-        loc.yaw = data["yaw"]
-        loc.roll = data["roll"]
-        loc.unknown = data["unknown"]
+        loc.pitch = data["pitch"] 
+        loc.yaw = data["yaw"] if data.get("unknown", None) is None else data["roll"]
+        loc.roll = data["roll"] if data.get("unknown", None) is None else data["yaw"]
+        loc.__calc_quaterion()
+
         return loc
     
     def to_bytes(self):
@@ -393,9 +401,9 @@ class ActorTransform:
             struct.pack('<d', self.y) +
             struct.pack('<d', self.z) +
             struct.pack('<d', self.pitch) +
-            struct.pack('<d', self.yaw) +
             struct.pack('<d', self.roll) +
-            struct.pack('<Q', self.unknown)
+            struct.pack('<d', self.yaw) +
+            struct.pack('<d', self.quaternion)
         )
     
     def store_json(self, folder: Path, name: str = None):

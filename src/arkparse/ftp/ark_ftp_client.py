@@ -5,9 +5,14 @@ from zoneinfo import ZoneInfo
 from io import BytesIO
 from pathlib import Path
 import json
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from arkparse.saves.asa_save import AsaSave
 
 from arkparse.enums import ArkMap
 from arkparse.logging import ArkSaveLogger
+from arkparse.utils.tm_files import CONFIG_FILE_DIR
 
 SAVE_FILES_LOCATION = ["arksa", "ShooterGame", "Saved", "SavedArks"]
 INI_FOLDER_LOCATION = ["arksa", "ShooterGame", "Saved", "Config", "WindowsServer"]
@@ -82,7 +87,21 @@ class INI:
         GAME= "Game.ini"
 
 class ArkFtpClient:
-    def __init__(self, host, port, user, password):
+    _LAST_FTP_CONFIG_PATH = CONFIG_FILE_DIR / "last_ftp_config.json"
+    _LAST_MAP_PATH = CONFIG_FILE_DIR / "last_map.txt"
+    
+    def __init__(self, host = None, port = None, user = None, password = None):
+        self._configured_map = None
+        if host is None or port is None or user is None or password is None:
+            config, configured_map = self.load_configuration()
+            if config is None or map is None:
+                raise ValueError("FTP configuration not provided and no previous configuration found. Please provide host, port, user, and password or ensure the last configuration is saved. You can set the configuration using the set_configuration() method.")
+            host = config['host']
+            port = config['port']
+            user = config['user']
+            password = config['password']
+            self._configured_map = configured_map
+            
         self.host = host
         self.port = port
         self.user = user
@@ -91,8 +110,37 @@ class ArkFtpClient:
         self.connected = False
         self.ftp.connect(host, port, timeout=10)
         self.ftp.login(user, password)
-        self.map = None
         self.connected = True
+        self.map = None
+        if self._configured_map is not None:
+            self.set_map(self._configured_map)
+
+    @staticmethod
+    def set_configuration(host, port, user, password, map: ArkMap):
+        config = {
+            "host": host,
+            "port": port,
+            "user": user,
+            "password": password
+        }
+        with open(ArkFtpClient._LAST_FTP_CONFIG_PATH, 'w') as config_file:
+            json.dump(config, config_file)
+        with open(ArkFtpClient._LAST_MAP_PATH, 'w') as map_file:
+            map_file.write(str(map.value))
+
+    @staticmethod
+    def load_configuration():
+        if not ArkFtpClient._LAST_FTP_CONFIG_PATH.exists() or not ArkFtpClient._LAST_MAP_PATH.exists():
+            return None, None
+        
+        with open(ArkFtpClient._LAST_FTP_CONFIG_PATH, 'r') as config_file:
+            config = json.load(config_file)
+        
+        with open(ArkFtpClient._LAST_MAP_PATH, 'r') as map_file:
+            map_value = map_file.read().strip()
+            map = ArkMap(int(map_value))
+
+        return config, map
 
     @staticmethod
     def from_config(config, map: ArkMap=None):
@@ -275,6 +323,13 @@ class ArkFtpClient:
             local_file = output_directory / file_name
             self.download_file(file_name, local_file)
             return local_file
+        
+    def get_current_save(self, map: ArkMap = None) -> "AsaSave":
+        from arkparse import AsaSave
+        map = map if map is not None else self._configured_map
+        save_contents = self.download_save_file(output_directory=None, map=map)
+        save = AsaSave(contents=save_contents, map=map)
+        return save
         
     def remove_save_file(self, map: ArkMap = None):
         map: dict = self._check_map(map)
