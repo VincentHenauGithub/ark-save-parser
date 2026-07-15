@@ -97,7 +97,10 @@ def enabled_maps(profile):
             ArkMap.SCORCHED_EARTH,
             ArkMap.THE_CENTER,
             ArkMap.THE_ISLAND,
-            ArkMap.ASTRAEOS
+            ArkMap.ASTRAEOS,
+            ArkMap.LOST_COLONY,
+            ArkMap.VALGUERO,
+            ArkMap.GENESIS,
         ]
     
 @pytest.fixture(scope="session")
@@ -179,4 +182,11 @@ def enabled_map_objects(enabled_maps):
         enabled[ArkMap.THE_ISLAND] = AsaSave(save_path(ArkMap.THE_ISLAND))
     if ArkMap.THE_CENTER in enabled_maps:
         enabled[ArkMap.THE_CENTER] = AsaSave(save_path(ArkMap.THE_CENTER))
+    if ArkMap.LOST_COLONY in enabled_maps:
+        enabled[ArkMap.LOST_COLONY] = AsaSave(save_path(ArkMap.LOST_COLONY))
+    if ArkMap.VALGUERO in enabled_maps:
+        enabled[ArkMap.VALGUERO] = AsaSave(save_path(ArkMap.VALGUERO))
+    if ArkMap.GENESIS in enabled_maps:
+        enabled[ArkMap.GENESIS] = AsaSave(save_path(ArkMap.GENESIS))
+    
     yield enabled

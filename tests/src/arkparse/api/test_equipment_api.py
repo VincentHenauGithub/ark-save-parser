@@ -71,23 +71,26 @@ def eq_api(ragnarok_save):
 def get_for_map(map_name: ArkMap, api: EquipmentApi):
     print(f"Testing equipment for map: {map_name}")
 
+    # Maps without an explicit expectation fall back to "greater than zero".
+    expected = equipment_per_map().get(map_name, {})
+
     armor = api.get_armor()
     print(f"Total Armor Items: {len(armor)}")
-    assert len(armor) >= equipment_per_map()[map_name]["armor"], "Unexpected number of armor items found"
+    assert len(armor) >= max(expected.get("armor", 0), 1), "Unexpected number of armor items found"
 
     weapons = api.get_weapons()
     print(f"Total Weapon Items: {len(weapons)}")
-    assert len(weapons) >= equipment_per_map()[map_name]["weapons"], "Unexpected number of weapon items found."
+    assert len(weapons) >= max(expected.get("weapons", 0), 1), "Unexpected number of weapon items found."
 
     saddles = api.get_saddles()
     print(f"Total Saddle Items: {len(saddles)}")
-    assert len(saddles) >= equipment_per_map()[map_name]["saddles"], "Unexpected number of saddle items found."
-    if len(saddles) > equipment_per_map()[map_name]["saddles"]:
-        ArkSaveLogger.warning_log(f"Found more saddles than expected for map {map_name}. Expected: {equipment_per_map()[map_name]['saddles']}, Found: {len(saddles)}.")
+    assert len(saddles) >= max(expected.get("saddles", 0), 1), "Unexpected number of saddle items found."
+    if len(saddles) > expected.get("saddles", 0):
+        ArkSaveLogger.warning_log(f"Found more saddles than expected for map {map_name}. Expected: {expected.get('saddles', 0)}, Found: {len(saddles)}.")
 
     shields = api.get_shields()
     print(f"Total Shield Items: {len(shields)}")
-    assert len(shields) >= equipment_per_map()[map_name]["shields"], "Unexpected number of shield items found."
+    assert len(shields) >= max(expected.get("shields", 0), 1), "Unexpected number of shield items found."
 
 def test_parse_ragnarok(eq_api: EquipmentApi, enabled_maps: list):
     """

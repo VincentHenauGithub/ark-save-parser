@@ -13,9 +13,12 @@ def structures_per_map(map: ArkMap) -> int:
         ArkMap.ABERRATION: 22940,
         ArkMap.EXTINCTION: 62135,
         ArkMap.ASTRAEOS: 130372,
-        ArkMap.SCORCHED_EARTH: 27143,
+        ArkMap.SCORCHED_EARTH: 27146,
         ArkMap.THE_ISLAND: 113156,
-        ArkMap.THE_CENTER: 138494
+        ArkMap.THE_CENTER: 138498,
+        ArkMap.LOST_COLONY: 19951,
+        ArkMap.VALGUERO: 20915,
+        ArkMap.GENESIS: 5850,
     }
     return strct.get(map, 0)
 
@@ -39,4 +42,5 @@ def test_structure_retrieval(structure_apis: Dict[ArkMap, StructureApi], enabled
 
         print(f"  Total structures: {len(structures)}")
 
-        assert len(structures) >= structures_per_map(map), f"Expected at least {structures_per_map(map)} structures, got {len(structures)}"
+        # Maps without an explicit expectation fall back to "greater than zero".
+        assert len(structures) >= max(structures_per_map(map), 1), f"Expected at least {max(structures_per_map(map), 1)} structures, got {len(structures)}"
