@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional, List
 
 import struct
+import re
 from pathlib import Path
 import json
 import numpy as np
@@ -247,17 +248,23 @@ class MapCoords:
         
         return ((self.lat - other.lat) ** 2 + (self.long - other.long) ** 2) ** 0.5
 
+    def __sub_map_suffix(self) -> str:
+        if not self.sub_map_name:
+            return ""
+        words = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", " ", self.sub_map_name)
+        return f" ({words})"
+
     def __str__(self) -> str:
         if self.in_cryopod:
             return f"(in cryopod)"
         else:
-            return f"({self.lat:.2f}, {self.long:.2f})"
-        
+            return f"({self.lat:.2f}, {self.long:.2f}){self.__sub_map_suffix()}"
+
     def str_short(self) -> str:
         if self.in_cryopod:
             return f"(in cryopod)"
         else:
-            return f"({self.lat:.2f}, {self.long:.2f})"
+            return f"({self.lat:.2f}, {self.long:.2f}){self.__sub_map_suffix()}"
         
     def round(self, digits: int = 2):
         self.lat = round(self.lat, digits)
