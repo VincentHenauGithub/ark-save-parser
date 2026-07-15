@@ -11,7 +11,7 @@ def structures_per_map(map: ArkMap) -> int:
     strct = {
         ArkMap.RAGNAROK: 54838,
         ArkMap.ABERRATION: 22940,
-        ArkMap.EXTINCTION: 62135,
+        ArkMap.EXTINCTION: 62142,
         ArkMap.ASTRAEOS: 130372,
         ArkMap.SCORCHED_EARTH: 27146,
         ArkMap.THE_ISLAND: 113156,
@@ -22,25 +22,16 @@ def structures_per_map(map: ArkMap) -> int:
     }
     return strct.get(map, 0)
 
-@pytest.fixture(scope="module")
-def structure_apis(enabled_map_objects):
+def test_structure_retrieval(map_save):
     """
-    Fixture to provide a StructureApi instance for the enabled map saves.
+    Test to retrieve structure information from the current map save.
     """
-    resources = {map: StructureApi(save) for map, save in enabled_map_objects.items()}
-    yield resources
+    map, save = map_save
+    print(f"\nRetrieving structure information for map: {map.name.title()}")
+    api = StructureApi(save)
+    structures = api.get_all()
 
-def test_structure_retrieval(structure_apis: Dict[ArkMap, StructureApi], enabled_map_objects: Dict[ArkMap, AsaSave]):
-    """
-    Test to retrieve game time information from all enabled map saves.
-    """
-    print("\nRetrieving structure information from enabled map saves:")
-    for map, _ in enabled_map_objects.items():
-        print(f"Map: {map.name.title()}")
-        api = structure_apis[map]
-        structures = api.get_all()
+    print(f"  Total structures: {len(structures)}")
 
-        print(f"  Total structures: {len(structures)}")
-
-        # Maps without an explicit expectation fall back to "greater than zero".
-        assert len(structures) >= max(structures_per_map(map), 1), f"Expected at least {max(structures_per_map(map), 1)} structures, got {len(structures)}"
+    # Maps without an explicit expectation fall back to "greater than zero".
+    assert len(structures) >= max(structures_per_map(map), 1), f"Expected at least {max(structures_per_map(map), 1)} structures, got {len(structures)}"
