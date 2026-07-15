@@ -10,7 +10,7 @@ def structures_per_map(map: ArkMap) -> int:
     """ Fixture to provide the expected number of dinos for each map. """
     strct = {
         ArkMap.RAGNAROK: 54838,
-        ArkMap.ABERRATION: 22937,
+        ArkMap.ABERRATION: 22940,
         ArkMap.EXTINCTION: 62135,
         ArkMap.ASTRAEOS: 130372,
         ArkMap.SCORCHED_EARTH: 27143,

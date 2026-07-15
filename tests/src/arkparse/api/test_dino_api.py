@@ -1,10 +1,10 @@
+
 import pytest
 from pathlib import Path
 from arkparse.api.dino_api import DinoApi
 from arkparse import AsaSave
-from arkparse.object_model.dinos import TamedDino, TamedBaby, BabyStage
-from arkparse.enums import ArkMap
-from arkparse.classes.dinos import Dinos
+from arkparse.object_model.dinos import TamedDino, BabyStage
+from arkparse.enums import ArkMap, ArkDinoTrait
 
 NR_DINOS = 34450
 NR_TAMED = 2925
@@ -146,6 +146,53 @@ def test_get_all_dinos(dino_api: DinoApi):
     assert nr_wild == NR_WILD, f"Expected {NR_WILD} wild dinos, got {nr_wild}"
     assert in_cryopod_wild == 0, "There should be no wild dinos in cryopods"
     assert in_cryopod == NR_IN_CRYO, f"Expected {NR_IN_CRYO} tamed dinos in cryopods, got {in_cryopod}"
+
+def test_gene_traits_are_parsed(dino_api: DinoApi):
+    """
+    Test that dino gene traits are parsed. Builds a map of trait type to the
+    number of occurrences across all dinos. For now this only checks that at
+    least one trait is parsed; counts per trait can be enforced later.
+    """
+    dinos = dino_api.get_all()
+
+    trait_counts: dict[str, int] = {}
+    for _, dino in dinos.items():
+        for gene_trait in dino.gene_traits:
+            trait_counts[str(gene_trait.trait)] = trait_counts.get(str(gene_trait.trait), 0) + 1
+
+    print("Gene trait counts:")
+    for trait, count in sorted(trait_counts.items(), key=lambda x: x[1], reverse=True):
+        print(f"  {trait}: {count}")
+
+    total_traits = sum(trait_counts.values())
+    print(f"Total gene traits parsed: {total_traits} across {len(trait_counts)} trait types")
+    assert total_traits > 0, "Expected at least one gene trait to be parsed"
+
+    assert total_traits >= 23584, f"Expected at least 23584 gene traits, got {total_traits}"
+    assert len(trait_counts) >= 51, f"Expected at least 51 unique gene traits, got {len(trait_counts)}"
+
+def test_gene_traits_json_export(dino_api: DinoApi):
+    """
+    Test that dino gene traits survive the JSON export path. Finds a dino that
+    has gene traits, serializes it and verifies the traits are present in both
+    the JSON object and the JSON string.
+    """
+    dinos = dino_api.get_all()
+
+    dino_with_traits = next(
+        (d for d in dinos.values() if d.gene_traits), None
+    )
+    assert dino_with_traits is not None, "Expected at least one dino with gene traits"
+
+    json_obj = dino_with_traits.to_json_obj()
+    assert "GeneTraits" in json_obj, "GeneTraits key missing from JSON object"
+    assert len(json_obj["GeneTraits"]) == len(dino_with_traits.gene_traits), \
+        "Number of exported gene traits does not match parsed gene traits"
+
+    json_str = dino_with_traits.to_json_str()
+    for gene_trait in dino_with_traits.gene_traits:
+        assert str(gene_trait) in json_str, \
+            f"Gene trait {gene_trait} missing from exported JSON string"
 
 def test_retrieve_wild_dinos(dino_api: DinoApi):
     """
