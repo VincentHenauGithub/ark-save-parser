@@ -9,12 +9,23 @@ import math
 
 if TYPE_CHECKING:
     from arkparse.parsing.ark_binary_parser import ArkBinaryParser
-from arkparse.enums.ark_map import ArkMap
+from arkparse.enums.ark_map import ArkMap, SubMap
 from .ark_vector import ArkVector
 from .ark_rotator import ArkRotator
 
 
 FOUNDATION_DISTANCE = 300  # 300 units in ark is 1 foundation
+
+
+def _resolve_sub_map_name(sub_map_name: Optional[str | SubMap]) -> Optional[str]:
+    if sub_map_name is None:
+        return None
+    elif isinstance(sub_map_name, SubMap):
+        return sub_map_name.value
+    elif isinstance(sub_map_name, str):
+        return sub_map_name
+    else:
+        raise ValueError(f"Invalid sub_map_name: {sub_map_name}")
 
 @dataclass
 class Bounds:
@@ -147,6 +158,9 @@ class MapCoordinateParameters:
                 )
             ]
 
+    def __resolve_sub_map_name(self, sub_map_name: Optional[str | SubMap]) -> Optional[str]:
+        return _resolve_sub_map_name(sub_map_name)
+
     def _get_map_data_by_coords(self, x: Optional[float] = None, y: Optional[float] = None, z: Optional[float] = None) -> MapData:
         if x is None or y is None or z is None:
             return self.map_data[0]
@@ -176,7 +190,8 @@ class MapCoordinateParameters:
 
         return lat, lo, map_data.sub_map_name
 
-    def transform_from(self, lat: float, lo: float, sub_map_name: Optional[str] = None) -> ArkVector:
+    def transform_from(self, lat: float, lo: float, sub_map_name: Optional[str | SubMap] = None) -> ArkVector:
+        sub_map_name = self.__resolve_sub_map_name(sub_map_name)
         map_data = self._get_map_data_by_sub_name(sub_map_name)
 
         origin_y_diff = map_data.origin.min_y - map_data.origin.max_y
@@ -220,11 +235,11 @@ class MapCoords:
     in_cryopod: bool
     sub_map_name: Optional[str]
 
-    def __init__(self, lat, long, in_cryo = False, sub_map_name = None):
+    def __init__(self, lat, long, in_cryo = False, sub_map_name: Optional[str | SubMap] = None):
         self.lat = lat
         self.long = long
         self.in_cryopod = in_cryo
-        self.sub_map_name = sub_map_name
+        self.sub_map_name = _resolve_sub_map_name(sub_map_name)
 
     def distance_to(self, other: "MapCoords") -> float:
         if self.in_cryopod or other.in_cryopod:

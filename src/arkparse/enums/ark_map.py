@@ -23,3 +23,10 @@ class ArkMap(Enum):
         :return: The file name of the map.
         """
         return self.name.replace('_', ' ').title().replace(' ', '')
+    
+class SubMap(Enum):
+    pass
+
+class GenesisSubMap(Enum):
+    BIOMES = "OtherBiomes"
+    OCEAN = "Ocean"
