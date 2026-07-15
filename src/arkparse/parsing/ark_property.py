@@ -11,6 +11,7 @@ from arkparse.parsing.struct.ark_linear_color import ArkLinearColor
 from arkparse.parsing.struct.ark_quat import ArkQuat
 from arkparse.parsing.struct.ark_rotator import ArkRotator
 from arkparse.parsing.struct.ark_vector import ArkVector
+from arkparse.parsing.struct.ark_vector2d import ArkVector2D
 from arkparse.parsing.struct.ark_unique_net_id_repl import ArkUniqueNetIdRepl
 from arkparse.parsing.struct.ark_vector_bool_pair import ArkVectorBoolPair
 from arkparse.parsing.struct.ark_server_custom_folder import ArkServerCustomFolder
@@ -83,6 +84,7 @@ _STRUCT_READERS: Dict[ArkStructType, Callable[["ArkBinaryParser", int], Any]] = 
     ArkStructType.Quat: lambda bb, ds: ArkQuat(bb),
     ArkStructType.Rotator: lambda bb, ds: ArkRotator(bb),
     ArkStructType.Vector: lambda bb, ds: ArkVector(bb),
+    ArkStructType.Vector2D: lambda bb, ds: ArkVector2D(bb, ds),
     ArkStructType.UniqueNetIdRepl: lambda bb, ds: ArkUniqueNetIdRepl(bb),
     ArkStructType.VectorBoolPair: lambda bb, ds: ArkVectorBoolPair(bb),
     ArkStructType.ArkTrackedActorIdCategoryPairWithBool: lambda bb, ds: ArkTrackedActorIdCategoryPairWithBool(bb),
