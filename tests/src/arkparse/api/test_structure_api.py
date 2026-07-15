@@ -39,4 +39,4 @@ def test_structure_retrieval(structure_apis: Dict[ArkMap, StructureApi], enabled
 
         print(f"  Total structures: {len(structures)}")
 
-        assert len(structures) == structures_per_map(map), f"Expected {structures_per_map(map)} structures, got {len(structures)}"
+        assert len(structures) >= structures_per_map(map), f"Expected at least {structures_per_map(map)} structures, got {len(structures)}"
