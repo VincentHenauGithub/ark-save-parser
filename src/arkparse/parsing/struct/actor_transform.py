@@ -1,210 +1,208 @@
-from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Optional, List
 
 import struct
+import re
 from pathlib import Path
 import json
-from uuid import UUID
 import numpy as np
 import math
 
 if TYPE_CHECKING:
     from arkparse.parsing.ark_binary_parser import ArkBinaryParser
-from arkparse.enums.ark_map import ArkMap
+from arkparse.enums.ark_map import ArkMap, SubMap
 from .ark_vector import ArkVector
 from .ark_rotator import ArkRotator
 
 
 FOUNDATION_DISTANCE = 300  # 300 units in ark is 1 foundation
 
+
+def _resolve_sub_map_name(sub_map_name: Optional[str | SubMap]) -> Optional[str]:
+    if sub_map_name is None:
+        return None
+    elif isinstance(sub_map_name, SubMap):
+        return sub_map_name.value
+    elif isinstance(sub_map_name, str):
+        return sub_map_name
+    else:
+        raise ValueError(f"Invalid sub_map_name: {sub_map_name}")
+
+@dataclass
+class Bounds:
+    min_x: float
+    min_y: float
+    min_z: float
+    max_x: float
+    max_y: float
+    max_z: float
+
+
+@dataclass
+class MapData:
+    origin: Bounds
+    playable: Bounds
+    sub_map_name: Optional[str]
+
+    def contains(self, x: float, y: float, z: float) -> bool:
+        return (
+                self.origin.min_x <= x <= self.origin.max_x
+                and self.origin.min_y <= y <= self.origin.max_y
+                and self.origin.min_z <= z <= self.origin.max_z
+        )
+
+
 @dataclass
 class MapCoordinateParameters:
-    origin_min_x: float
-    origin_min_y: float
-    origin_min_z: float
-
-    origin_max_x: float
-    origin_max_y: float
-    origin_max_z: float
-
-    playable_min_x: float
-    playable_min_y: float
-    playable_min_z: float
-
-    playable_max_x: float
-    playable_max_y: float
-    playable_max_z: float
+    map_data: List[MapData] = field(default_factory=list)
 
     def __init__(self, map: ArkMap):
-        # These are the MapData grabbed from ASA Dev Kit.
-        # A map can have multiple MapData associated to it, but at the moment none of the ASA maps available is doing so.
-        # Origin Min-Max is used for minimap coords computation.
-        # Playable Min-Max is used to know which MapData to query for computation.
         if map == ArkMap.SCORCHED_EARTH:
-            self.origin_min_x = -393650.0
-            self.origin_min_y = -393650.0
-            self.origin_min_z = -25515.0
-            self.origin_max_x = 393750.0
-            self.origin_max_y = 393750.0
-            self.origin_max_z = 66645.0
-            self.playable_min_x = -393650.0
-            self.playable_min_y = -393650.0
-            self.playable_min_z = -25515.0
-            self.playable_max_x = 393750.0
-            self.playable_max_y = 393750.0
-            self.playable_max_z = 66645.0
+            self.map_data = [
+                MapData(
+                    origin=Bounds(-393650.0, -393650.0, -25515.0, 393750.0, 393750.0, 66645.0),
+                    playable=Bounds(-393650.0, -393650.0, -25515.0, 393750.0, 393750.0, 66645.0),
+                    sub_map_name=None
+                )
+            ]
         elif map == ArkMap.THE_CENTER:
-            self.origin_min_x = -524364.0
-            self.origin_min_y = -337215.0
-            self.origin_min_z = -171880.46875
-            self.origin_max_x = 513040.0
-            self.origin_max_y = 700189.0
-            self.origin_max_z = 101159.6875
-            self.playable_min_x = -524364.0
-            self.playable_min_y = -337215.0
-            self.playable_min_z = -171880.46875
-            self.playable_max_x = 513040.0
-            self.playable_max_y = 700189.0
-            self.playable_max_z = 101159.6875
+            self.map_data = [
+                MapData(
+                    origin=Bounds(-524364.0, -337215.0, -171880.46875, 513040.0, 700189.0, 101159.6875),
+                    playable=Bounds(-524364.0, -337215.0, -171880.46875, 513040.0, 700189.0, 101159.6875),
+                    sub_map_name=None
+                )
+            ]
         elif map == ArkMap.ABERRATION:
-            self.origin_min_x = -400000.0
-            self.origin_min_y = -400000.0
-            self.origin_min_z = -15000.0
-            self.origin_max_x = 400000.0
-            self.origin_max_y = 400000.0
-            self.origin_max_z = 54695.0
-            self.playable_min_x = -400000.0
-            self.playable_min_y = -400000.0
-            self.playable_min_z = -15000.0
-            self.playable_max_x = 400000.0
-            self.playable_max_y = 400000.0
-            self.playable_max_z = 54695.0
+            self.map_data = [
+                MapData(
+                    origin=Bounds(-400000.0, -400000.0, -15000.0, 400000.0, 400000.0, 54695.0),
+                    playable=Bounds(-400000.0, -400000.0, -15000.0, 400000.0, 400000.0, 54695.0),
+                    sub_map_name=None
+                )
+            ]
         elif map == ArkMap.EXTINCTION:
-            self.origin_min_x = -342900.0
-            self.origin_min_y = -342900.0
-            self.origin_min_z = -15000.0
-            self.origin_max_x = 342900.0
-            self.origin_max_y = 342900.0
-            self.origin_max_z = 54695.0
-            self.playable_min_x = -342900.0
-            self.playable_min_y = -342900.0
-            self.playable_min_z = -15000.0
-            self.playable_max_x = 342900.0
-            self.playable_max_y = 342900.0
-            self.playable_max_z = 54695.0
+            self.map_data = [
+                MapData(
+                    origin=Bounds(-342900.0, -342900.0, -15000.0, 342900.0, 342900.0, 54695.0),
+                    playable=Bounds(-342900.0, -342900.0, -15000.0, 342900.0, 342900.0, 54695.0),
+                    sub_map_name=None
+                )
+            ]
         elif map == ArkMap.RAGNAROK:
-            self.origin_min_x = -655000.0
-            self.origin_min_y = -655000.0
-            self.origin_min_z = -655000.0
-            self.origin_max_x = 655000.0
-            self.origin_max_y = 655000.0
-            self.origin_max_z = 54695.0
-            self.playable_min_x = -655000.0
-            self.playable_min_y = -655000.0
-            self.playable_min_z = -100000.0
-            self.playable_max_x = 655000.0
-            self.playable_max_y = 655000.0
-            self.playable_max_z = 655000.0
+            self.map_data = [
+                MapData(
+                    origin=Bounds(-655000.0, -655000.0, -655000.0, 655000.0, 655000.0, 54695.0),
+                    playable=Bounds(-655000.0, -655000.0, -100000.0, 655000.0, 655000.0, 655000.0),
+                    sub_map_name=None
+                )
+            ]
         elif map == ArkMap.ASTRAEOS:
-            self.origin_min_x = -800000.0
-            self.origin_min_y = -800000.0
-            self.origin_min_z = -15000.0
-            self.origin_max_x = 800000.0
-            self.origin_max_y = 800000.0
-            self.origin_max_z = 54695.0
-            self.playable_min_x = -800000.0
-            self.playable_min_y = -800000.0
-            self.playable_min_z = -15000.0
-            self.playable_max_x = 800000.0
-            self.playable_max_y = 800000.0
-            self.playable_max_z = 54695.0
+            self.map_data = [
+                MapData(
+                    origin=Bounds(-800000.0, -800000.0, -15000.0, 800000.0, 800000.0, 54695.0),
+                    playable=Bounds(-800000.0, -800000.0, -15000.0, 800000.0, 800000.0, 54695.0),
+                    sub_map_name=None
+                )
+            ]
         elif map == ArkMap.SVARTALFHEIM:
-            self.origin_min_x = -203250.0
-            self.origin_min_y = -203250.0
-            self.origin_min_z = -15000.0
-            self.origin_max_x = 203250.0
-            self.origin_max_y = 203250.0
-            self.origin_max_z = 54695.0
-            self.playable_min_x = -203250.0
-            self.playable_min_y = -203250.0
-            self.playable_min_z = -15000.0
-            self.playable_max_x = 203250.0
-            self.playable_max_y = 203250.0
-            self.playable_max_z = 54695.0
+            self.map_data = [
+                MapData(
+                    origin=Bounds(-203250.0, -203250.0, -15000.0, 203250.0, 203250.0, 54695.0),
+                    playable=Bounds(-203250.0, -203250.0, -15000.0, 203250.0, 203250.0, 54695.0),
+                    sub_map_name=None
+                )
+            ]
         elif map == ArkMap.VALGUERO:
-            self.origin_min_x = -408000.0
-            self.origin_min_y = -408000.0
-            self.origin_min_z = -655000.0
-            self.origin_max_x = 408000.0
-            self.origin_max_y = 408000.0
-            self.origin_max_z = 54695.0
-            self.playable_min_x = -408000.0
-            self.playable_min_y = -408000.0
-            self.playable_min_z = -100000.0
-            self.playable_max_x = 408000.0
-            self.playable_max_y = 408000.0
-            self.playable_max_z = 655000.0
+            self.map_data = [
+                MapData(
+                    origin=Bounds(-408000.0, -408000.0, -655000.0, 408000.0, 408000.0, 54695.0),
+                    playable=Bounds(-408000.0, -408000.0, -100000.0, 408000.0, 408000.0, 655000.0),
+                    sub_map_name=None
+                )
+            ]
         elif map == ArkMap.CLUB_ARK:
-            self.origin_min_x = -12812.0
-            self.origin_min_y = -15121.0
-            self.origin_min_z = -12500.0
-            self.origin_max_x = 12078.0
-            self.origin_max_y = 9770.0
-            self.origin_max_z = 12500.0
-            self.playable_min_x = -10581.0
-            self.playable_min_y = -15121.0
-            self.playable_min_z = -12500.0
-            self.playable_max_x = 9847.0
-            self.playable_max_y = 9770.0
-            self.playable_max_z = 12500.0
+            self.map_data = [
+                MapData(
+                    origin=Bounds(-12812.0, -15121.0, -12500.0, 12078.0, 9770.0, 12500.0),
+                    playable=Bounds(-10581.0, -15121.0, -12500.0, 9847.0, 9770.0, 12500.0),
+                    sub_map_name=None
+                )
+            ]
         elif map == ArkMap.LOST_COLONY:
-            self.origin_min_x = -408000.0
-            self.origin_min_y = -408000.0
-            self.origin_min_z = -15000.0
-            self.origin_max_x = 408000.0
-            self.origin_max_y = 408000.0
-            self.origin_max_z = 54695.0
-            self.playable_min_x = -408000.0
-            self.playable_min_y = -408000.0
-            self.playable_min_z = -15000.0
-            self.playable_max_x = 408000.0
-            self.playable_max_y = 408000.0
-            self.playable_max_z = 54695.0
-        else: # Fallback to MinimapData_Base, this is the default data if not overridden by the map (used by The Island for example).
-            self.origin_min_x = -342900.0
-            self.origin_min_y = -342900.0
-            self.origin_min_z = -15000.0
-            self.origin_max_x = 342900.0
-            self.origin_max_y = 342900.0
-            self.origin_max_z = 54695.0
-            self.playable_min_x = -342900.0
-            self.playable_min_y = -342900.0
-            self.playable_min_z = -15000.0
-            self.playable_max_x = 342900.0
-            self.playable_max_y = 342900.0
-            self.playable_max_z = 54695.0
+            self.map_data = [
+                MapData(
+                    origin=Bounds(-408000.0, -408000.0, -15000.0, 408000.0, 408000.0, 54695.0),
+                    playable=Bounds(-408000.0, -408000.0, -15000.0, 408000.0, 408000.0, 54695.0),
+                    sub_map_name=None
+                )
+            ]
+        elif map == ArkMap.GENESIS1:
+            self.map_data = [
+                MapData(
+                    origin=Bounds(-1107501.0, -1107500.0, 129392.0, 1107499.0, 1107500.0, 404392.0),
+                    playable=Bounds(-1107501.0, -1107500.0, 129392.0, 1107499.0, 1107500.0, 404392.0),
+                    sub_map_name="Ocean"
+                ),
+                MapData(
+                    origin=Bounds(-410001.0, -410000.0, -399952.0, 409999.0, 410000.0, 100048.0),
+                    playable=Bounds(-410001.0, -410000.0, -399952.0, 409999.0, 410000.0, 100048.0),
+                    sub_map_name="OtherBiomes"
+                )
+            ]
+        else:  # Fallback MinimapData_Base (ex : The Island)
+            self.map_data = [
+                MapData(
+                    origin=Bounds(-342900.0, -342900.0, -15000.0, 342900.0, 342900.0, 54695.0),
+                    playable=Bounds(-342900.0, -342900.0, -15000.0, 342900.0, 342900.0, 54695.0),
+                    sub_map_name=None
+                )
+            ]
 
-    def transform_to(self, x: float, y: float) -> ArkVector:
-        y_max_diff = y - self.origin_max_y
-        x_max_diff = x - self.origin_max_x
-        origin_y_diff = self.origin_min_y - self.origin_max_y
-        origin_x_diff = self.origin_min_x - self.origin_max_x
+    def __resolve_sub_map_name(self, sub_map_name: Optional[str | SubMap]) -> Optional[str]:
+        return _resolve_sub_map_name(sub_map_name)
+
+    def _get_map_data_by_coords(self, x: Optional[float] = None, y: Optional[float] = None, z: Optional[float] = None) -> MapData:
+        if x is None or y is None or z is None:
+            return self.map_data[0]
+        for data in self.map_data:
+            if data.contains(x, y, z):
+                return data
+        return self.map_data[0]
+
+    def _get_map_data_by_sub_name(self, sub_name: Optional[str]) -> Optional[MapData]:
+        if sub_name is not None:
+            for map_data in self.map_data:
+                if map_data.sub_map_name is not None and map_data.sub_map_name.casefold() == sub_name.casefold():
+                    return map_data
+        return self.map_data[0]
+
+    def transform_to(self, x: float, y: float, z: float = 0.0) -> tuple[float, float, Optional[str]]:
+        map_data = self._get_map_data_by_coords(x, y, z)
+
+        y_max_diff = y - map_data.origin.max_y
+        x_max_diff = x - map_data.origin.max_x
+        origin_y_diff = map_data.origin.min_y - map_data.origin.max_y
+        origin_x_diff = map_data.origin.min_x - map_data.origin.max_x
         lat_ratio = y_max_diff / origin_y_diff
         lo_ratio = x_max_diff / origin_x_diff
         lat = MapCoordinateParameters.lerp(100.0, 0.0, lat_ratio)
         lo = MapCoordinateParameters.lerp(100.0, 0.0, lo_ratio)
 
-        return lat, lo
-    
-    def transform_from(self, lat: float, lo: float) -> ArkVector:
-        origin_y_diff = self.origin_min_y - self.origin_max_y
-        origin_x_diff = self.origin_min_x - self.origin_max_x
+        return lat, lo, map_data.sub_map_name
+
+    def transform_from(self, lat: float, lo: float, sub_map_name: Optional[str | SubMap] = None) -> ArkVector:
+        sub_map_name = self.__resolve_sub_map_name(sub_map_name)
+        map_data = self._get_map_data_by_sub_name(sub_map_name)
+
+        origin_y_diff = map_data.origin.min_y - map_data.origin.max_y
+        origin_x_diff = map_data.origin.min_x - map_data.origin.max_x
         lat_ratio = MapCoordinateParameters.inv_lerp(100.0, 0.0, lat)
         lo_ratio = MapCoordinateParameters.inv_lerp(100.0, 0.0, lo)
         y_max_diff = lat_ratio * origin_y_diff
         x_max_diff = lo_ratio * origin_x_diff
-        y = y_max_diff + self.origin_max_y
-        x = x_max_diff + self.origin_max_x
+        y = y_max_diff + map_data.origin.max_y
+        x = x_max_diff + map_data.origin.max_x
 
         return ArkVector(x=x, y=y, z=0)
 
@@ -225,10 +223,10 @@ class MapCoordinateParameters:
         # fit lat = m_y * y + b_y
         m_y, b_y = np.polyfit(ys, lats, 1)
 
-        latitude_scale   = round(1.0 / m_x, 2)
-        latitude_shift   = round(b_x, 2)
-        longitude_scale  = round(1.0 / m_y, 2)
-        longitude_shift  = round(b_y, 2)
+        latitude_scale = round(1.0 / m_x, 2)
+        latitude_shift = round(b_x, 2)
+        longitude_scale = round(1.0 / m_y, 2)
+        longitude_shift = round(b_y, 2)
 
         return latitude_scale, latitude_shift, longitude_scale, longitude_shift
 
@@ -236,11 +234,13 @@ class MapCoords:
     lat : float
     long : float
     in_cryopod: bool
+    sub_map_name: Optional[str]
 
-    def __init__(self, lat, long, in_cryo = False):
+    def __init__(self, lat, long, in_cryo = False, sub_map_name: Optional[str | SubMap] = None):
         self.lat = lat
         self.long = long
         self.in_cryopod = in_cryo
+        self.sub_map_name = _resolve_sub_map_name(sub_map_name)
 
     def distance_to(self, other: "MapCoords") -> float:
         if self.in_cryopod or other.in_cryopod:
@@ -248,25 +248,30 @@ class MapCoords:
         
         return ((self.lat - other.lat) ** 2 + (self.long - other.long) ** 2) ** 0.5
 
+    def __sub_map_suffix(self) -> str:
+        if not self.sub_map_name:
+            return ""
+        words = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", " ", self.sub_map_name)
+        return f" ({words})"
+
     def __str__(self) -> str:
         if self.in_cryopod:
             return f"(in cryopod)"
         else:
-            return f"({self.lat:.2f}, {self.long:.2f})"
-        
+            return f"({self.lat:.2f}, {self.long:.2f}){self.__sub_map_suffix()}"
+
     def str_short(self) -> str:
         if self.in_cryopod:
             return f"(in cryopod)"
         else:
-            return f"({self.lat:.2f}, {self.long:.2f})"
+            return f"({self.lat:.2f}, {self.long:.2f}){self.__sub_map_suffix()}"
         
     def round(self, digits: int = 2):
         self.lat = round(self.lat, digits)
         self.long = round(self.long, digits)
 
     def as_actor_transform(self, map) -> "ActorTransform":
-
-        return ActorTransform(vector=MapCoordinateParameters(map).transform_from(self.lat, self.long))
+        return ActorTransform(vector=MapCoordinateParameters(map).transform_from(self.lat, self.long, self.sub_map_name))
 
 @dataclass
 class ActorTransform:
@@ -336,8 +341,8 @@ class ActorTransform:
         return f"({self.x:.2f}, {self.y:.2f}, {self.z:.2f}) ({self.pitch:.2f}, {self.yaw:.2f}, {self.roll:.2f})"
 
     def as_map_coords(self, map) -> MapCoords:
-        lat, long = MapCoordinateParameters(map).transform_to(self.x, self.y)
-        return MapCoords(lat, long, self.in_cryopod)
+        lat, long, sub_map_name = MapCoordinateParameters(map).transform_to(self.x, self.y, self.z)
+        return MapCoords(lat, long, self.in_cryopod, sub_map_name)
     
     def is_within_distance(self, location: "ActorTransform", distance: float = None, foundations: int = None, tolerance: int = 10) -> bool:
         if self.in_cryopod or location.in_cryopod:
@@ -358,13 +363,19 @@ class ActorTransform:
         self.yaw = round(self.yaw, digits)
         self.roll = round(self.roll, digits)
         
-    def is_at_map_coordinate(self, map: ArkMap, coordinates: MapCoords, tolerance = 0.1) -> bool:
+    def is_at_map_coordinate(self, map: ArkMap, coordinates: MapCoords, tolerance: float = 0.1, check_if_same_sub_map: bool = True) -> bool:
         if self.in_cryopod:
             return False
 
         own_coords = self.as_map_coords(map)
 
-        return abs(own_coords.lat - coordinates.lat) <= tolerance and abs(own_coords.long - coordinates.long) <= tolerance
+        same_coords: bool = (abs(own_coords.lat - coordinates.lat) <= tolerance and abs(own_coords.long - coordinates.long) <= tolerance)
+
+        same_sub_map = True
+        if check_if_same_sub_map:
+            same_sub_map = (own_coords.sub_map_name is None and coordinates.sub_map_name is None) or (own_coords.sub_map_name.casefold() == coordinates.sub_map_name.casefold())
+
+        return same_coords and same_sub_map
     
     def as_json(self):
         return {

@@ -11,6 +11,7 @@ from .ark_tracked_actor_id_category_pair import ArkTrackedActorIdCategoryPair
 from .ark_unique_net_id_repl import ArkUniqueNetIdRepl
 from .ark_vector_bool_pair import ArkVectorBoolPair
 from .ark_vector import ArkVector
+from .ark_vector2d import ArkVector2D
 from .object_reference import ObjectReference, get_uuid_reference_bytes
 from .unknown_struct import UnknownStruct
 from .ark_custom_item_data import ArkCustomItemData

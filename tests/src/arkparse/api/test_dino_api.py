@@ -1,10 +1,10 @@
+
 import pytest
 from pathlib import Path
 from arkparse.api.dino_api import DinoApi
 from arkparse import AsaSave
-from arkparse.object_model.dinos import TamedDino, TamedBaby, BabyStage
-from arkparse.enums import ArkMap
-from arkparse.classes.dinos import Dinos
+from arkparse.object_model.dinos import TamedDino, BabyStage
+from arkparse.enums import ArkMap, ArkDinoTrait
 
 NR_DINOS = 34450
 NR_TAMED = 2925
@@ -24,10 +24,13 @@ def dinos_per_map():
         ArkMap.ASTRAEOS: 53679,
         ArkMap.SCORCHED_EARTH: 17175,
         ArkMap.THE_ISLAND: 31289,
-        ArkMap.THE_CENTER: 45061
+        ArkMap.THE_CENTER: 45061,
+        ArkMap.LOST_COLONY: 25672,
+        ArkMap.VALGUERO: 38492,
+        ArkMap.GENESIS: 23643,
     }
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def dino_api(ragnarok_save):
     """
     Fixture to provide a DinoApi instance for the Ragnarok save.
@@ -35,7 +38,7 @@ def dino_api(ragnarok_save):
     resource = DinoApi(ragnarok_save)
     yield resource
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def dino_mod_api(rag_limited: AsaSave, temp_file_folder: Path):
     """
     Helper function to get the DinoApi instance for the rag_limited save.
@@ -47,75 +50,16 @@ def dino_mod_api(rag_limited: AsaSave, temp_file_folder: Path):
     assert save is not None, "AsaSave should be initialized"
     return DinoApi(save)
 
-def test_parse_ragnarok(dino_api: DinoApi, enabled_maps: list):
+def test_parse_dinos(map_save):
     """
-    Test to parse the Ragnarok save file and check the number of dinos.
-    """
-    if not ArkMap.RAGNAROK in enabled_maps:
-        pytest.skip("Ragnarok map is not enabled in the test configuration.")
-    dinos = dino_api.get_all()  # This will trigger the parsing of dinos
-    print(f"Total dinos found in Ragnarok: {len(dinos)}")
-    assert len(dinos) >= dinos_per_map()[ArkMap.RAGNAROK], "Unexpected number of dinos found"
+    Test to parse the current map's save file and check the number of dinos.
 
-def test_parse_aberration(aberration_save: AsaSave, enabled_maps: list):
+    Maps without an explicit expectation fall back to "greater than zero".
     """
-    Test to parse the Aberration save file and check the number of dinos.
-    """
-    if not ArkMap.ABERRATION in enabled_maps:
-        pytest.skip("Aberration map is not enabled in the test configuration.")
-    dinos = DinoApi(aberration_save).get_all()  # This will trigger the parsing of dinos
-    print(f"Total dinos found in Aberration: {len(dinos)}")
-    assert len(dinos) >= dinos_per_map()[ArkMap.ABERRATION], "Unexpected number of dinos found"
-
-def test_parse_extinction(extinction_save: AsaSave, enabled_maps: list):
-    """
-    Test to parse the Extinction save file and check the number of dinos.
-    """
-    if not ArkMap.EXTINCTION in enabled_maps:
-        pytest.skip("Extinction map is not enabled in the test configuration.")
-    dinos = DinoApi(extinction_save).get_all()  # This will trigger the parsing of dinos
-    print(f"Total dinos found in Extinction: {len(dinos)}")
-    assert len(dinos) >= dinos_per_map()[ArkMap.EXTINCTION], "Unexpected number of dinos found"
-
-def test_parse_astraeos(astraeos_save: AsaSave, enabled_maps: list):
-    """
-    Test to parse the Astraeos save file and check the number of dinos.
-    """
-    if not ArkMap.ASTRAEOS in enabled_maps:
-        pytest.skip("Astraeos map is not enabled in the test configuration.")
-    dinos = DinoApi(astraeos_save).get_all()  # This will trigger the parsing of dinos
-    print(f"Total dinos found in Astraeos: {len(dinos)}")
-    assert len(dinos) >= dinos_per_map()[ArkMap.ASTRAEOS], "Unexpected number of dinos found"
-
-def test_parse_scorched_earth(scorched_earth_save: AsaSave, enabled_maps: list):
-    """
-    Test to parse the Scorched Earth save file and check the number of dinos.
-    """
-    if not ArkMap.SCORCHED_EARTH in enabled_maps:
-        pytest.skip("Scorched Earth map is not enabled in the test configuration.")
-    dinos = DinoApi(scorched_earth_save).get_all()  # This will trigger the parsing of dinos
-    print(f"Total dinos found in Scorched Earth: {len(dinos)}")
-    assert len(dinos) >= dinos_per_map()[ArkMap.SCORCHED_EARTH], "Unexpected number of dinos found"
-
-def test_parse_the_island(the_island_save: AsaSave, enabled_maps: list):
-    """
-    Test to parse The Island save file and check the number of dinos.
-    """
-    if not ArkMap.THE_ISLAND in enabled_maps:
-        pytest.skip("The Island map is not enabled in the test configuration.")
-    dinos = DinoApi(the_island_save).get_all()  # This will trigger the parsing of dinos
-    print(f"Total dinos found in The Island: {len(dinos)}")
-    assert len(dinos) >= dinos_per_map()[ArkMap.THE_ISLAND], "Unexpected number of dinos found"
-
-def test_parse_the_center(the_center_save: AsaSave, enabled_maps: list):
-    """
-    Test to parse The Center save file and check the number of dinos.
-    """
-    if not ArkMap.THE_CENTER in enabled_maps:
-        pytest.skip("The Center map is not enabled in the test configuration.")
-    dinos = DinoApi(the_center_save).get_all()  # This will trigger the parsing of dinos
-    print(f"Total dinos found in The Center: {len(dinos)}")
-    assert len(dinos) >= dinos_per_map()[ArkMap.THE_CENTER], "Unexpected number of dinos found"
+    map_name, save = map_save
+    dinos = DinoApi(save).get_all()  # This will trigger the parsing of dinos
+    print(f"Total dinos found in {map_name.name.title()}: {len(dinos)}")
+    assert len(dinos) >= max(dinos_per_map().get(map_name, 0), 1), f"Unexpected number of dinos found for {map_name.name.title()}"
 
 def test_get_all_dinos(dino_api: DinoApi):
     """
@@ -146,6 +90,53 @@ def test_get_all_dinos(dino_api: DinoApi):
     assert nr_wild == NR_WILD, f"Expected {NR_WILD} wild dinos, got {nr_wild}"
     assert in_cryopod_wild == 0, "There should be no wild dinos in cryopods"
     assert in_cryopod == NR_IN_CRYO, f"Expected {NR_IN_CRYO} tamed dinos in cryopods, got {in_cryopod}"
+
+def test_gene_traits_are_parsed(dino_api: DinoApi):
+    """
+    Test that dino gene traits are parsed. Builds a map of trait type to the
+    number of occurrences across all dinos. For now this only checks that at
+    least one trait is parsed; counts per trait can be enforced later.
+    """
+    dinos = dino_api.get_all()
+
+    trait_counts: dict[str, int] = {}
+    for _, dino in dinos.items():
+        for gene_trait in dino.gene_traits:
+            trait_counts[str(gene_trait.trait)] = trait_counts.get(str(gene_trait.trait), 0) + 1
+
+    print("Gene trait counts:")
+    for trait, count in sorted(trait_counts.items(), key=lambda x: x[1], reverse=True):
+        print(f"  {trait}: {count}")
+
+    total_traits = sum(trait_counts.values())
+    print(f"Total gene traits parsed: {total_traits} across {len(trait_counts)} trait types")
+    assert total_traits > 0, "Expected at least one gene trait to be parsed"
+
+    assert total_traits >= 23584, f"Expected at least 23584 gene traits, got {total_traits}"
+    assert len(trait_counts) >= 51, f"Expected at least 51 unique gene traits, got {len(trait_counts)}"
+
+def test_gene_traits_json_export(dino_api: DinoApi):
+    """
+    Test that dino gene traits survive the JSON export path. Finds a dino that
+    has gene traits, serializes it and verifies the traits are present in both
+    the JSON object and the JSON string.
+    """
+    dinos = dino_api.get_all()
+
+    dino_with_traits = next(
+        (d for d in dinos.values() if d.gene_traits), None
+    )
+    assert dino_with_traits is not None, "Expected at least one dino with gene traits"
+
+    json_obj = dino_with_traits.to_json_obj()
+    assert "GeneTraits" in json_obj, "GeneTraits key missing from JSON object"
+    assert len(json_obj["GeneTraits"]) == len(dino_with_traits.gene_traits), \
+        "Number of exported gene traits does not match parsed gene traits"
+
+    json_str = dino_with_traits.to_json_str()
+    for gene_trait in dino_with_traits.gene_traits:
+        assert str(gene_trait) in json_str, \
+            f"Gene trait {gene_trait} missing from exported JSON string"
 
 def test_retrieve_wild_dinos(dino_api: DinoApi):
     """

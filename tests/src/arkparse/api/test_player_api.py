@@ -24,14 +24,14 @@ def get_test_tribe(player_api: PlayerApi | None) -> ArkTribe:
             return tribe
     return None
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def test_player(player_api: PlayerApi | None) -> ArkPlayer:
     """
     Fixture to retrieve a specific test player.
     """
     return get_test_player(player_api)
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def player_api(ragnarok_save) -> PlayerApi:
     """
     Helper function to retrieve the PlayerApi instance for a specific map.

@@ -7,6 +7,7 @@ from .ark_quat import ArkQuat
 from .ark_rotator import ArkRotator
 from .ark_tribe_rank_group import ArkTribeRankGroup
 from .ark_vector import ArkVector
+from .ark_vector2d import ArkVector2D
 from .ark_unique_net_id_repl import ArkUniqueNetIdRepl
 from .ark_vector_bool_pair import ArkVectorBoolPair
 from .ark_tracked_actor_id_category_pair_with_bool import ArkTrackedActorIdCategoryPairWithBool
@@ -34,6 +35,7 @@ class ArkStructType(Enum):
     LinearColor = "LinearColor"
     Quat = "Quat"
     Vector = "Vector"
+    Vector2D = "Vector2D"
     Rotator = "Rotator"
     UniqueNetIdRepl = "UniqueNetIdRepl"
     Color = "Color"
@@ -75,6 +77,7 @@ class ArkStructType(Enum):
             "LinearColor": lambda data: ArkLinearColor(data),
             "Quat": lambda data: ArkQuat(data),
             "Vector": lambda data: ArkVector(data),
+            "Vector2D": lambda data: ArkVector2D(data),
             "Rotator": lambda data: ArkRotator(data),
             "UniqueNetIdRepl": lambda data: ArkUniqueNetIdRepl(data),
             "Color": lambda data: ArkColor(data),

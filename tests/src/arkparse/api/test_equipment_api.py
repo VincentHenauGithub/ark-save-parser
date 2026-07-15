@@ -18,49 +18,67 @@ def equipment_per_map():
     return {
         ArkMap.RAGNAROK: {
             "armor": 1906,
-            "weapons": 1517,
-            "saddles": 2161,
+            "weapons": 1529,
+            "saddles": 2181,
             "shields": 87
         },
         ArkMap.ABERRATION: {
             "armor": 1024,
             "weapons": 394,
-            "saddles": 481,
+            "saddles": 482,
             "shields": 27
         },
         ArkMap.EXTINCTION: {
             "armor": 4279,
-            "weapons": 2649,
-            "saddles": 3110,
+            "weapons": 2669,
+            "saddles": 3274,
             "shields": 80
         },
         ArkMap.ASTRAEOS: {
             "armor": 6120,
-            "weapons": 3757,
-            "saddles": 8100,
+            "weapons": 3773,
+            "saddles": 8151,
             "shields": 205
         },
         ArkMap.SCORCHED_EARTH: {
             "armor": 1594,
             "weapons": 818,
-            "saddles": 1565,
+            "saddles": 1576,
             "shields": 33
         },
         ArkMap.THE_ISLAND: {
             "armor": 6143,
-            "weapons": 3857,
-            "saddles": 6555,
+            "weapons": 3881,
+            "saddles": 6687,
             "shields": 216
         },
         ArkMap.THE_CENTER: {
             "armor": 6480,
-            "weapons": 3818,
-            "saddles": 7418,
+            "weapons": 3831,
+            "saddles": 7526,
             "shields": 208
-        }
+        },
+        ArkMap.LOST_COLONY: {
+            "armor": 2277,
+            "weapons": 1675,
+            "saddles": 1763,
+            "shields": 68
+        },
+        ArkMap.VALGUERO: {
+            "armor": 972,
+            "weapons": 701,
+            "saddles": 1398,
+            "shields": 50
+        },
+        ArkMap.GENESIS: {
+            "armor": 809,
+            "weapons": 529,
+            "saddles": 475,
+            "shields": 34
+        },
     }
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def eq_api(ragnarok_save):
     """
     Fixture to provide a EquipmentApi instance for the Ragnarok save.
@@ -71,91 +89,33 @@ def eq_api(ragnarok_save):
 def get_for_map(map_name: ArkMap, api: EquipmentApi):
     print(f"Testing equipment for map: {map_name}")
 
+    # Maps without an explicit expectation fall back to "greater than zero".
+    expected = equipment_per_map().get(map_name, {})
+
     armor = api.get_armor()
     print(f"Total Armor Items: {len(armor)}")
-    assert len(armor) >= equipment_per_map()[map_name]["armor"], "Unexpected number of armor items found"
+    assert len(armor) >= max(expected.get("armor", 0), 1), "Unexpected number of armor items found"
 
     weapons = api.get_weapons()
     print(f"Total Weapon Items: {len(weapons)}")
-    assert len(weapons) >= equipment_per_map()[map_name]["weapons"], "Unexpected number of weapon items found."
+    assert len(weapons) >= max(expected.get("weapons", 0), 1), "Unexpected number of weapon items found."
 
     saddles = api.get_saddles()
     print(f"Total Saddle Items: {len(saddles)}")
-    assert len(saddles) >= equipment_per_map()[map_name]["saddles"], "Unexpected number of saddle items found."
-    if len(saddles) > equipment_per_map()[map_name]["saddles"]:
-        ArkSaveLogger.warning_log(f"Found more saddles than expected for map {map_name}. Expected: {equipment_per_map()[map_name]['saddles']}, Found: {len(saddles)}.")
+    assert len(saddles) >= max(expected.get("saddles", 0), 1), "Unexpected number of saddle items found."
+    if len(saddles) > expected.get("saddles", 0):
+        ArkSaveLogger.warning_log(f"Found more saddles than expected for map {map_name}. Expected: {expected.get('saddles', 0)}, Found: {len(saddles)}.")
 
     shields = api.get_shields()
     print(f"Total Shield Items: {len(shields)}")
-    assert len(shields) >= equipment_per_map()[map_name]["shields"], "Unexpected number of shield items found."
+    assert len(shields) >= max(expected.get("shields", 0), 1), "Unexpected number of shield items found."
 
-def test_parse_ragnarok(eq_api: EquipmentApi, enabled_maps: list):
+def test_parse_equipment(map_save):
     """
-    Test to parse the Ragnarok save file and check the number of dinos.
+    Test to parse the current map's save file and check the equipment counts.
     """
-    if not ArkMap.RAGNAROK in enabled_maps:
-        pytest.skip("Ragnarok map is not enabled in the test configuration.")
-
-    get_for_map(ArkMap.RAGNAROK, eq_api)
-
-def test_parse_aberration(aberration_save: AsaSave, enabled_maps: list):
-    """
-    Test to parse the Aberration save file and check the number of dinos.
-    """
-    if not ArkMap.ABERRATION in enabled_maps:
-        pytest.skip("Aberration map is not enabled in the test configuration.")
-    eq_api = EquipmentApi(aberration_save)
-    
-    get_for_map(ArkMap.ABERRATION, eq_api)
-
-def test_parse_extinction(extinction_save: AsaSave, enabled_maps: list):
-    """
-    Test to parse the Extinction save file and check the number of dinos.
-    """
-    if not ArkMap.EXTINCTION in enabled_maps:
-        pytest.skip("Extinction map is not enabled in the test configuration.")
-    eq_api = EquipmentApi(extinction_save)
-
-    get_for_map(ArkMap.EXTINCTION, eq_api)
-
-def test_parse_astraeos(astraeos_save: AsaSave, enabled_maps: list):
-    """
-    Test to parse the Astraeos save file and check the number of dinos.
-    """
-    if not ArkMap.ASTRAEOS in enabled_maps:
-        pytest.skip("Astraeos map is not enabled in the test configuration.")
-    eq_api = EquipmentApi(astraeos_save)
-
-    get_for_map(ArkMap.ASTRAEOS, eq_api)
-
-def test_parse_scorched_earth(scorched_earth_save: AsaSave, enabled_maps: list):
-    """
-    Test to parse the Scorched Earth save file and check the number of dinos.
-    """
-    if not ArkMap.SCORCHED_EARTH in enabled_maps:
-        pytest.skip("Scorched Earth map is not enabled in the test configuration.")
-    eq_api = EquipmentApi(scorched_earth_save)
-
-    get_for_map(ArkMap.SCORCHED_EARTH, eq_api)
-
-def test_parse_the_island(the_island_save: AsaSave, enabled_maps: list):
-    """
-    Test to parse The Island save file and check the number of dinos.
-    """
-    if not ArkMap.THE_ISLAND in enabled_maps:
-        pytest.skip("The Island map is not enabled in the test configuration.")
-    eq_api = EquipmentApi(the_island_save)
-
-    get_for_map(ArkMap.THE_ISLAND, eq_api)
-
-def test_parse_the_center(the_center_save: AsaSave, enabled_maps: list):
-    """
-    Test to parse The Center save file and check the number of dinos.
-    """
-    if not ArkMap.THE_CENTER in enabled_maps:
-        pytest.skip("The Center map is not enabled in the test configuration.")
-    eq_api = EquipmentApi(the_center_save)
-    get_for_map(ArkMap.THE_CENTER, eq_api)
+    map_name, save = map_save
+    get_for_map(map_name, EquipmentApi(save))
 
 def test_armor_generation_boundaries(eq_api: EquipmentApi):
     """

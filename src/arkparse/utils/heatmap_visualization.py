@@ -1,7 +1,7 @@
-from arkparse.enums import ArkMap
+from arkparse.enums import ArkMap, SubMap
 from importlib.resources import files
 
-def draw_heatmap(heatmap, map: ArkMap, map_fade: float = 0.7):
+def draw_heatmap(heatmap, map: ArkMap, submap: SubMap, map_fade: float = 0.7):
     import matplotlib.pyplot as plt
     import matplotlib.image as mpimg
     import numpy as np
@@ -9,8 +9,9 @@ def draw_heatmap(heatmap, map: ArkMap, map_fade: float = 0.7):
     resolution = len(heatmap)
     mask = heatmap == 0
     package = 'arkparse.assets'
+    name = f"{map.name}_{submap.value}.PNG" if submap else f"{map.name}.PNG"
     try:
-        with open(files(package) / f'{map.name}.PNG', 'rb') as img_path:
+        with open(files(package) / name, 'rb') as img_path:
             img = mpimg.imread(img_path)
     except FileNotFoundError:
         raise FileNotFoundError(f"Could not find the image file for the map '{map.name}', you can add it to the assets folder in the arkparse package.")
