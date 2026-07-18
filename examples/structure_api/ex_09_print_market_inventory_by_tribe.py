@@ -20,15 +20,15 @@ def asv_class_name(obj: Any) -> str:
     return f"{short_name}_C" if short_name else ""
 
 
-def get_market_coords(market: StructureWithInventory) -> tuple[float, float]:
+def get_market_coords(market: StructureWithInventory) -> tuple[float, float, str]:
     if market.location is None:
-        return 0.0, 0.0
+        return 0.0, 0.0, "Unknown"
 
     coords = market.location.as_map_coords(MAP)
     if coords is None:
-        return 0.0, 0.0
+        return 0.0, 0.0, "Unknown"
 
-    return coords.lat, coords.long
+    return coords.lat, coords.long, coords.sub_map_name or "Unknown"
 
 
 def get_nested_property(container: Any, name: str, default: Any = None) -> Any:
@@ -135,8 +135,8 @@ def main() -> None:
         print(f"Tribe {tribe_name} (ID: {tribe_id})")
 
         for market in sorted(markets, key=lambda m: str(m.uuid)):
-            lat, lon = get_market_coords(market)
-            print(f"Market Lat: {lat:.2f} Lon: {lon:.2f}")
+            lat, lon, biome = get_market_coords(market)
+            print(f"Market Lat: {lat:.2f} Lon: {lon:.2f} Biome: {biome}")
             if DEBUG_MARKET_DATA:
                 debug_market_data(market)
 
