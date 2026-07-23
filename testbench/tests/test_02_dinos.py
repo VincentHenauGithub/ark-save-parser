@@ -1,5 +1,7 @@
 """Dino API: parse all dinos and snapshot the wild/tamed/cryo/baby breakdown.
 Also verifies type and baby-stage invariants that must hold for any save."""
+from arkparse.parsing.game_object_reader_configuration import GameObjectReaderConfiguration
+from arkparse.saves.asa_save import AsaSave
 import pytest
 
 from arkparse.api.dino_api import DinoApi
@@ -20,7 +22,7 @@ def test_get_all(dino_api: DinoApi, snapshot: Snapshot):
     snapshot.check("dinos_total", len(dinos))
 
 
-def test_breakdown(dino_api: DinoApi, snapshot: Snapshot):
+def test_breakdown(dino_api: DinoApi, snapshot: Snapshot, save):
     dinos = dino_api.get_all()
     tamed = wild = cryo_tamed = cryo_wild = 0
     for dino in dinos.values():
@@ -32,6 +34,28 @@ def test_breakdown(dino_api: DinoApi, snapshot: Snapshot):
             wild += 1
             if dino.is_cryopodded:
                 cryo_wild += 1
+
+    print("fetching containers with Dino ID properties")
+    config = GameObjectReaderConfiguration()
+    config.property_names = ["DinoID1"]
+    save: AsaSave = save
+    with_id = save.get_game_objects(config)
+    print(f"Found {len(with_id)} dinos with DinoID1 property")
+
+    count = 0
+    for uuid2, d in with_id.items():
+        found = False
+        
+        for uuid, dino in dinos.items():
+            if uuid.bytes == uuid2.bytes:
+                found = True
+                break
+        if not found:
+            count += 1
+            print(f"Dino not found in containers: {d.blueprint} ({uuid2}) count={count}")
+
+    assert count == 0, f"{count} dinos with DinoID1 property not found in containers"
+
 
     print(f"tamed={tamed} wild={wild} cryo_tamed={cryo_tamed} cryo_wild={cryo_wild}")
     assert tamed + wild == len(dinos), "tamed + wild must equal total"

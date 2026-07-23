@@ -16,6 +16,7 @@ class ArkMap(Enum):
     CLUB_ARK = 12
     LOST_COLONY = 13
     GENESIS1 = 14
+    DEIMOS_MAP = 15
 
     def to_file_name(self) -> str:
         """
