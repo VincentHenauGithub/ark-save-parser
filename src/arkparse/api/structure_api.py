@@ -83,10 +83,10 @@ class StructureApi:
                     SKIPPED_STRUCTURE_BPS.append(obj.blueprint)
                     ArkSaveLogger.warning_log(f"Object {obj.uuid} ({obj.blueprint}) does not seem to be a structure, skipping bps of this type")
                     # DEBUG: dump the skipped blueprints to a JSON next to this file
-                    import json
-                    from pathlib import Path
-                    _skip_path = Path(__file__).parent / "skipped_structure_bps.json"
-                    _skip_path.write_text(json.dumps(sorted(SKIPPED_STRUCTURE_BPS), indent=4))
+                    # import json
+                    # from pathlib import Path
+                    # _skip_path = Path(__file__).parent / "skipped_structure_bps.json"
+                    # _skip_path.write_text(json.dumps(sorted(SKIPPED_STRUCTURE_BPS), indent=4))
                 to_remove.append(obj.uuid)
 
         for uuid in to_remove:
