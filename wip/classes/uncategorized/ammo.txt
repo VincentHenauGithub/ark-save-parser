@@ -1,4 +1,5 @@
 /CybersStructures/Misc/AmmoBox/PrimalItemStructure_AmmoBox_CS.PrimalItemStructure_AmmoBox_CS_C
+/CybersStructures/Misc/TekChemBench/Recipes/PrimalItemAmmo_Flamethrower_TekChemBench.PrimalItemAmmo_Flamethrower_TekChemBench_C
 /Game/Extinction/CoreBlueprints/Weapons/PrimalItemAmmo_CannonShell.PrimalItemAmmo_CannonShell_C
 /Game/Extinction/CoreBlueprints/Weapons/PrimalItemAmmo_RocketPod.PrimalItemAmmo_RocketPod_C
 /Game/Genesis2/Structures/AmmoBox/PrimalItemStructure_AmmoContainer.PrimalItemStructure_AmmoContainer_C
@@ -17,7 +18,9 @@
 /Game/PrimalEarth/Dinos/Ammonite/Ammonite_AIController.Ammonite_AIController_C
 /Game/PrimalEarth/Dinos/Ammonite/Ammonite_Character.Ammonite_Character_C
 /Game/PrimalEarth/Dinos/Trilobite/DinoCharacterStatusComponent_BP_Ammonite.DinoCharacterStatusComponent_BP_Ammonite_C
+/I-Dino/Weapon/PrimalItemAmmo_DinoColor.PrimalItemAmmo_DinoColor_C
 /QoLPlus/Misc/AmmoBoxPlus/BP_AmmoBoxPlus.BP_AmmoBoxPlus_C
 /QoLPlus/Misc/AmmoBoxPlus/PrimalInventory_AmmoBoxPlus.PrimalInventory_AmmoBoxPlus_C
 /QoLPlus/Misc/AmmoBoxPlus/PrimalItemStructure_AmmoBoxPlus.PrimalItemStructure_AmmoBoxPlus_C
 /QoLPlus/Misc/IndustrialGrinder/Recipes/PrimalItem_AmmoniteBloodPlus.PrimalItem_AmmoniteBloodPlus_C
+/VS/Storage/AmmoniteBile/Jar/VS_AmmoniteBileJarWL.VS_AmmoniteBileJarWL_C

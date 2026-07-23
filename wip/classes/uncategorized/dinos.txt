@@ -102,3 +102,4 @@
 /Game/PrimalEarth/Dinos/Trike/BionicTrike_Character_BP.BionicTrike_Character_BP_C
 /PA_Ascension/Dinos/PaleoMammoth/Paleo_Mammoth_Character_BP.Paleo_Mammoth_Character_BP_C
 /PA_Ascension/Dinos/PaleoOtter/Paleo_Otter_Character_BP.Paleo_Otter_Character_BP_C
+/skyshroud_drakara/Dinos/Atokirina/Atokirina_Character_BP.Atokirina_Character_BP_C
