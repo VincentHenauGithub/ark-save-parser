@@ -450,7 +450,10 @@ class ArmaDoggoGear:
     battle_spikes: str = "/Game/Packs/Wasteland/Dinos/CompanionDino/Items/Armor/PrimalItemArmor_DinoCompanion_Gear_Spikes.PrimalItemArmor_DinoCompanion_Gear_Spikes_C"
     bait_trap: str = "/Game/Packs/Wasteland/Dinos/CompanionDino/Items/Armor/PrimalItemArmor_DinoCompanion_Gear_MeatSack.PrimalItemArmor_DinoCompanion_Gear_MeatSack_C"
 
-
+    # Utility gear attachments for the companion dino; these occupy an armor
+    # slot but provide no armor rating (unlike the doggo saddle `armor`).
+    gear = [ammo_box, extra_armor, speed_booster, oxygen_tank, rucksack, medpack,
+            camping_gear, picnic_set, battle_spikes, bait_trap]
 
     all_bps = [armor]
 

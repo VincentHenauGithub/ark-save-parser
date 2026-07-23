@@ -38,13 +38,30 @@ def _is_parallel_enabled() -> bool:
 
 _PARALLEL_ENABLED = _is_parallel_enabled()
 
+_KNOWN_SPECIAL_CASES = [
+    "/Game/PrimalEarth/Items/Raft/Raft_BP.Raft_BP_C",
+    "/Game/Mods/Ragnarok/Custom_Assets/Dinos/Polar_Bear/Polar_Bear.Polar_Bear_C",
+    "/Game/PrimalEarth/Items/Raft/MotorRaft_BP.MotorRaft_BP_C",
+    "/Game/Packs/Wasteland/Vehicles/Car/Car_Vehicle_BP.Car_Vehicle_BP_C",
+    "/Game/Aberration/Dinos/Pteroteuthis/Pteroteuthis_Char_BP.Pteroteuthis_Char_BP_C",
+    "/Game/Aberration/Dinos/Pteroteuthis/Pteroteuthis_Char_BP_Surface.Pteroteuthis_Char_BP_Surface_C",
+    "/Game/Genesis/Dinos/Swarms/InsectSwarmChar_BP.InsectSwarmChar_BP_C",
+    "/Game/Genesis/Dinos/Swarms/MicrobeSwarmChar_BP.MicrobeSwarmChar_BP_C",
+    "/Game/LostColony/Dinos/LostChargePet/LostCharge_LanternPet_Char_BP.LostCharge_LanternPet_Char_BP_C",
+    "/Game/LostColony/Structures/CompanionBed/Structure/BP_CompanionBed_Base.BP_CompanionBed_Base_C",
+    "/Game/Water/Vessels/Brig/BrigShipBP.BrigShipBP_C",
+    "/Game/Water/Vessels/Brig/BrigShipPlayerFollowingBP_Miniboss.BrigShipPlayerFollowingBP_Miniboss_C",
+    "/Game/Water/Vessels/Sloop/SloopShipBP.SloopShipBP_C"
+]
+
 
 class DinoApi:
     _DEFAULT_CONFIG = GameObjectReaderConfiguration(
         blueprint_name_filter=lambda name: \
             name is not None and \
-                (((("/Creatures/" in name) or ("/Dinos/" in name) or ("/SDinoVariants/" in name)) and "_Character_" in name) or \
+                (((("/Creatures/" in name) or ("/Dinos/" in name) or ("/SDinoVariants/" in name) or ("/AstraeosCreatures/" in name)) and "_Character_" in name) or \
                 ("DinoCharacterStatusComponent" in name) or \
+                (name in _KNOWN_SPECIAL_CASES) or \
                 ("PrimalItem_WeaponEmptyCryopod" in name or "PrimalItem_SCSCryopod" in name or "ItemDinoball.ItemDinoball_C" in name)))
 
     def __init__(self, save: AsaSave):
@@ -88,7 +105,7 @@ class DinoApi:
             return None
         
         dino = None
-        if "Dinos/" in object.blueprint and "_Character_" in object.blueprint:
+        if "_Character_" in object.blueprint or (object.blueprint in _KNOWN_SPECIAL_CASES):
             if uuid in self.parsed_dinos:
                 dino = self.parsed_dinos[uuid]
             else:
@@ -114,8 +131,9 @@ class DinoApi:
         cryopod_objects_to_parse: List[Tuple[UUID, ArkGameObject]] = []  # (uuid, obj)
         
         for key, obj in objects.items():
-            if not only_cryopodded and "Dinos/" in obj.blueprint and "_Character_" in obj.blueprint:
-                is_tamed = obj.get_property_value("TamedTimeStamp") is not None
+
+            if not only_cryopodded and (("_Character_" in obj.blueprint)  or (obj.blueprint in _KNOWN_SPECIAL_CASES)):
+                is_tamed = (obj.get_property_value("TamedTimeStamp") is not None) or (obj.get_property_value("TamingTeamID") is not None)
                 is_baby = obj.get_property_value("bIsBaby", False)
                 
                 if obj.uuid in self.parsed_dinos:

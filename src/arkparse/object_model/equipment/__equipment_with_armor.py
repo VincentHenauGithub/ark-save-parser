@@ -7,6 +7,7 @@ from arkparse.logging import ArkSaveLogger
 
 from arkparse.classes.equipment import Armor as ArmorBps
 from arkparse.classes.equipment import Saddles as SaddleBps
+from arkparse.classes.equipment import Shields as ShieldBps
 from arkparse.classes.equipment import Mek as MekBps
 from arkparse.classes.equipment import ArmaDoggoGear as Arma
 
@@ -40,6 +41,11 @@ class EquipmentWithArmor(EquipmentWithDurability):
             return 180
         elif bp in ArmorBps.scuba.all_bps:
             return 1
+        elif bp in ShieldBps.all_bps:
+            # Shields have no armor rating in-game (durability is their only
+            # meaningful stat, see EquipmentWithDurability.get_default_dura), so
+            # the armor base is the neutral value of 1.
+            return 1
         elif bp in ArmorBps.hazard.all_bps:
             return 65
         elif bp == ArmorBps.misc.gas_mask:
@@ -53,7 +59,14 @@ class EquipmentWithArmor(EquipmentWithDurability):
             return 45
         elif bp in [SaddleBps.paracer, SaddleBps.diplodocus, SaddleBps.bronto, SaddleBps.paracer_platform,
                     SaddleBps.archelon, SaddleBps.carbo, MekBps.shield] or bp in Arma.all_bps:
+            # MekBps.shield is the M.D.S.M. (armor 20 per wiki); the doggo saddle
+            # (Arma.all_bps) is a 20-armor saddle.
             return 20
+        elif bp in Arma.gear or bp in [MekBps.cannon, MekBps.missile_pod, MekBps.transformer]:
+            # The Mek siege cannon / missile pod / transformer provide no passive
+            # armor (per wiki), and the companion-dino utility gear has no armor
+            # rating (durability-only); use the neutral base of 1.
+            return 1
         elif bp == SaddleBps.titanosaur_platform:
             return 1
         elif bp in SaddleBps.all_bps:
