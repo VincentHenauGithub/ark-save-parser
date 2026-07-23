@@ -9,7 +9,7 @@ class ImportFile:
             with open(file_path, "rb") as f:
                 return f.read()
             
-        file = path.split("\\")[-1]
+        file = path.replace("\\", "/").split("/")[-1]
         uuid = UUID(file.split("_")[1].split('.')[0])
         t = file.split("_")[0]
         name_path = None if t == "loc" else Path(path).parent / (file.split('.')[0] + "_n.json")

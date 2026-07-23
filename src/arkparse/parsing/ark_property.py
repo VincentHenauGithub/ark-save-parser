@@ -298,11 +298,14 @@ class ArkProperty:
         if key_type == ArkValueType.Struct:
             value_type = bb.read_name()
         else:
-            if key_type == ArkValueType.Byte:
+            if key_type == ArkValueType.Byte and ArkValueType.from_name(bb.peek_name()) is None:
                 # Enum-keyed map (e.g. TMap<TEnumAsByte<EFoo>, ...>): the key's
                 # enum type is serialized as a descriptor block before the value
                 # type: [enum name][int][enum path][int]. Consume it so the value
-                # type is read from the correct offset.
+                # type is read from the correct offset. Some Byte-keyed maps
+                # (e.g. TMap<TEnumAsByte, Int>) omit this descriptor and store
+                # the value type directly, so only consume it when the next name
+                # isn't itself a value-type name.
                 enum_key_type = bb.read_name()
                 bb.read_int()
                 enum_key_path = bb.read_name()
@@ -342,7 +345,8 @@ class ArkProperty:
             if value_type == ArkValueType.Struct:
                 entries.append(ArkProperty.read_struct_map(key_type, bb, map_name))
             else:
-                if value_type in _SIMPLE_SPECS and key_type in _SIMPLE_SPECS:
+                _readable = lambda vt: vt in _SIMPLE_SPECS or vt == ArkValueType.Byte
+                if _readable(value_type) and _readable(key_type):
                     map_key = ArkProperty.read_property_value(key_type, bb)
                     map_value = ArkProperty.read_property_value(value_type, bb)
                     entry = ArkProperty(f"{map_key}", value_type.name, 0, 0, map_value)

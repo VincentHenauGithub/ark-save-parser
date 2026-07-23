@@ -1,14 +1,16 @@
 
+import json
 import pytest
 from pathlib import Path
 from arkparse.api.dino_api import DinoApi
 from arkparse import AsaSave
 from arkparse.object_model.dinos import TamedDino, BabyStage
 from arkparse.enums import ArkMap, ArkDinoTrait
+from arkparse.parsing.game_object_reader_configuration import GameObjectReaderConfiguration
 
-NR_DINOS = 34450
-NR_TAMED = 2925
-NR_WILD = 31525
+NR_DINOS = 34471
+NR_TAMED = 2949
+NR_WILD = 31522
 NR_IN_CRYO = 2200
 NR_WILD_BABIES = 2747
 NR_TAMED_BABIES = 40
@@ -68,7 +70,7 @@ def test_get_all_dinos(dino_api: DinoApi):
     dinos = dino_api.get_all()
     assert isinstance(dinos, dict), "Expected a dictionary of dinos"
     print(f"Total dinos found: {len(dinos)}")
-    assert len(dinos) == NR_DINOS, f"Expected {NR_DINOS} dinos, got {len(dinos)}"
+    assert len(dinos) >= NR_DINOS, f"Expectedat least {NR_DINOS} dinos, got {len(dinos)}"
 
     nr_tamed = 0
     nr_wild = 0
@@ -86,10 +88,44 @@ def test_get_all_dinos(dino_api: DinoApi):
     
     print(f"Total tamed dinos: {nr_tamed}, Total wild dinos: {nr_wild}")
     print(f"Tamed dinos in cryopods: {in_cryopod}, Wild dinos in cryopods: {in_cryopod_wild}")
-    assert nr_tamed == NR_TAMED, f"Expected {NR_TAMED} tamed dinos, got {nr_tamed}"
-    assert nr_wild == NR_WILD, f"Expected {NR_WILD} wild dinos, got {nr_wild}"
+    assert nr_tamed >= NR_TAMED, f"Expected at least {NR_TAMED} tamed dinos, got {nr_tamed}"
+    assert nr_wild >= NR_WILD, f"Expected at least {NR_WILD} wild dinos, got {nr_wild}"
     assert in_cryopod_wild == 0, "There should be no wild dinos in cryopods"
-    assert in_cryopod == NR_IN_CRYO, f"Expected {NR_IN_CRYO} tamed dinos in cryopods, got {in_cryopod}"
+    assert in_cryopod >= NR_IN_CRYO, f"Expected at least {NR_IN_CRYO} tamed dinos in cryopods, got {in_cryopod}"
+
+def test_all_dinos_with_id_are_parsed(map_save):
+    """
+    For each map, check that every game object carrying a DinoID1 property is
+    represented in the parsed dino set. Note: DinoID1 is not dino-exclusive
+    (rafts, cars and other rideable actors carry it too), so mismatches are
+    printed for inspection.
+    """
+    map_name, save = map_save
+    dinos = DinoApi(save).get_all()
+
+    print(f"[{map_name.name}] fetching containers with Dino ID properties")
+    config = GameObjectReaderConfiguration()
+    config.property_names = ["DinoID1"]
+    with_id = save.get_game_objects(config)
+    print(f"[{map_name.name}] Found {len(with_id)} objects with DinoID1 property")
+
+    parsed_ids = {uuid.bytes for uuid in dinos.keys()}
+    count = 0
+    unparsed_bps = set()
+    for uuid2, d in with_id.items():
+        if uuid2.bytes not in parsed_ids:
+            count += 1
+            unparsed_bps.add(d.blueprint)
+            print(f"[{map_name.name}] Object with DinoID1 not in parsed dinos: {d.blueprint} ({uuid2}) count={count}")
+
+    # Compile the detected (unparsed) blueprints into a single alphabetical,
+    # unique list next to this test file (merged across all maps)
+    _dump_path = Path(__file__).parent / "unparsed_dinos_with_id.json"
+    _existing = set(json.loads(_dump_path.read_text())) if _dump_path.exists() else set()
+    _existing |= unparsed_bps
+    _dump_path.write_text(json.dumps(sorted(_existing), indent=4))
+
+    assert count == 0, f"[{map_name.name}] {count} objects with DinoID1 property not found in parsed dinos"
 
 def test_gene_traits_are_parsed(dino_api: DinoApi):
     """

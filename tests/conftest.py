@@ -100,6 +100,7 @@ _FULL_PROFILE_MAPS = [
     ArkMap.LOST_COLONY,
     ArkMap.VALGUERO,
     ArkMap.GENESIS,
+    ArkMap.DEIMOS_MAP,
 ]
 
 def _profile_maps(profile: str) -> List[ArkMap]:
