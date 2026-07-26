@@ -119,7 +119,10 @@ class Saddles:
     crylophosaurus: str = "/Game/ASA/Dinos/Cryolophosaurus/Saddle/PrimalItemArmor_CryoSaddle.PrimalItemArmor_CryoSaddle_C"
     deinonychus: str = "/Game/Valguero/Dinos/Deinonychus/PrimalItemArmor_DeinonychusSaddle.PrimalItemArmor_DeinonychusSaddle_C"
     acrocanthosaurus: str = "/Game/ASA/Dinos/Acrocanthosaurus/Saddle/PrimalItemArmor_AcroSaddle.PrimalItemArmor_AcroSaddle_C"
-
+    axolotl: str = "/Game/Packs/TidesOfFortune/Dinos/Axolotl/PrimalItemArmor_AxolotlSaddle.PrimalItemArmor_AxolotlSaddle_C"
+    cherufe: str = "/Game/Genesis/Dinos/Cherufe/PrimalItemArmor_CherufeSaddle.PrimalItemArmor_CherufeSaddle_C"
+    giant_turtle: str = "/Game/Genesis/Dinos/GiantTurtle/PrimalItemArmor_GiantTurtleSaddle.PrimalItemArmor_GiantTurtleSaddle_C"
+    palaeoctopus: str = "/Game/Packs/TidesOfFortune/Dinos/Paleoctopus/Saddle/PrimalItemArmor_PalaeoctopusSaddle.PrimalItemArmor_PalaeoctopusSaddle_C"
 
     all_bps = [yi_ling, archelon, ceratosaurus, deinosuchus, fasolasuchus, gigantoraptor_ASA, 
                shastasaurus, xiphactinus, saddle_cart_btt, rockdrake_btt, allo, ankylo, 
@@ -136,7 +139,7 @@ class Saddles:
                thorny_dragon, bison, deinotherium, dreadnoughtus, maelizard, gacha, gas_bags,
                snow_owl, ravager, managarmr, velonosaur, helicoprion, gigantoraptor, desmodus,
                soulwyn, gigadesmodus_platform, gigadesmodus, maelwyn, aureliax, ossidon, megaraptor, 
-               pyromane, crylophosaurus, deinonychus, acrocanthosaurus]
+               pyromane, crylophosaurus, deinonychus, acrocanthosaurus, axolotl, cherufe, giant_turtle, palaeoctopus]
     
 class Hazard:
     boots: str = "/Game/Aberration/CoreBlueprints/Items/Armor/HazardSuit/PrimalItemArmor_HazardSuitBoots.PrimalItemArmor_HazardSuitBoots_C"
@@ -253,7 +256,8 @@ class Shields:
     metal: str = "/Game/PrimalEarth/CoreBlueprints/Items/Armor/Shields/PrimalItemArmor_MetalShield.PrimalItemArmor_MetalShield_C"
     riot: str = "/Game/PrimalEarth/CoreBlueprints/Items/Armor/Shields/PrimalItemArmor_TransparentRiotShield.PrimalItemArmor_TransparentRiotShield_C"
     wood: str = "/Game/PrimalEarth/CoreBlueprints/Items/Armor/Shields/PrimalItemArmor_WoodShield.PrimalItemArmor_WoodShield_C"
-    all_bps = [metal, riot, wood]
+    tek: str = "/Game/PrimalEarth/CoreBlueprints/Items/Armor/Shields/PrimalItemArmor_ShieldTek.PrimalItemArmor_ShieldTek_C"
+    all_bps = [metal, riot, wood, tek]
 
 class Desert:
     boots: str = "/Game/ScorchedEarth/Outfits/PrimalItemArmor_DesertClothBoots.PrimalItemArmor_DesertClothBoots_C"
@@ -318,7 +322,7 @@ class Primitive:
     crossbow: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponCrossbow.PrimalItem_WeaponCrossbow_C"
     whip: str = "/Game/ScorchedEarth/WeaponWhip/PrimalItem_WeaponWhip.PrimalItem_WeaponWhip_C"
     boomerang: str = "/Game/ScorchedEarth/WeaponBoomerang/PrimalItem_WeaponBoomerang.PrimalItem_WeaponBoomerang_C"
-    all_bps = [bow, slingshot, stone_club, torch, lance, pike, sword, shotgun, simple_pistol, crossbow]
+    all_bps = [bow, slingshot, stone_club, torch, lance, pike, sword, shotgun, simple_pistol, crossbow, whip, boomerang]
 
 class Advanced:
     compound_bow: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponCompoundBow.PrimalItem_WeaponCompoundBow_C"
@@ -334,7 +338,12 @@ class Advanced:
     flamethrower: str = "/Game/ScorchedEarth/WeaponFlamethrower/PrimalItem_WeapFlamethrower.PrimalItem_WeapFlamethrower_C"
     tek_spear: str = "/Game/LostColony/Weapons/TekSpear/PrimalItem_WeaponSpear_Tek.PrimalItem_WeaponSpear_Tek_C"
     tek_sword: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponTekSword.PrimalItem_WeaponTekSword_C"
-    all_bps = [compound_bow, fabricated_pistol, fabricated_shotgun, fabricated_sniper, fabricated_crossbow,longneck, assault_rifle, rocket_launcher, tek_rifle, chainsaw, flamethrower, tek_spear, tek_sword]
+    mining_drill: str = "/Game/Genesis/Weapons/MiningDrill/PrimalItem_WeaponMiningDrill.PrimalItem_WeaponMiningDrill_C"
+    hand_cannon: str = "/Game/Packs/TidesOfFortune/Weapons/HandCannon/WeaponItem/PrimalItem_WeaponHandCannon_ToF.PrimalItem_WeaponHandCannon_ToF_C"
+    tek_claws: str = "/Game/Genesis/Weapons/TekHandBlades/PrimalItem_WeaponTekClaws.PrimalItem_WeaponTekClaws_C"
+    tek_grenade_launcher: str = "/Game/Genesis/Weapons/TekGrenadeLauncher/PrimalItem_WeaponTekGrenadeLauncher.PrimalItem_WeaponTekGrenadeLauncher_C"
+    charge_lantern: str = "/Game/Aberration/WeaponRadioactiveLanternCharge/PrimalItem_WeaponRadioactiveLanternCharge.PrimalItem_WeaponRadioactiveLanternCharge_C"
+    all_bps = [compound_bow, fabricated_pistol, fabricated_shotgun, fabricated_sniper, fabricated_crossbow, longneck, assault_rifle, rocket_launcher, tek_rifle, chainsaw, flamethrower, tek_spear, tek_sword, mining_drill, hand_cannon, tek_claws, tek_grenade_launcher, charge_lantern]
 
 class CursedWeapons:
     chainsaw: str = "/Game/LostColony/CoreBlueprints/Items/CursedWeapons/PrimalItem_ChainSaw_Cursed.PrimalItem_ChainSaw_Cursed_C"
