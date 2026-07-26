@@ -51,7 +51,9 @@ _KNOWN_SPECIAL_CASES = [
     "/Game/LostColony/Structures/CompanionBed/Structure/BP_CompanionBed_Base.BP_CompanionBed_Base_C",
     "/Game/Water/Vessels/Brig/BrigShipBP.BrigShipBP_C",
     "/Game/Water/Vessels/Brig/BrigShipPlayerFollowingBP_Miniboss.BrigShipPlayerFollowingBP_Miniboss_C",
-    "/Game/Water/Vessels/Sloop/SloopShipBP.SloopShipBP_C"
+    "/Game/Water/Vessels/Sloop/SloopShipBP.SloopShipBP_C",
+    "/Game/Dragontopia/Dragons/Eclipsar/Lumina/Lumina_Character_BP.Lumina_Character_BP_C",
+    "/Game/Dragontopia/Dragons/Eclipsar/Umbra/Umbra_Character_BP.Umbra_Character_BP_C"
 ]
 
 
