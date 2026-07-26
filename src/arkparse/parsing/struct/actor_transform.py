@@ -137,7 +137,7 @@ class MapCoordinateParameters:
                     sub_map_name=None
                 )
             ]
-        elif map == ArkMap.GENESIS1:
+        elif map in (ArkMap.GENESIS, ArkMap.GENESIS1):
             self.map_data = [
                 MapData(
                     origin=Bounds(-1107501.0, -1107500.0, 129392.0, 1107499.0, 1107500.0, 404392.0),
