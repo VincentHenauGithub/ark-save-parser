@@ -69,7 +69,7 @@ class EquipmentWithDurability(Equipment):
             return 700
         elif bp in [Weapons.advanced.tek_claws, Weapons.advanced.tek_sword, Weapons.advanced.tek_grenade_launcher]:
             return 140
-        elif bp in [Weapons.advanced.charge_lantern, Weapons.primitive.shotgun, Weapons.cursed.shotgun, Weapons.advanced.fabricated_shotgun, Weapons.cursed.fabricated_shotgun]:
+        elif bp in [Weapons.advanced.charge_lantern, Weapons.primitive.shotgun, Weapons.advanced.fabricated_shotgun, Weapons.cursed.fabricated_shotgun]:
             return 300
         elif bp in [Weapons.advanced.longneck, Weapons.cursed.longneck, Weapons.advanced.fabricated_sniper, Weapons.cursed.fabricated_sniper]:
             return 70
