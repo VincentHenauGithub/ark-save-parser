@@ -20,13 +20,15 @@ class EquipmentWithDurability(Equipment):
             return 50
         elif bp in ArmorBps.ghillie.all_bps or bp in ArmorBps.leather.all_bps or bp in ArmorBps.desert.all_bps:
             return 45
-        elif bp in ArmorBps.fur.all_bps or bp in ArmorBps.arctic.all_bps or bp:
+        elif bp in ArmorBps.fur.all_bps or bp in ArmorBps.arctic.all_bps:
             return 125
         elif bp in ArmorBps.cloth.all_bps:
             return 25
-        elif bp in ArmorBps.riot.all_bps or bp in ArmorBps.flak.all_bps or bp in ArmorBps.tek.all_bps:
+        elif bp in ArmorBps.riot.all_bps or bp in ArmorBps.cursed_riot.all_bps  or bp in ArmorBps.flak.all_bps or bp in ArmorBps.cursed_flak.all_bps:
             return 120
-        elif bp in ArmorBps.scuba.pants or bp in Mek.transformer:
+        elif bp in ArmorBps.tek.all_bps or bp in ArmorBps.cursed_tek.all_bps:
+                    return 300
+        elif bp in [ArmorBps.scuba.pants, Mek.transformer]:
             return 50
         elif bp in [ArmorBps.scuba.chest, ArmorBps.scuba.flippers, ArmorBps.scuba.goggles]:
             return 45
@@ -34,7 +36,7 @@ class EquipmentWithDurability(Equipment):
             return 85.5
         elif bp == ShieldBps.metal:
             return 1250
-        elif bp == ShieldBps.riot:
+        elif bp in [ShieldBps.riot, ShieldBps.tek]:
             return 2300
         elif bp == ShieldBps.wood:
             return 350
@@ -51,38 +53,40 @@ class EquipmentWithDurability(Equipment):
             return 500
         elif bp in SaddleBps.all_bps:
             return 100
-        elif bp == Weapons.advanced.compound_bow:
+        elif bp in [Weapons.advanced.compound_bow, Weapons.cursed.compound_bow]:
             return 55
-        elif bp == Weapons.primitive.sword:
+        elif bp in [Weapons.primitive.sword, Weapons.cursed.sword]:
             return 70
         elif bp == Misc.prod:
             return 10
         elif bp == Weapons.primitive.bow:
             return 50
-        elif bp == Weapons.primitive.crossbow or bp == Weapons.advanced.fabricated_crossbow:
+        elif bp in [Weapons.primitive.crossbow, Weapons.advanced.fabricated_crossbow, Weapons.cursed.crossbow]:
             return 100
-        elif bp == Misc.harpoon:
+        elif bp in [Misc.harpoon, Weapons.cursed.harpoon]:
             return 100
-        elif bp == Weapons.primitive.simple_pistol:
-            return 60
-        elif bp == Weapons.advanced.longneck:
+        elif bp == Weapons.advanced.mining_drill:
+            return 700
+        elif bp in [Weapons.advanced.tek_claws, Weapons.advanced.tek_sword, Weapons.advanced.tek_grenade_launcher]:
+            return 140
+        elif bp in [Weapons.advanced.charge_lantern, Weapons.primitive.shotgun, Weapons.advanced.fabricated_shotgun, Weapons.cursed.fabricated_shotgun]:
+            return 300
+        elif bp in [Weapons.advanced.longneck, Weapons.cursed.longneck, Weapons.advanced.fabricated_sniper, Weapons.cursed.fabricated_sniper]:
             return 70
-        elif bp in [Weapons.primitive.shotgun, Weapons.advanced.chainsaw]:
+        elif bp in [Weapons.advanced.chainsaw, Weapons.cursed.chainsaw]:
             return 80
-        elif bp == Weapons.advanced.fabricated_pistol:
+        elif bp in [Weapons.primitive.simple_pistol, Weapons.advanced.fabricated_pistol, Weapons.cursed.fabricated_pistol, Weapons.advanced.hand_cannon]:
             return 60
-        elif bp == Weapons.advanced.fabricated_shotgun:
-            return 120
-        elif bp == Weapons.advanced.fabricated_sniper:
-            return 70
         elif bp == Weapons.advanced.rocket_launcher:
             return 120
-        elif bp == Weapons.advanced.tek_rifle:
+        elif bp in [Weapons.advanced.tek_rifle, Weapons.cursed.tek_rifle]:
             return 80
         elif bp in [Weapons.gathering.sickle, Weapons.gathering.metal_hatchet, Weapons.gathering.metal_pick, 
                     Weapons.gathering.stone_hatchet, Weapons.gathering.stone_pick, Weapons.gathering.fishing_rod,
                     Weapons.advanced.assault_rifle, Weapons.primitive.slingshot, Weapons.primitive.stone_club,
-                    Weapons.primitive.pike, Weapons.primitive.lance, Weapons.advanced.flamethrower, Weapons.primitive.torch]  or bp in Arma.all_bps:
+                    Weapons.primitive.pike, Weapons.primitive.lance, Weapons.advanced.flamethrower, Weapons.primitive.torch,
+                    Weapons.cursed.metal_hatchet, Weapons.cursed.metal_pick, Weapons.cursed.assault_rifle,
+                    Weapons.cursed.pike, Weapons.cursed.flamethrower, Weapons.cursed.tek_sword, Weapons.primitive.whip]  or bp in Arma.all_bps:
             return 40
         elif bp == Misc.climb_pick:
             return 65

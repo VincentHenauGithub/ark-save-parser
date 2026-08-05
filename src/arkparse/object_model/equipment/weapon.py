@@ -10,6 +10,7 @@ from arkparse.utils.json_utils import DefaultJsonEncoder
 
 from .__equipment import Equipment
 from .__equipment_with_durability import EquipmentWithDurability
+from arkparse.classes.equipment import Weapons
 
 
 class Weapon(EquipmentWithDurability):
@@ -46,7 +47,9 @@ class Weapon(EquipmentWithDurability):
         
     def get_actual_value(self, stat: ArkEquipmentStat, internal_value: int) -> float:
         if stat == ArkEquipmentStat.DAMAGE:
-            return round(100.0 + internal_value / 100, 1)
+            bp = getattr(self.object, 'blueprint', None) if hasattr(self, 'object') and self.object else None
+            mult = 0.003 if bp in [Weapons.advanced.tek_claws, Weapons.advanced.mining_drill, Weapons.advanced.tek_sword] else 0.01
+            return round(100.0 + internal_value * mult, 1)
         else:
             return super().get_actual_value(stat, internal_value)
         

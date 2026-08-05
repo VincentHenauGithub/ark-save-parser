@@ -58,7 +58,7 @@ class EquipmentWithArmor(EquipmentWithDurability):
                     SaddleBps.rock_drake_tek]:
             return 45
         elif bp in [SaddleBps.paracer, SaddleBps.diplodocus, SaddleBps.bronto, SaddleBps.paracer_platform,
-                    SaddleBps.archelon, SaddleBps.carbo, MekBps.shield] or bp in Arma.all_bps:
+                    SaddleBps.archelon, SaddleBps.carbo, SaddleBps.giant_turtle, MekBps.shield] or bp in Arma.all_bps:
             # MekBps.shield is the M.D.S.M. (armor 20 per wiki); the doggo saddle
             # (Arma.all_bps) is a 20-armor saddle.
             return 20
