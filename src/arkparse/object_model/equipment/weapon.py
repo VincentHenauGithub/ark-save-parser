@@ -38,18 +38,20 @@ class Weapon(EquipmentWithDurability):
     def get_implemented_stats(self) -> list:
         return super().get_implemented_stats() + [ArkEquipmentStat.DAMAGE]
 
+    def _get_damage_multiplier(self) -> float:
+        bp = getattr(self.object, 'blueprint', None) if hasattr(self, 'object') and self.object else None
+        return 0.003 if bp in [Weapons.advanced.tek_claws, Weapons.advanced.mining_drill, Weapons.advanced.tek_sword] else 0.01
+
     def get_internal_value(self, stat: ArkEquipmentStat) -> int:
         if stat == ArkEquipmentStat.DAMAGE:
-            value = int((self.damage - 100.0) * 100)
+            value = int(round((self.damage - 100.0) / self._get_damage_multiplier()))
             return value if value >= 100 else 100
         else:
             return super().get_internal_value(stat)    
         
     def get_actual_value(self, stat: ArkEquipmentStat, internal_value: int) -> float:
         if stat == ArkEquipmentStat.DAMAGE:
-            bp = getattr(self.object, 'blueprint', None) if hasattr(self, 'object') and self.object else None
-            mult = 0.003 if bp in [Weapons.advanced.tek_claws, Weapons.advanced.mining_drill, Weapons.advanced.tek_sword] else 0.01
-            return round(100.0 + internal_value * mult, 1)
+            return round(100.0 + internal_value * self._get_damage_multiplier(), 1)
         else:
             return super().get_actual_value(stat, internal_value)
         

@@ -65,6 +65,11 @@ class Dino(ParsedObjectBase):
         super().__init_props__()
 
         self.is_female = self.object.get_property_value("bIsFemale", False)
+
+        # Special case for Lumina:
+        if "/Lumina/" in self.object.blueprint:
+            self.is_female = True
+
         self.id_ = DinoId.from_data(self.object)
         self.gene_traits = [GeneTrait(t) for t in self.object.get_array_property_value("GeneTraits")]
         self.is_dead = self.object.get_property_value("bIsDead", False)
