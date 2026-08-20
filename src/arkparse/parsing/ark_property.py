@@ -178,10 +178,8 @@ class ArkProperty:
     def read_property(byte_buffer: "ArkBinaryParser", in_array: bool = False, struct_end: int = -1) -> Optional["ArkProperty"]:
         name_position = byte_buffer.get_position()
         value_position = 0
-        byte_buffer.save_context.generate_unknown = True
-
-        key = byte_buffer.read_name()
-        byte_buffer.save_context.generate_unknown = False
+        with byte_buffer.save_context.unknown_names_allowed():
+            key = byte_buffer.read_name()
 
         if key is None or key == "None":
             ArkSaveLogger.parser_log("Exiting struct (None marker) (pos = " + str(byte_buffer.get_position()) + " (hex: " + hex(byte_buffer.get_position()) + "))")

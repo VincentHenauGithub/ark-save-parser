@@ -47,8 +47,10 @@ class ArkCustomItemData:
     skins: list[str] = None
 
     def __init__(self, ark_binary_data: "ArkBinaryParser"):
-        ark_binary_data.save_context.generate_unknown = True
+        with ark_binary_data.save_context.unknown_names_allowed():
+            self.__read_body(ark_binary_data)
 
+    def __read_body(self, ark_binary_data: "ArkBinaryParser"):
         total_size = self.__read_header(ark_binary_data)
         data_start = ark_binary_data.position
         ArkSaveLogger.parser_log(f"Reading CustomItemData at position {data_start}, expected size: {total_size} bytes")
@@ -117,8 +119,6 @@ class ArkCustomItemData:
             ArkSaveLogger.parser_log(f"Float: {float_value}")
         for name in self.names:
             ArkSaveLogger.parser_log(f"Name: {name}")
-            
-        ark_binary_data.save_context.generate_unknown = False
 
     def to_json_obj(self, include_byte_arrays: bool = False):
         json_obj = { "doubles": self.doubles,

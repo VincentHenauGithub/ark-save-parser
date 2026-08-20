@@ -45,11 +45,38 @@ baseline tracked.
 |------|---------|
 | `conftest.py` | Autodetects the save, parses it once, wires snapshot fixtures |
 | `snapshot.py` | Snapshot load / store / compare helper |
-| `tests/test_01_parsing.py` | Load, faulty-object check, game time, GeneralApi |
+| `tests/test_01_parsing.py` | Load, faulty-object check, game time, GeneralApi, re-parse stability, unresolved names |
 | `tests/test_02_dinos.py` | DinoApi: totals, wild/tamed/cryo breakdown, babies |
 | `tests/test_03_structures.py` | StructureApi totals |
 | `tests/test_04_equipment.py` | EquipmentApi: armor/weapons/saddles/shields |
 | `tests/test_05_players.py` | PlayerApi: players/tribes/pawns + inventories |
+
+## Why the bench re-parses
+
+`test_reparse_is_stable` parses the save from scratch **3 more times** after the
+session parse and requires every run to agree (same object count, zero faulty).
+
+One clean parse proves less than it looks like. On free-threaded builds
+`get_game_objects()` fans out over a `ThreadPoolExecutor` sharing a single
+`SaveContext`, so a state race only bites in *some* runs — a shared
+`generate_unknown` flag once failed roughly half of them while the bench, parsing
+once, happily reported `faulty=0`. Repeating the parse also catches parser state
+that leaks from one parse into the next.
+
+```bash
+TESTBENCH_REPARSE_RUNS=10 pytest tests/test_01_parsing.py   # more runs
+TESTBENCH_REPARSE_RUNS=0  pytest                            # skip (faster)
+```
+
+Run the bench on a **free-threaded** interpreter (`python -VV` says
+"free-threading build") if you want thread races covered at all; on a GIL build
+parsing is sequential and the re-parses only catch leaked state. The test prints
+which mode it ran in.
+
+`test_unresolved_names` snapshots how many names the parser had to invent
+(`Unknown_<id>`, used where a name id is missing from the save's name table).
+Those are silent — they raise nothing and never count as faulty — so the count is
+tracked to stop it creeping up.
 
 ## Debugging a parse
 

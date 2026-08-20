@@ -1,5 +1,7 @@
 from typing import Dict, List, Optional, TYPE_CHECKING
+import threading
 import uuid
+from contextlib import contextmanager
 from pathlib import Path
 import random
 import json
@@ -22,10 +24,41 @@ class SaveContext:
         self.unknown_value: int = 0
         self.npc_zone_volumes: List["NpcZoneVolume"] = []
         self.all_uuids: List[uuid.UUID] = []
+        # generate_unknown is per-thread (see the property below); one SaveContext
+        # is shared by every worker thread of a parallel parse.
+        self._local = threading.local()
         self.generate_unknown: bool = False
         self._has_name_table: bool = False  # Cached flag for fast lookup
         self.current_time = 0
         self.current_day = 0
+
+    @property
+    def generate_unknown(self) -> bool:
+        """Whether name ids missing from the name table are fabricated instead of
+        raising. Thread-local: on free-threaded builds `get_game_objects` parses
+        with a ThreadPoolExecutor over this single shared context, so a plain
+        attribute would let one thread switch it off while another is still
+        inside a region that needs it on."""
+        return getattr(self._local, "generate_unknown", False)
+
+    @generate_unknown.setter
+    def generate_unknown(self, value: bool) -> None:
+        self._local.generate_unknown = bool(value)
+
+    @contextmanager
+    def unknown_names_allowed(self):
+        """Fabricate unknown names for the duration of the block.
+
+        Restores the previous value rather than forcing it off, so nested
+        regions (a property read inside a CustomItemData, say) don't clobber
+        the enclosing one, and an exception can't leak the flag on.
+        """
+        previous = self.generate_unknown
+        self.generate_unknown = True
+        try:
+            yield
+        finally:
+            self.generate_unknown = previous
 
     def get_actor_transform(self, uuid_: uuid.UUID) -> Optional[ActorTransform]:
         return self.actor_transforms.get(uuid_)

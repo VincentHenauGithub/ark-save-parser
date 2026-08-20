@@ -43,36 +43,38 @@ class EmbeddedCryopodData:
                     parser: ArkBinaryParser = ParserClass.from_deflated_data(bts)
                     parser.in_cryopod = True
 
-                    try:
-                        objects: List[ArkGameObject] = []
-                        if not is_legacy:
-                            parser.skip_bytes(8)  # Skip the first 8 bytes (header)
-                        nr_of_obj = parser.read_uint32()
-                        ArkSaveLogger.parser_log(f"Number of embedded objects: {nr_of_obj}")
-                        parser.save_context.generate_unknown = True
-                        for _ in range(nr_of_obj):
-                            objects.append(ArkGameObject(binary_reader=parser, from_custom_bytes=True))
-                        for obj in objects:
-                            # parser.position += 8 if is_legacy else 0
-                            obj.read_props_at_offset(parser, legacy=is_legacy)
-                    except Exception as e:
-                        ArkSaveLogger.error_log(f"Error reading embedded cryopod data:")
-                        parser.structured_print()
-                        ArkSaveLogger.parser_log(f"Made structured print of parser at error")
+                    # The embedded objects carry name ids absent from the save's
+                    # name table, so unknown names are fabricated for this whole
+                    # block (the debug re-parse in the except branch included).
+                    with parser.save_context.unknown_names_allowed():
                         try:
-                            ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.PARSER, True)
-                            objects = []
-                            parser.position = 4 if is_legacy else 12
+                            objects: List[ArkGameObject] = []
+                            if not is_legacy:
+                                parser.skip_bytes(8)  # Skip the first 8 bytes (header)
+                            nr_of_obj = parser.read_uint32()
+                            ArkSaveLogger.parser_log(f"Number of embedded objects: {nr_of_obj}")
                             for _ in range(nr_of_obj):
                                 objects.append(ArkGameObject(binary_reader=parser, from_custom_bytes=True))
                             for obj in objects:
                                 # parser.position += 8 if is_legacy else 0
                                 obj.read_props_at_offset(parser, legacy=is_legacy)
-                            ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.PARSER, False)
-                        except Exception as _:
-                            pass
-                        raise e
-                    parser.save_context.generate_unknown = False
+                        except Exception as e:
+                            ArkSaveLogger.error_log(f"Error reading embedded cryopod data:")
+                            parser.structured_print()
+                            ArkSaveLogger.parser_log(f"Made structured print of parser at error")
+                            try:
+                                ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.PARSER, True)
+                                objects = []
+                                parser.position = 4 if is_legacy else 12
+                                for _ in range(nr_of_obj):
+                                    objects.append(ArkGameObject(binary_reader=parser, from_custom_bytes=True))
+                                for obj in objects:
+                                    # parser.position += 8 if is_legacy else 0
+                                    obj.read_props_at_offset(parser, legacy=is_legacy)
+                                ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.PARSER, False)
+                            except Exception as _:
+                                pass
+                            raise e
 
                     if is_legacy:
                         ArkSaveLogger.parser_log("Parsed legacy cryopod data")
@@ -97,18 +99,17 @@ class EmbeddedCryopodData:
                         PropType = LegacyArkProperty
                         parser.skip_bytes(4)
                         ArkSaveLogger.objects_log("Detected legacy saddle data in cryopod")
-                    parser.save_context.generate_unknown = True
-                    try:
-                        obj = ArkGameObject(binary_reader=parser, no_header=True)
-                    except Exception as e:
-                        ArkSaveLogger.error_log(f"Error reading saddle data: {e}")
-                        parser.structured_print()
-                        parser.store()
-                        ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.PARSER, True)
-                        obj = ArkGameObject(binary_reader=parser, no_header=True)
-                        ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.PARSER, False)
-                        raise e
-                    parser.save_context.generate_unknown = False
+                    with parser.save_context.unknown_names_allowed():
+                        try:
+                            obj = ArkGameObject(binary_reader=parser, no_header=True)
+                        except Exception as e:
+                            ArkSaveLogger.error_log(f"Error reading saddle data: {e}")
+                            parser.structured_print()
+                            parser.store()
+                            ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.PARSER, True)
+                            obj = ArkGameObject(binary_reader=parser, no_header=True)
+                            ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.PARSER, False)
+                            raise e
 
                     props_to_purge = ['ItemQuantity', 'ItemStatValues', 'bAllowRemovalFromInventory', 'SteamUserItemID', 'CustomItemName', 'OriginalItemDropLocation', 'EggGenderOverride', 'ItemCustomClass', 'EggDinoAncestors', \
                                       'NextSpoilingTime', 'ClusterSpoilingTimeUTC', 'CustomItemDatas', 'EggNumberMutationsApplied', 'EggNumberOfLevelUpPointsApplied', 'bHideFromInventoryDisplay', 'CustomItemColors', 'CustomCosmeticAuthVars', \
