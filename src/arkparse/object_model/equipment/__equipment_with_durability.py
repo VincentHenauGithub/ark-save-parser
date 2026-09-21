@@ -4,7 +4,7 @@ from uuid import UUID
 from arkparse import AsaSave
 from arkparse.logging.ark_save_logger import ArkSaveLogger
 from arkparse.enums import ArkEquipmentStat
-from arkparse.classes.equipment import Armor as ArmorBps, Shields as ShieldBps, Saddles as SaddleBps, Weapons, Misc, Mek, ArmaDoggoGear as Arma
+from arkparse.classes.equipment import Armor as ArmorBps, Shields as ShieldBps, Saddles as SaddleBps, Weapons, Tools, Mek, ArmaDoggoGear as Arma
 
 from .__equipment import Equipment
 from ...utils.json_utils import DefaultJsonEncoder
@@ -57,13 +57,13 @@ class EquipmentWithDurability(Equipment):
             return 55
         elif bp in [Weapons.primitive.sword, Weapons.cursed.sword]:
             return 70
-        elif bp == Misc.prod:
+        elif bp == Tools.prod:
             return 10
         elif bp == Weapons.primitive.bow:
             return 50
         elif bp in [Weapons.primitive.crossbow, Weapons.advanced.fabricated_crossbow, Weapons.cursed.crossbow]:
             return 100
-        elif bp in [Misc.harpoon, Weapons.cursed.harpoon]:
+        elif bp in [Tools.harpoon, Weapons.cursed.harpoon]:
             return 100
         elif bp == Weapons.advanced.mining_drill:
             return 700
@@ -88,7 +88,7 @@ class EquipmentWithDurability(Equipment):
                     Weapons.cursed.metal_hatchet, Weapons.cursed.metal_pick, Weapons.cursed.assault_rifle,
                     Weapons.cursed.pike, Weapons.cursed.flamethrower, Weapons.cursed.tek_sword, Weapons.primitive.whip]  or bp in Arma.all_bps:
             return 40
-        elif bp == Misc.climb_pick:
+        elif bp == Tools.climb_pick:
             return 65
         elif bp == Mek.shield or bp == Mek.cannon or bp == Mek.missile_pod:
             return 5000

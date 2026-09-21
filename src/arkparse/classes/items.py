@@ -1,90 +1,96 @@
 """Remaining inventory items, container inventories and buffs."""
 
-class ItemTraits:
-    armor_ammo_on_hit: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_AmmoOnHit.PrimalItem_ItemTrait_Armor_AmmoOnHit_C"
-    armor_ammo_on_hit_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_AmmoOnHit_Lesser.PrimalItem_ItemTrait_Armor_AmmoOnHit_Lesser_C"
-    armor_ammo_on_hit_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_AmmoOnHit_Moderate.PrimalItem_ItemTrait_Armor_AmmoOnHit_Moderate_C"
-    armor_increased_incoming_healing: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_IncreasedIncomingHealing.PrimalItem_ItemTrait_Armor_IncreasedIncomingHealing_C"
-    armor_increased_incoming_healing_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_IncreasedIncomingHealing_Lesser.PrimalItem_ItemTrait_Armor_IncreasedIncomingHealing_Lesser_C"
-    armor_increased_incoming_healing_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_IncreasedIncomingHealing_Moderate.PrimalItem_ItemTrait_Armor_IncreasedIncomingHealing_Moderate_C"
-    armor_marathon: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_Marathon.PrimalItem_ItemTrait_Armor_Marathon_C"
-    armor_marathon_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_Marathon_Lesser.PrimalItem_ItemTrait_Armor_Marathon_Lesser_C"
-    armor_marathon_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_Marathon_Moderate.PrimalItem_ItemTrait_Armor_Marathon_Moderate_C"
-    armor_mobile: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_Mobile.PrimalItem_ItemTrait_Armor_Mobile_C"
-    armor_mobile_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_Mobile_Lesser.PrimalItem_ItemTrait_Armor_Mobile_Lesser_C"
-    armor_mobile_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_Mobile_Moderate.PrimalItem_ItemTrait_Armor_Mobile_Moderate_C"
-    armor_reduced_debuff_duration: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_ReducedDebuffDuration.PrimalItem_ItemTrait_Armor_ReducedDebuffDuration_C"
-    armor_reduced_debuff_duration_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_ReducedDebuffDuration_Lesser.PrimalItem_ItemTrait_Armor_ReducedDebuffDuration_Lesser_C"
-    armor_reduced_debuff_duration_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_ReducedDebuffDuration_Moderate.PrimalItem_ItemTrait_Armor_ReducedDebuffDuration_Moderate_C"
-    gun_cannibalizing: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Cannibalizing.PrimalItem_ItemTrait_Gun_Cannibalizing_C"
-    gun_cannibalizing_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Cannibalizing_Lesser.PrimalItem_ItemTrait_Gun_Cannibalizing_Lesser_C"
-    gun_cannibalizing_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Cannibalizing_Moderate.PrimalItem_ItemTrait_Gun_Cannibalizing_Moderate_C"
-    gun_focusing: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Focusing.PrimalItem_ItemTrait_Gun_Focusing_C"
-    gun_focusing_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Focusing_Lesser.PrimalItem_ItemTrait_Gun_Focusing_Lesser_C"
-    gun_focusing_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Focusing_Moderate.PrimalItem_ItemTrait_Gun_Focusing_Moderate_C"
-    gun_reduced_damage_on_hit: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_ReducedDamageOnHit.PrimalItem_ItemTrait_Gun_ReducedDamageOnHit_C"
-    gun_reduced_damage_on_hit_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_ReducedDamageOnHit_Lesser.PrimalItem_ItemTrait_Gun_ReducedDamageOnHit_Lesser_C"
-    gun_reduced_damage_on_hit_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_ReducedDamageOnHit_Moderate.PrimalItem_ItemTrait_Gun_ReducedDamageOnHit_Moderate_C"
-    gun_ricochet: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Ricochet.PrimalItem_ItemTrait_Gun_Ricochet_C"
-    gun_ricochet_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Ricochet_Lesser.PrimalItem_ItemTrait_Gun_Ricochet_Lesser_C"
-    gun_ricochet_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Ricochet_Moderate.PrimalItem_ItemTrait_Gun_Ricochet_Moderate_C"
-    gun_tracker: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Tracker.PrimalItem_ItemTrait_Gun_Tracker_C"
-    gun_tracker_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Tracker_Lesser.PrimalItem_ItemTrait_Gun_Tracker_Lesser_C"
-    gun_tracker_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Tracker_Moderate.PrimalItem_ItemTrait_Gun_Tracker_Moderate_C"
-    melee_heal_on_damage: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_HealOnDamage.PrimalItem_ItemTrait_Melee_HealOnDamage_C"
-    melee_heal_on_damage_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_HealOnDamage_Lesser.PrimalItem_ItemTrait_Melee_HealOnDamage_Lesser_C"
-    melee_heal_on_damage_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_HealOnDamage_Moderate.PrimalItem_ItemTrait_Melee_HealOnDamage_Moderate_C"
-    melee_increased_damage_from_behind: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedDamageFromBehind.PrimalItem_ItemTrait_Melee_IncreasedDamageFromBehind_C"
-    melee_increased_damage_from_behind_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedDamageFromBehind_Lesser.PrimalItem_ItemTrait_Melee_IncreasedDamageFromBehind_Lesser_C"
-    melee_increased_damage_from_behind_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedDamageFromBehind_Moderate.PrimalItem_ItemTrait_Melee_IncreasedDamageFromBehind_Moderate_C"
-    melee_increased_damage_to_non_living: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedDamageToNonLiving.PrimalItem_ItemTrait_Melee_IncreasedDamageToNonLiving_C"
-    melee_increased_damage_to_non_living_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedDamageToNonLiving_Lesser.PrimalItem_ItemTrait_Melee_IncreasedDamageToNonLiving_Lesser_C"
-    melee_increased_damage_to_non_living_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedDamageToNonLiving_Moderate.PrimalItem_ItemTrait_Melee_IncreasedDamageToNonLiving_Moderate_C"
-    melee_increased_speed_and_damage_taken: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedSpeedAndDamageTaken.PrimalItem_ItemTrait_Melee_IncreasedSpeedAndDamageTaken_C"
-    melee_increased_speed_and_damage_taken_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedSpeedAndDamageTaken_Lesser.PrimalItem_ItemTrait_Melee_IncreasedSpeedAndDamageTaken_Lesser_C"
-    melee_increased_speed_and_damage_taken_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedSpeedAndDamageTaken_Moderate.PrimalItem_ItemTrait_Melee_IncreasedSpeedAndDamageTaken_Moderate_C"
-    melee_shield_on_hit: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_ShieldOnHit.PrimalItem_ItemTrait_Melee_ShieldOnHit_C"
-    melee_shield_on_hit_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_ShieldOnHit_Lesser.PrimalItem_ItemTrait_Melee_ShieldOnHit_Lesser_C"
-    melee_shield_on_hit_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_ShieldOnHit_Moderate.PrimalItem_ItemTrait_Melee_ShieldOnHit_Moderate_C"
-    projectile_antigrav: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_Antigrav.PrimalItem_ItemTrait_Projectile_Antigrav_C"
-    projectile_antigrav_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_Antigrav_Lesser.PrimalItem_ItemTrait_Projectile_Antigrav_Lesser_C"
-    projectile_antigrav_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_Antigrav_Moderate.PrimalItem_ItemTrait_Projectile_Antigrav_Moderate_C"
-    projectile_extra_damage_to_vulnerable: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_ExtraDamageToVulnerable.PrimalItem_ItemTrait_Projectile_ExtraDamageToVulnerable_C"
-    projectile_extra_damage_to_vulnerable_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_ExtraDamageToVulnerable_Lesser.PrimalItem_ItemTrait_Projectile_ExtraDamageToVulnerable_Lesser_C"
-    projectile_extra_damage_to_vulnerable_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_ExtraDamageToVulnerable_Moderate.PrimalItem_ItemTrait_Projectile_ExtraDamageToVulnerable_Moderate_C"
-    projectile_increased_damage_to_alpha: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_IncreasedDamageToAlpha.PrimalItem_ItemTrait_Projectile_IncreasedDamageToAlpha_C"
-    projectile_increased_damage_to_alpha_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_IncreasedDamageToAlpha_Lesser.PrimalItem_ItemTrait_Projectile_IncreasedDamageToAlpha_Lesser_C"
-    projectile_increased_damage_to_alpha_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_IncreasedDamageToAlpha_Moderate.PrimalItem_ItemTrait_Projectile_IncreasedDamageToAlpha_Moderate_C"
-    projectile_increased_first_hit_damage: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_IncreasedFirstHitDamage.PrimalItem_ItemTrait_Projectile_IncreasedFirstHitDamage_C"
-    projectile_increased_first_hit_damage_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_IncreasedFirstHitDamage_Lesser.PrimalItem_ItemTrait_Projectile_IncreasedFirstHitDamage_Lesser_C"
-    projectile_increased_first_hit_damage_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_IncreasedFirstHitDamage_Moderate.PrimalItem_ItemTrait_Projectile_IncreasedFirstHitDamage_Moderate_C"
-    projectile_second_projectile: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_SecondProjectile.PrimalItem_ItemTrait_Projectile_SecondProjectile_C"
-    projectile_second_projectile_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_SecondProjectile_Lesser.PrimalItem_ItemTrait_Projectile_SecondProjectile_Lesser_C"
-    projectile_second_projectile_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_SecondProjectile_Moderate.PrimalItem_ItemTrait_Projectile_SecondProjectile_Moderate_C"
+class ArmorTraits:
+    ammo_on_hit: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_AmmoOnHit.PrimalItem_ItemTrait_Armor_AmmoOnHit_C"
+    ammo_on_hit_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_AmmoOnHit_Lesser.PrimalItem_ItemTrait_Armor_AmmoOnHit_Lesser_C"
+    ammo_on_hit_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_AmmoOnHit_Moderate.PrimalItem_ItemTrait_Armor_AmmoOnHit_Moderate_C"
+    increased_incoming_healing: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_IncreasedIncomingHealing.PrimalItem_ItemTrait_Armor_IncreasedIncomingHealing_C"
+    increased_incoming_healing_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_IncreasedIncomingHealing_Lesser.PrimalItem_ItemTrait_Armor_IncreasedIncomingHealing_Lesser_C"
+    increased_incoming_healing_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_IncreasedIncomingHealing_Moderate.PrimalItem_ItemTrait_Armor_IncreasedIncomingHealing_Moderate_C"
+    marathon: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_Marathon.PrimalItem_ItemTrait_Armor_Marathon_C"
+    marathon_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_Marathon_Lesser.PrimalItem_ItemTrait_Armor_Marathon_Lesser_C"
+    marathon_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_Marathon_Moderate.PrimalItem_ItemTrait_Armor_Marathon_Moderate_C"
+    mobile: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_Mobile.PrimalItem_ItemTrait_Armor_Mobile_C"
+    mobile_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_Mobile_Lesser.PrimalItem_ItemTrait_Armor_Mobile_Lesser_C"
+    mobile_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_Mobile_Moderate.PrimalItem_ItemTrait_Armor_Mobile_Moderate_C"
+    reduced_debuff_duration: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_ReducedDebuffDuration.PrimalItem_ItemTrait_Armor_ReducedDebuffDuration_C"
+    reduced_debuff_duration_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_ReducedDebuffDuration_Lesser.PrimalItem_ItemTrait_Armor_ReducedDebuffDuration_Lesser_C"
+    reduced_debuff_duration_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Armor_ReducedDebuffDuration_Moderate.PrimalItem_ItemTrait_Armor_ReducedDebuffDuration_Moderate_C"
 
-    all_bps = [armor_ammo_on_hit, armor_ammo_on_hit_lesser, armor_ammo_on_hit_moderate,
-               armor_increased_incoming_healing, armor_increased_incoming_healing_lesser,
-               armor_increased_incoming_healing_moderate, armor_marathon, armor_marathon_lesser,
-               armor_marathon_moderate, armor_mobile, armor_mobile_lesser, armor_mobile_moderate,
-               armor_reduced_debuff_duration, armor_reduced_debuff_duration_lesser,
-               armor_reduced_debuff_duration_moderate, gun_cannibalizing, gun_cannibalizing_lesser,
-               gun_cannibalizing_moderate, gun_focusing, gun_focusing_lesser, gun_focusing_moderate,
-               gun_reduced_damage_on_hit, gun_reduced_damage_on_hit_lesser,
-               gun_reduced_damage_on_hit_moderate, gun_ricochet, gun_ricochet_lesser, gun_ricochet_moderate,
-               gun_tracker, gun_tracker_lesser, gun_tracker_moderate, melee_heal_on_damage,
-               melee_heal_on_damage_lesser, melee_heal_on_damage_moderate, melee_increased_damage_from_behind,
-               melee_increased_damage_from_behind_lesser, melee_increased_damage_from_behind_moderate,
-               melee_increased_damage_to_non_living, melee_increased_damage_to_non_living_lesser,
-               melee_increased_damage_to_non_living_moderate, melee_increased_speed_and_damage_taken,
-               melee_increased_speed_and_damage_taken_lesser, melee_increased_speed_and_damage_taken_moderate,
-               melee_shield_on_hit, melee_shield_on_hit_lesser, melee_shield_on_hit_moderate,
-               projectile_antigrav, projectile_antigrav_lesser, projectile_antigrav_moderate,
-               projectile_extra_damage_to_vulnerable, projectile_extra_damage_to_vulnerable_lesser,
-               projectile_extra_damage_to_vulnerable_moderate, projectile_increased_damage_to_alpha,
-               projectile_increased_damage_to_alpha_lesser, projectile_increased_damage_to_alpha_moderate,
-               projectile_increased_first_hit_damage, projectile_increased_first_hit_damage_lesser,
-               projectile_increased_first_hit_damage_moderate, projectile_second_projectile,
-               projectile_second_projectile_lesser, projectile_second_projectile_moderate]
+    all_bps = [ammo_on_hit, ammo_on_hit_lesser, ammo_on_hit_moderate, increased_incoming_healing,
+               increased_incoming_healing_lesser, increased_incoming_healing_moderate, marathon,
+               marathon_lesser, marathon_moderate, mobile, mobile_lesser, mobile_moderate,
+               reduced_debuff_duration, reduced_debuff_duration_lesser, reduced_debuff_duration_moderate]
+
+class GunTraits:
+    cannibalizing: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Cannibalizing.PrimalItem_ItemTrait_Gun_Cannibalizing_C"
+    cannibalizing_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Cannibalizing_Lesser.PrimalItem_ItemTrait_Gun_Cannibalizing_Lesser_C"
+    cannibalizing_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Cannibalizing_Moderate.PrimalItem_ItemTrait_Gun_Cannibalizing_Moderate_C"
+    focusing: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Focusing.PrimalItem_ItemTrait_Gun_Focusing_C"
+    focusing_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Focusing_Lesser.PrimalItem_ItemTrait_Gun_Focusing_Lesser_C"
+    focusing_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Focusing_Moderate.PrimalItem_ItemTrait_Gun_Focusing_Moderate_C"
+    reduced_damage_on_hit: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_ReducedDamageOnHit.PrimalItem_ItemTrait_Gun_ReducedDamageOnHit_C"
+    reduced_damage_on_hit_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_ReducedDamageOnHit_Lesser.PrimalItem_ItemTrait_Gun_ReducedDamageOnHit_Lesser_C"
+    reduced_damage_on_hit_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_ReducedDamageOnHit_Moderate.PrimalItem_ItemTrait_Gun_ReducedDamageOnHit_Moderate_C"
+    ricochet: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Ricochet.PrimalItem_ItemTrait_Gun_Ricochet_C"
+    ricochet_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Ricochet_Lesser.PrimalItem_ItemTrait_Gun_Ricochet_Lesser_C"
+    ricochet_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Ricochet_Moderate.PrimalItem_ItemTrait_Gun_Ricochet_Moderate_C"
+    tracker: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Tracker.PrimalItem_ItemTrait_Gun_Tracker_C"
+    tracker_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Tracker_Lesser.PrimalItem_ItemTrait_Gun_Tracker_Lesser_C"
+    tracker_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Gun_Tracker_Moderate.PrimalItem_ItemTrait_Gun_Tracker_Moderate_C"
+
+    all_bps = [cannibalizing, cannibalizing_lesser, cannibalizing_moderate, focusing, focusing_lesser,
+               focusing_moderate, reduced_damage_on_hit, reduced_damage_on_hit_lesser,
+               reduced_damage_on_hit_moderate, ricochet, ricochet_lesser, ricochet_moderate, tracker,
+               tracker_lesser, tracker_moderate]
+
+class MeleeTraits:
+    heal_on_damage: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_HealOnDamage.PrimalItem_ItemTrait_Melee_HealOnDamage_C"
+    heal_on_damage_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_HealOnDamage_Lesser.PrimalItem_ItemTrait_Melee_HealOnDamage_Lesser_C"
+    heal_on_damage_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_HealOnDamage_Moderate.PrimalItem_ItemTrait_Melee_HealOnDamage_Moderate_C"
+    increased_damage_from_behind: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedDamageFromBehind.PrimalItem_ItemTrait_Melee_IncreasedDamageFromBehind_C"
+    increased_damage_from_behind_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedDamageFromBehind_Lesser.PrimalItem_ItemTrait_Melee_IncreasedDamageFromBehind_Lesser_C"
+    increased_damage_from_behind_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedDamageFromBehind_Moderate.PrimalItem_ItemTrait_Melee_IncreasedDamageFromBehind_Moderate_C"
+    increased_damage_to_non_living: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedDamageToNonLiving.PrimalItem_ItemTrait_Melee_IncreasedDamageToNonLiving_C"
+    increased_damage_to_non_living_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedDamageToNonLiving_Lesser.PrimalItem_ItemTrait_Melee_IncreasedDamageToNonLiving_Lesser_C"
+    increased_damage_to_non_living_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedDamageToNonLiving_Moderate.PrimalItem_ItemTrait_Melee_IncreasedDamageToNonLiving_Moderate_C"
+    increased_speed_and_damage_taken: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedSpeedAndDamageTaken.PrimalItem_ItemTrait_Melee_IncreasedSpeedAndDamageTaken_C"
+    increased_speed_and_damage_taken_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedSpeedAndDamageTaken_Lesser.PrimalItem_ItemTrait_Melee_IncreasedSpeedAndDamageTaken_Lesser_C"
+    increased_speed_and_damage_taken_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_IncreasedSpeedAndDamageTaken_Moderate.PrimalItem_ItemTrait_Melee_IncreasedSpeedAndDamageTaken_Moderate_C"
+    shield_on_hit: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_ShieldOnHit.PrimalItem_ItemTrait_Melee_ShieldOnHit_C"
+    shield_on_hit_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_ShieldOnHit_Lesser.PrimalItem_ItemTrait_Melee_ShieldOnHit_Lesser_C"
+    shield_on_hit_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Melee_ShieldOnHit_Moderate.PrimalItem_ItemTrait_Melee_ShieldOnHit_Moderate_C"
+
+    all_bps = [heal_on_damage, heal_on_damage_lesser, heal_on_damage_moderate, increased_damage_from_behind,
+               increased_damage_from_behind_lesser, increased_damage_from_behind_moderate,
+               increased_damage_to_non_living, increased_damage_to_non_living_lesser,
+               increased_damage_to_non_living_moderate, increased_speed_and_damage_taken,
+               increased_speed_and_damage_taken_lesser, increased_speed_and_damage_taken_moderate,
+               shield_on_hit, shield_on_hit_lesser, shield_on_hit_moderate]
+
+class ProjectileTraits:
+    antigrav: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_Antigrav.PrimalItem_ItemTrait_Projectile_Antigrav_C"
+    antigrav_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_Antigrav_Lesser.PrimalItem_ItemTrait_Projectile_Antigrav_Lesser_C"
+    antigrav_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_Antigrav_Moderate.PrimalItem_ItemTrait_Projectile_Antigrav_Moderate_C"
+    extra_damage_to_vulnerable: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_ExtraDamageToVulnerable.PrimalItem_ItemTrait_Projectile_ExtraDamageToVulnerable_C"
+    extra_damage_to_vulnerable_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_ExtraDamageToVulnerable_Lesser.PrimalItem_ItemTrait_Projectile_ExtraDamageToVulnerable_Lesser_C"
+    extra_damage_to_vulnerable_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_ExtraDamageToVulnerable_Moderate.PrimalItem_ItemTrait_Projectile_ExtraDamageToVulnerable_Moderate_C"
+    increased_damage_to_alpha: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_IncreasedDamageToAlpha.PrimalItem_ItemTrait_Projectile_IncreasedDamageToAlpha_C"
+    increased_damage_to_alpha_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_IncreasedDamageToAlpha_Lesser.PrimalItem_ItemTrait_Projectile_IncreasedDamageToAlpha_Lesser_C"
+    increased_damage_to_alpha_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_IncreasedDamageToAlpha_Moderate.PrimalItem_ItemTrait_Projectile_IncreasedDamageToAlpha_Moderate_C"
+    increased_first_hit_damage: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_IncreasedFirstHitDamage.PrimalItem_ItemTrait_Projectile_IncreasedFirstHitDamage_C"
+    increased_first_hit_damage_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_IncreasedFirstHitDamage_Lesser.PrimalItem_ItemTrait_Projectile_IncreasedFirstHitDamage_Lesser_C"
+    increased_first_hit_damage_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_IncreasedFirstHitDamage_Moderate.PrimalItem_ItemTrait_Projectile_IncreasedFirstHitDamage_Moderate_C"
+    second_projectile: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_SecondProjectile.PrimalItem_ItemTrait_Projectile_SecondProjectile_C"
+    second_projectile_lesser: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_SecondProjectile_Lesser.PrimalItem_ItemTrait_Projectile_SecondProjectile_Lesser_C"
+    second_projectile_moderate: str = "/Game/Packs/Wasteland/CoreBlueprints/ItemTraits/Items/PrimalItem_ItemTrait_Projectile_SecondProjectile_Moderate.PrimalItem_ItemTrait_Projectile_SecondProjectile_Moderate_C"
+
+    all_bps = [antigrav, antigrav_lesser, antigrav_moderate, extra_damage_to_vulnerable,
+               extra_damage_to_vulnerable_lesser, extra_damage_to_vulnerable_moderate,
+               increased_damage_to_alpha, increased_damage_to_alpha_lesser,
+               increased_damage_to_alpha_moderate, increased_first_hit_damage,
+               increased_first_hit_damage_lesser, increased_first_hit_damage_moderate, second_projectile,
+               second_projectile_lesser, second_projectile_moderate]
 
 class BossTributes:
     rag_wyv_boss_easy: str = "/Game/ASA/Dinos/IceWyvern/Boss/PrimalItem_BossTribute_RagWyvBoss_Easy.PrimalItem_BossTribute_RagWyvBoss_Easy_C"
@@ -135,47 +141,49 @@ class BossTributes:
 
 class VehicleParts:
     train_car_platform: str = "/Game/Packs/Frontier/Structures/TrainCarts/PrimalItem_TrainCar_Platform.PrimalItem_TrainCar_Platform_C"
-    craft_brig: str = "/Game/Packs/TidesOfFortune/Vehicles/Brigantine/PrimalItemShip_Craft_Brig.PrimalItemShip_Craft_Brig_C"
-    craft_galleon: str = "/Game/Packs/TidesOfFortune/Vehicles/Galleon/PrimalItemShip_Craft_Galleon.PrimalItemShip_Craft_Galleon_C"
-    craft_sloop: str = "/Game/Packs/TidesOfFortune/Vehicles/Sloop/PrimalItemShip_Craft_Sloop.PrimalItemShip_Craft_Sloop_C"
-    bed_racer: str = "/Game/Packs/Wasteland/Vehicles/Car/Bed/Racer/PrimalItem_Car_Bed_Racer.PrimalItem_Car_Bed_Racer_C"
-    bed_rollcage: str = "/Game/Packs/Wasteland/Vehicles/Car/Bed/Rollcage/PrimalItem_Car_Bed_Rollcage.PrimalItem_Car_Bed_Rollcage_C"
-    bed_truck: str = "/Game/Packs/Wasteland/Vehicles/Car/Bed/Truck/PrimalItem_Car_Bed_Truck.PrimalItem_Car_Bed_Truck_C"
-    cab_racer: str = "/Game/Packs/Wasteland/Vehicles/Car/Cab/Racer/PrimalItem_Car_Cab_Racer.PrimalItem_Car_Cab_Racer_C"
-    cab_rollcage: str = "/Game/Packs/Wasteland/Vehicles/Car/Cab/Rollcage/PrimalItem_Car_Cab_Rollcage.PrimalItem_Car_Cab_Rollcage_C"
-    cab_truck: str = "/Game/Packs/Wasteland/Vehicles/Car/Cab/Truck/PrimalItem_Car_Cab_Truck.PrimalItem_Car_Cab_Truck_C"
-    chassis_main: str = "/Game/Packs/Wasteland/Vehicles/Car/Chassis/Main/PrimalItem_Car_Chassis_Main.PrimalItem_Car_Chassis_Main_C"
-    engine_racer: str = "/Game/Packs/Wasteland/Vehicles/Car/EngineCompartment/Racer/PrimalItem_Car_Engine_Racer.PrimalItem_Car_Engine_Racer_C"
-    engine_rollcage: str = "/Game/Packs/Wasteland/Vehicles/Car/EngineCompartment/Rollcage/PrimalItem_Car_Engine_Rollcage.PrimalItem_Car_Engine_Rollcage_C"
-    engine_truck: str = "/Game/Packs/Wasteland/Vehicles/Car/EngineCompartment/Truck/PrimalItem_Car_Engine_Truck.PrimalItem_Car_Engine_Truck_C"
-    frontmod_armor: str = "/Game/Packs/Wasteland/Vehicles/Car/FrontEndMod/Armor/PrimalItem_Car_Frontmod_Armor.PrimalItem_Car_Frontmod_Armor_C"
-    frontmod_buzzsaw: str = "/Game/Packs/Wasteland/Vehicles/Car/FrontEndMod/Buzzsaw/PrimalItem_Car_Frontmod_Buzzsaw.PrimalItem_Car_Frontmod_Buzzsaw_C"
-    frontmod_cow_catcher: str = "/Game/Packs/Wasteland/Vehicles/Car/FrontEndMod/CowCatcher/PrimalItem_Car_Frontmod_CowCatcher.PrimalItem_Car_Frontmod_CowCatcher_C"
-    frontmod_spikes: str = "/Game/Packs/Wasteland/Vehicles/Car/FrontEndMod/Spikes/PrimalItem_Car_Frontmod_Spikes.PrimalItem_Car_Frontmod_Spikes_C"
-    rearmod_afterburner: str = "/Game/Packs/Wasteland/Vehicles/Car/RearEndMod/Afterburner/PrimalItem_Car_Rearmod_Afterburner.PrimalItem_Car_Rearmod_Afterburner_C"
-    rearmod_hook: str = "/Game/Packs/Wasteland/Vehicles/Car/RearEndMod/Hook/PrimalItem_Car_Rearmod_Hook.PrimalItem_Car_Rearmod_Hook_C"
-    rearmod_jump: str = "/Game/Packs/Wasteland/Vehicles/Car/RearEndMod/JumpJet/PrimalItem_Car_Rearmod_Jump.PrimalItem_Car_Rearmod_Jump_C"
-    rearmod_mines: str = "/Game/Packs/Wasteland/Vehicles/Car/RearEndMod/Mines/PrimalItem_Car_Rearmod_Mines.PrimalItem_Car_Rearmod_Mines_C"
-    rearmod_sludge: str = "/Game/Packs/Wasteland/Vehicles/Car/RearEndMod/Sludge/PrimalItem_Car_Rearmod_Sludge.PrimalItem_Car_Rearmod_Sludge_C"
-    rearmod_smoke: str = "/Game/Packs/Wasteland/Vehicles/Car/RearEndMod/Smoke/PrimalItem_Car_Rearmod_Smoke.PrimalItem_Car_Rearmod_Smoke_C"
-    turret_cannon: str = "/Game/Packs/Wasteland/Vehicles/Car/Turret/Cannon/PrimalItem_Car_Turret_Cannon.PrimalItem_Car_Turret_Cannon_C"
-    turret_flamethrower: str = "/Game/Packs/Wasteland/Vehicles/Car/Turret/Flamethrower/PrimalItem_Car_Turret_Flamethrower.PrimalItem_Car_Turret_Flamethrower_C"
-    turret_flight_seeker: str = "/Game/Packs/Wasteland/Vehicles/Car/Turret/Flightseeker/PrimalItem_Car_Turret_FlightSeeker.PrimalItem_Car_Turret_FlightSeeker_C"
-    turret_minigun: str = "/Game/Packs/Wasteland/Vehicles/Car/Turret/Minigun/PrimalItem_Car_Turret_Minigun.PrimalItem_Car_Turret_Minigun_C"
-    turret_shotgun: str = "/Game/Packs/Wasteland/Vehicles/Car/Turret/Shotgun/PrimalItem_Car_Turret_Shotgun.PrimalItem_Car_Turret_Shotgun_C"
-    wheels_racer: str = "/Game/Packs/Wasteland/Vehicles/Car/WheelsAndSuspension/Racer/PrimalItem_Car_Wheels_Racer.PrimalItem_Car_Wheels_Racer_C"
-    wheels_rollcage: str = "/Game/Packs/Wasteland/Vehicles/Car/WheelsAndSuspension/RollCage/PrimalItem_Car_Wheels_Rollcage.PrimalItem_Car_Wheels_Rollcage_C"
-    wheels_truck: str = "/Game/Packs/Wasteland/Vehicles/Car/WheelsAndSuspension/Truck/PrimalItem_Car_Wheels_Truck.PrimalItem_Car_Wheels_Truck_C"
+    ship_craft_brig: str = "/Game/Packs/TidesOfFortune/Vehicles/Brigantine/PrimalItemShip_Craft_Brig.PrimalItemShip_Craft_Brig_C"
+    ship_craft_galleon: str = "/Game/Packs/TidesOfFortune/Vehicles/Galleon/PrimalItemShip_Craft_Galleon.PrimalItemShip_Craft_Galleon_C"
+    ship_craft_sloop: str = "/Game/Packs/TidesOfFortune/Vehicles/Sloop/PrimalItemShip_Craft_Sloop.PrimalItemShip_Craft_Sloop_C"
+    car_bed_racer: str = "/Game/Packs/Wasteland/Vehicles/Car/Bed/Racer/PrimalItem_Car_Bed_Racer.PrimalItem_Car_Bed_Racer_C"
+    car_bed_rollcage: str = "/Game/Packs/Wasteland/Vehicles/Car/Bed/Rollcage/PrimalItem_Car_Bed_Rollcage.PrimalItem_Car_Bed_Rollcage_C"
+    car_bed_truck: str = "/Game/Packs/Wasteland/Vehicles/Car/Bed/Truck/PrimalItem_Car_Bed_Truck.PrimalItem_Car_Bed_Truck_C"
+    car_cab_racer: str = "/Game/Packs/Wasteland/Vehicles/Car/Cab/Racer/PrimalItem_Car_Cab_Racer.PrimalItem_Car_Cab_Racer_C"
+    car_cab_rollcage: str = "/Game/Packs/Wasteland/Vehicles/Car/Cab/Rollcage/PrimalItem_Car_Cab_Rollcage.PrimalItem_Car_Cab_Rollcage_C"
+    car_cab_truck: str = "/Game/Packs/Wasteland/Vehicles/Car/Cab/Truck/PrimalItem_Car_Cab_Truck.PrimalItem_Car_Cab_Truck_C"
+    car_chassis_main: str = "/Game/Packs/Wasteland/Vehicles/Car/Chassis/Main/PrimalItem_Car_Chassis_Main.PrimalItem_Car_Chassis_Main_C"
+    car_engine_racer: str = "/Game/Packs/Wasteland/Vehicles/Car/EngineCompartment/Racer/PrimalItem_Car_Engine_Racer.PrimalItem_Car_Engine_Racer_C"
+    car_engine_rollcage: str = "/Game/Packs/Wasteland/Vehicles/Car/EngineCompartment/Rollcage/PrimalItem_Car_Engine_Rollcage.PrimalItem_Car_Engine_Rollcage_C"
+    car_engine_truck: str = "/Game/Packs/Wasteland/Vehicles/Car/EngineCompartment/Truck/PrimalItem_Car_Engine_Truck.PrimalItem_Car_Engine_Truck_C"
+    car_frontmod_armor: str = "/Game/Packs/Wasteland/Vehicles/Car/FrontEndMod/Armor/PrimalItem_Car_Frontmod_Armor.PrimalItem_Car_Frontmod_Armor_C"
+    car_frontmod_buzzsaw: str = "/Game/Packs/Wasteland/Vehicles/Car/FrontEndMod/Buzzsaw/PrimalItem_Car_Frontmod_Buzzsaw.PrimalItem_Car_Frontmod_Buzzsaw_C"
+    car_frontmod_cow_catcher: str = "/Game/Packs/Wasteland/Vehicles/Car/FrontEndMod/CowCatcher/PrimalItem_Car_Frontmod_CowCatcher.PrimalItem_Car_Frontmod_CowCatcher_C"
+    car_frontmod_spikes: str = "/Game/Packs/Wasteland/Vehicles/Car/FrontEndMod/Spikes/PrimalItem_Car_Frontmod_Spikes.PrimalItem_Car_Frontmod_Spikes_C"
+    car_rearmod_afterburner: str = "/Game/Packs/Wasteland/Vehicles/Car/RearEndMod/Afterburner/PrimalItem_Car_Rearmod_Afterburner.PrimalItem_Car_Rearmod_Afterburner_C"
+    car_rearmod_hook: str = "/Game/Packs/Wasteland/Vehicles/Car/RearEndMod/Hook/PrimalItem_Car_Rearmod_Hook.PrimalItem_Car_Rearmod_Hook_C"
+    car_rearmod_jump: str = "/Game/Packs/Wasteland/Vehicles/Car/RearEndMod/JumpJet/PrimalItem_Car_Rearmod_Jump.PrimalItem_Car_Rearmod_Jump_C"
+    car_rearmod_mines: str = "/Game/Packs/Wasteland/Vehicles/Car/RearEndMod/Mines/PrimalItem_Car_Rearmod_Mines.PrimalItem_Car_Rearmod_Mines_C"
+    car_rearmod_sludge: str = "/Game/Packs/Wasteland/Vehicles/Car/RearEndMod/Sludge/PrimalItem_Car_Rearmod_Sludge.PrimalItem_Car_Rearmod_Sludge_C"
+    car_rearmod_smoke: str = "/Game/Packs/Wasteland/Vehicles/Car/RearEndMod/Smoke/PrimalItem_Car_Rearmod_Smoke.PrimalItem_Car_Rearmod_Smoke_C"
+    car_turret_cannon: str = "/Game/Packs/Wasteland/Vehicles/Car/Turret/Cannon/PrimalItem_Car_Turret_Cannon.PrimalItem_Car_Turret_Cannon_C"
+    car_turret_flamethrower: str = "/Game/Packs/Wasteland/Vehicles/Car/Turret/Flamethrower/PrimalItem_Car_Turret_Flamethrower.PrimalItem_Car_Turret_Flamethrower_C"
+    car_turret_flight_seeker: str = "/Game/Packs/Wasteland/Vehicles/Car/Turret/Flightseeker/PrimalItem_Car_Turret_FlightSeeker.PrimalItem_Car_Turret_FlightSeeker_C"
+    car_turret_minigun: str = "/Game/Packs/Wasteland/Vehicles/Car/Turret/Minigun/PrimalItem_Car_Turret_Minigun.PrimalItem_Car_Turret_Minigun_C"
+    car_turret_shotgun: str = "/Game/Packs/Wasteland/Vehicles/Car/Turret/Shotgun/PrimalItem_Car_Turret_Shotgun.PrimalItem_Car_Turret_Shotgun_C"
+    car_wheels_racer: str = "/Game/Packs/Wasteland/Vehicles/Car/WheelsAndSuspension/Racer/PrimalItem_Car_Wheels_Racer.PrimalItem_Car_Wheels_Racer_C"
+    car_wheels_rollcage: str = "/Game/Packs/Wasteland/Vehicles/Car/WheelsAndSuspension/RollCage/PrimalItem_Car_Wheels_Rollcage.PrimalItem_Car_Wheels_Rollcage_C"
+    car_wheels_truck: str = "/Game/Packs/Wasteland/Vehicles/Car/WheelsAndSuspension/Truck/PrimalItem_Car_Wheels_Truck.PrimalItem_Car_Wheels_Truck_C"
     raft: str = "/Game/PrimalEarth/Items/Raft/PrimalItemRaft.PrimalItemRaft_C"
-    craft_trireme: str = "/Game/Water/Vessels/Trireme/PrimalItemShip_Craft_Trireme.PrimalItemShip_Craft_Trireme_C"
+    ship_craft_trireme: str = "/Game/Water/Vessels/Trireme/PrimalItemShip_Craft_Trireme.PrimalItemShip_Craft_Trireme_C"
     primal_inventory_component_shipyard_large: str = "/Game/Packs/TidesOfFortune/Structures/Shipyard/Gameplay/PrimalInventoryComponent_ShipyardLarge.PrimalInventoryComponent_ShipyardLarge_C"
 
-    all_bps = [train_car_platform, craft_brig, craft_galleon, craft_sloop, bed_racer, bed_rollcage, bed_truck,
-               cab_racer, cab_rollcage, cab_truck, chassis_main, engine_racer, engine_rollcage, engine_truck,
-               frontmod_armor, frontmod_buzzsaw, frontmod_cow_catcher, frontmod_spikes, rearmod_afterburner,
-               rearmod_hook, rearmod_jump, rearmod_mines, rearmod_sludge, rearmod_smoke, turret_cannon,
-               turret_flamethrower, turret_flight_seeker, turret_minigun, turret_shotgun, wheels_racer,
-               wheels_rollcage, wheels_truck, raft, craft_trireme, primal_inventory_component_shipyard_large]
+    all_bps = [train_car_platform, ship_craft_brig, ship_craft_galleon, ship_craft_sloop, car_bed_racer,
+               car_bed_rollcage, car_bed_truck, car_cab_racer, car_cab_rollcage, car_cab_truck,
+               car_chassis_main, car_engine_racer, car_engine_rollcage, car_engine_truck, car_frontmod_armor,
+               car_frontmod_buzzsaw, car_frontmod_cow_catcher, car_frontmod_spikes, car_rearmod_afterburner,
+               car_rearmod_hook, car_rearmod_jump, car_rearmod_mines, car_rearmod_sludge, car_rearmod_smoke,
+               car_turret_cannon, car_turret_flamethrower, car_turret_flight_seeker, car_turret_minigun,
+               car_turret_shotgun, car_wheels_racer, car_wheels_rollcage, car_wheels_truck, raft,
+               ship_craft_trireme, primal_inventory_component_shipyard_large]
 
 class Recipes:
     type1: str = "/Game/PrimalEarth/CoreBlueprints/Items/Consumables/PrimalItemCustomDrinkRecipe_Type1.PrimalItemCustomDrinkRecipe_Type1_C"
@@ -224,13 +232,37 @@ class TreasureMaps:
     all_bps = [shoulder_dragon, treasure_map, wild_supply_drop, wild_bottle_s1_gen1, wild_bottle_s2_gen1,
                wild_bottle_s3_gen1]
 
+class Spawners:
+    enforcer: str = "/Game/Extinction/CoreBlueprints/Items/PrimalItem_Spawner_Enforcer.PrimalItem_Spawner_Enforcer_C"
+    mek: str = "/Game/Extinction/CoreBlueprints/Items/PrimalItem_Spawner_Mek.PrimalItem_Spawner_Mek_C"
+    enforcer_city_terminal: str = "/Game/Extinction/Structures/CityTerminal/PrimalItem_Spawner_Enforcer_CityTerminal.PrimalItem_Spawner_Enforcer_CityTerminal_C"
+    hover_skiff: str = "/Game/Genesis/CoreBlueprints/Items/PrimalItem_Spawner_HoverSkiff.PrimalItem_Spawner_HoverSkiff_C"
+    helper_bot: str = "/Game/Packs/Steampunk/Dinos/HelperBot/PrimalItem_Spawner_HelperBot.PrimalItem_Spawner_HelperBot_C"
+    dino_zeppelin: str = "/Game/Packs/Steampunk/Dinos/Zeppelin/PrimalItem_DinoSpawner_Zeppelin.PrimalItem_DinoSpawner_Zeppelin_C"
+
+    all_bps = [enforcer, mek, enforcer_city_terminal, hover_skiff, helper_bot, dino_zeppelin]
+
+class DungeonEntrances:
+    tek_cave_easy: str = "/Game/PrimalEarth/CoreBlueprints/Items/Armor/Cloth/PrimalItem_DungeonEntrance_TekCave_Easy.PrimalItem_DungeonEntrance_TekCave_Easy_C"
+    tek_cave_hard: str = "/Game/PrimalEarth/CoreBlueprints/Items/Armor/Cloth/PrimalItem_DungeonEntrance_TekCave_Hard.PrimalItem_DungeonEntrance_TekCave_Hard_C"
+    tek_cave_medium: str = "/Game/PrimalEarth/CoreBlueprints/Items/Armor/Cloth/PrimalItem_DungeonEntrance_TekCave_Medium.PrimalItem_DungeonEntrance_TekCave_Medium_C"
+
+    all_bps = [tek_cave_easy, tek_cave_hard, tek_cave_medium]
+
+class Taxidermy:
+    dermis: str = "/Game/Extinction/CoreBlueprints/Items/PrimalItem_TaxidermyDermis.PrimalItem_TaxidermyDermis_C"
+    dermis_no_upload: str = "/Game/Extinction/CoreBlueprints/Items/PrimalItem_TaxidermyDermis_NoUpload.PrimalItem_TaxidermyDermis_NoUpload_C"
+    dermis_gargoyle: str = "/Game/LostColony/Dinos/Gargoyle/PrimalItem_TaxidermyDermis_Gargoyle.PrimalItem_TaxidermyDermis_Gargoyle_C"
+    taxidermy_base: str = "/Game/Extinction/CoreBlueprints/Inventories/PrimalInventoryBP_TaxidermyBase.PrimalInventoryBP_TaxidermyBase_C"
+
+    all_bps = [dermis, dermis_no_upload, dermis_gargoyle, taxidermy_base]
+
 class Inventories:
     gas_collector: str = "/Game/Aberration/CoreBlueprints/Inventories/PrimalInventoryBP_GasCollector.PrimalInventoryBP_GasCollector_C"
     primal_inventory_component_bp_city_terminal: str = "/Game/Aberration/CoreBlueprints/Inventories/PrimalInventoryComponentBP_CityTerminal.PrimalInventoryComponentBP_CityTerminal_C"
     primal_inventory_component_bp_power_node: str = "/Game/Aberration/CoreBlueprints/Inventories/PrimalInventoryComponentBP_PowerNode.PrimalInventoryComponentBP_PowerNode_C"
     primal_inventory_component_bp_radio_active_charge_lantern_ground: str = "/Game/Aberration/CoreBlueprints/Inventories/PrimalInventoryComponentBP_RadioActiveChargeLanternGround.PrimalInventoryComponentBP_RadioActiveChargeLanternGround_C"
     cryo_fridge: str = "/Game/Extinction/CoreBlueprints/Inventories/PrimalInventoryBP_CryoFridge.PrimalInventoryBP_CryoFridge_C"
-    taxidermy_base: str = "/Game/Extinction/CoreBlueprints/Inventories/PrimalInventoryBP_TaxidermyBase.PrimalInventoryBP_TaxidermyBase_C"
     tribute_terminal_desert: str = "/Game/Extinction/CoreBlueprints/Inventories/PrimalInventoryBP_TributeTerminal_Desert.PrimalInventoryBP_TributeTerminal_Desert_C"
     tribute_terminal_fz: str = "/Game/Extinction/CoreBlueprints/Inventories/PrimalInventoryBP_TributeTerminal_FZ.PrimalInventoryBP_TributeTerminal_FZ_C"
     tribute_terminal_forest: str = "/Game/Extinction/CoreBlueprints/Inventories/PrimalInventoryBP_TributeTerminal_Forest.PrimalInventoryBP_TributeTerminal_Forest_C"
@@ -335,7 +367,7 @@ class Inventories:
 
     all_bps = [gas_collector, primal_inventory_component_bp_city_terminal,
                primal_inventory_component_bp_power_node,
-               primal_inventory_component_bp_radio_active_charge_lantern_ground, cryo_fridge, taxidermy_base,
+               primal_inventory_component_bp_radio_active_charge_lantern_ground, cryo_fridge,
                tribute_terminal_desert, tribute_terminal_fz, tribute_terminal_forest, tribute_terminal_snow,
                dino_leash, ammo_container, crop_plot_tek, egg_incubator, tek_bunker, warbench,
                tribute_terminal_miniboss_boar, storage_box_barrel, oil_lamp_chandelier,
@@ -358,78 +390,57 @@ class Inventories:
 class Buffs:
     trick_meter_bonuses_concavenator: str = "/Game/ASA/Dinos/Concavenator/Buff_TrickMeterBonuses_Concavenator.Buff_TrickMeterBonuses_Concavenator_C"
     glider: str = "/Game/Aberration/CoreBlueprints/Buffs/Buff_Glider.Buff_Glider_C"
-    primal_buff_persistent_data_impregnate: str = "/Game/Aberration/CoreBlueprints/Buffs/PrimalBuffPersistentData_Impregnate.PrimalBuffPersistentData_Impregnate_C"
+    primal_persistent_data_impregnate: str = "/Game/Aberration/CoreBlueprints/Buffs/PrimalBuffPersistentData_Impregnate.PrimalBuffPersistentData_Impregnate_C"
     cryo_cooldown: str = "/Game/Extinction/CoreBlueprints/Buffs/Buff_CryoCooldown.Buff_CryoCooldown_C"
     sanguine_elixir_used: str = "/Game/Fjordur/Dinos/Desmodus/Buff_SanguineElixirUsed.Buff_SanguineElixirUsed_C"
     nameless_preggers_lc: str = "/Game/LostColony/CoreBlueprints/Buffs/Buff_NamelessPreggers_LC.Buff_NamelessPreggers_LC_C"
     gargoyle_bp: str = "/Game/LostColony/Dinos/Gargoyle/Buff_Gargoyle_BP.Buff_Gargoyle_BP_C"
     thrall_hostile: str = "/Game/LostColony/Dinos/Thrall/Buffs/Buff_Thrall_Hostile.Buff_Thrall_Hostile_C"
-    primal_buff_persistent_data_thrall_hostile: str = "/Game/LostColony/Dinos/Thrall/Buffs/PrimalBuffPersistentData_Thrall_Hostile.PrimalBuffPersistentData_Thrall_Hostile_C"
+    primal_persistent_data_thrall_hostile: str = "/Game/LostColony/Dinos/Thrall/Buffs/PrimalBuffPersistentData_Thrall_Hostile.PrimalBuffPersistentData_Thrall_Hostile_C"
     dino_companion_young_ice_fox: str = "/Game/LostColony/Dinos/YoungIceFox/Buff_DinoCompanion_YoungIceFox.Buff_DinoCompanion_YoungIceFox_C"
-    primal_buff_persistent_data_dino_companion_young_ice_fox: str = "/Game/LostColony/Dinos/YoungIceFox/Buffs/PrimalBuffPersistentData_DinoCompanion_YoungIceFox.PrimalBuffPersistentData_DinoCompanion_YoungIceFox_C"
+    primal_persistent_data_dino_companion_young_ice_fox: str = "/Game/LostColony/Dinos/YoungIceFox/Buffs/PrimalBuffPersistentData_DinoCompanion_YoungIceFox.PrimalBuffPersistentData_DinoCompanion_YoungIceFox_C"
     time_rewind_cooldown: str = "/Game/Packs/Steampunk/Weapons/Stopwatch/Buff_TimeRewind_Cooldown.Buff_TimeRewind_Cooldown_C"
-    primal_buff_persistent_data_dino_companion: str = "/Game/Packs/Wasteland/Dinos/CompanionDino/PrimalBuffPersistentData_DinoCompanion.PrimalBuffPersistentData_DinoCompanion_C"
+    primal_persistent_data_dino_companion: str = "/Game/Packs/Wasteland/Dinos/CompanionDino/PrimalBuffPersistentData_DinoCompanion.PrimalBuffPersistentData_DinoCompanion_C"
     dino_companion_doggo: str = "/Game/Packs/Wasteland/Dinos/Doggo/Buff_DinoCompanion_Doggo.Buff_DinoCompanion_Doggo_C"
     cake_slice_cooldown_breeding: str = "/Game/PrimalEarth/CoreBlueprints/Buffs/Buff_CakeSliceCooldown_Breeding.Buff_CakeSliceCooldown_Breeding_C"
     leech: str = "/Game/PrimalEarth/CoreBlueprints/Buffs/Buff_Leech.Buff_Leech_C"
     swamp_fever: str = "/Game/PrimalEarth/CoreBlueprints/Buffs/Buff_SwampFever.Buff_SwampFever_C"
     tek_bed_vitals: str = "/Game/PrimalEarth/CoreBlueprints/Buffs/Buff_TekBedVitals.Buff_TekBedVitals_C"
-    buff_data_template_tool_owner: str = "/Game/PrimalEarth/Structures/Templates/Buffs/BuffData_TemplateTool_Owner.BuffData_TemplateTool_Owner_C"
+    data_template_tool_owner: str = "/Game/PrimalEarth/Structures/Templates/Buffs/BuffData_TemplateTool_Owner.BuffData_TemplateTool_Owner_C"
     template_tool_owner: str = "/Game/PrimalEarth/Structures/Templates/Buffs/Buff_TemplateTool_Owner.Buff_TemplateTool_Owner_C"
     base_persistent_heatstroke: str = "/Game/ScorchedEarth/CoreBlueprints/Buffs/Buff_Base_Persistent_Heatstroke.Buff_Base_Persistent_Heatstroke_C"
-    primal_buff_persistent_data_generic_time_remaining: str = "/Game/ScorchedEarth/CoreBlueprints/Buffs/PrimalBuffPersistentData_GenericTimeRemaining.PrimalBuffPersistentData_GenericTimeRemaining_C"
-    primal_buff_persistent_data_heat_stroke: str = "/Game/ScorchedEarth/CoreBlueprints/Buffs/PrimalBuffPersistentData_HeatStroke.PrimalBuffPersistentData_HeatStroke_C"
+    primal_persistent_data_generic_time_remaining: str = "/Game/ScorchedEarth/CoreBlueprints/Buffs/PrimalBuffPersistentData_GenericTimeRemaining.PrimalBuffPersistentData_GenericTimeRemaining_C"
+    primal_persistent_data_heat_stroke: str = "/Game/ScorchedEarth/CoreBlueprints/Buffs/PrimalBuffPersistentData_HeatStroke.PrimalBuffPersistentData_HeatStroke_C"
 
-    all_bps = [trick_meter_bonuses_concavenator, glider, primal_buff_persistent_data_impregnate,
-               cryo_cooldown, sanguine_elixir_used, nameless_preggers_lc, gargoyle_bp, thrall_hostile,
-               primal_buff_persistent_data_thrall_hostile, dino_companion_young_ice_fox,
-               primal_buff_persistent_data_dino_companion_young_ice_fox, time_rewind_cooldown,
-               primal_buff_persistent_data_dino_companion, dino_companion_doggo, cake_slice_cooldown_breeding,
-               leech, swamp_fever, tek_bed_vitals, buff_data_template_tool_owner, template_tool_owner,
-               base_persistent_heatstroke, primal_buff_persistent_data_generic_time_remaining,
-               primal_buff_persistent_data_heat_stroke]
+    all_bps = [trick_meter_bonuses_concavenator, glider, primal_persistent_data_impregnate, cryo_cooldown,
+               sanguine_elixir_used, nameless_preggers_lc, gargoyle_bp, thrall_hostile,
+               primal_persistent_data_thrall_hostile, dino_companion_young_ice_fox,
+               primal_persistent_data_dino_companion_young_ice_fox, time_rewind_cooldown,
+               primal_persistent_data_dino_companion, dino_companion_doggo, cake_slice_cooldown_breeding,
+               leech, swamp_fever, tek_bed_vitals, data_template_tool_owner, template_tool_owner,
+               base_persistent_heatstroke, primal_persistent_data_generic_time_remaining,
+               primal_persistent_data_heat_stroke]
 
 class Misc:
     black_hole_dino: str = "/Game/ASA/Dinos/DarkPegasus/Cryo/PrimalItem_BlackHoleDino.PrimalItem_BlackHoleDino_C"
     rag_item_egg_wyvern_fertilized_ice: str = "/Game/ASA/Dinos/IceWyvern/Extra/Egg/RAG_Item_Egg_Wyvern_Fertilized_Ice.RAG_Item_Egg_Wyvern_Fertilized_Ice_C"
-    weapon_shoulder_dragon_autumn: str = "/Game/ASA/Dinos/ShoulderDragon/Variants/Autumn/PrimalItem_WeaponShoulderDragon_Autumn.PrimalItem_WeaponShoulderDragon_Autumn_C"
-    weapon_shoulder_dragon_spring: str = "/Game/ASA/Dinos/ShoulderDragon/Variants/Spring/PrimalItem_WeaponShoulderDragon_Spring.PrimalItem_WeaponShoulderDragon_Spring_C"
-    weapon_shoulder_dragon_winter: str = "/Game/ASA/Dinos/ShoulderDragon/Variants/Winter/PrimalItem_WeaponShoulderDragon_Winter.PrimalItem_WeaponShoulderDragon_Winter_C"
     charge_battery: str = "/Game/Aberration/WeaponGlowStickCharge/PrimalItem_ChargeBattery.PrimalItem_ChargeBattery_C"
     glow_stick: str = "/Game/Aberration/WeaponGlowStickThrow/PrimalItem_GlowStick.PrimalItem_GlowStick_C"
     plant_species_z_grenade: str = "/Game/Aberration/WeaponPlantSpeciesZ/PrimalItem_PlantSpeciesZ_Grenade.PrimalItem_PlantSpeciesZ_Grenade_C"
     tek_sniper: str = "/Game/Aberration/WeaponTekSniper/PrimalItem_TekSniper.PrimalItem_TekSniper_C"
     accessory_draconic_cape: str = "/Game/Dragontopia/CoreBlueprints/Armor/PrimalItemAccessory_DraconicCape.PrimalItemAccessory_DraconicCape_C"
-    weapon_drake_claw: str = "/Game/Dragontopia/Weapons/DrakeClaw/PrimalItem_WeaponDrakeClaw.PrimalItem_WeaponDrakeClaw_C"
-    spawner_enforcer: str = "/Game/Extinction/CoreBlueprints/Items/PrimalItem_Spawner_Enforcer.PrimalItem_Spawner_Enforcer_C"
-    spawner_mek: str = "/Game/Extinction/CoreBlueprints/Items/PrimalItem_Spawner_Mek.PrimalItem_Spawner_Mek_C"
-    taxidermy_dermis: str = "/Game/Extinction/CoreBlueprints/Items/PrimalItem_TaxidermyDermis.PrimalItem_TaxidermyDermis_C"
-    taxidermy_dermis_no_upload: str = "/Game/Extinction/CoreBlueprints/Items/PrimalItem_TaxidermyDermis_NoUpload.PrimalItem_TaxidermyDermis_NoUpload_C"
-    weapon_taxidermy_tool: str = "/Game/Extinction/CoreBlueprints/Weapons/PrimalItem_WeaponTaxidermyTool.PrimalItem_WeaponTaxidermyTool_C"
-    weapon_scout_remote: str = "/Game/Extinction/Dinos/Scout/PrimalItem_WeaponScoutRemote.PrimalItem_WeaponScoutRemote_C"
-    spawner_enforcer_city_terminal: str = "/Game/Extinction/Structures/CityTerminal/PrimalItem_Spawner_Enforcer_CityTerminal.PrimalItem_Spawner_Enforcer_CityTerminal_C"
-    weapon_scout_remote_city_terminal: str = "/Game/Extinction/Structures/CityTerminal/PrimalItem_WeaponScoutRemote_CityTerminal.PrimalItem_WeaponScoutRemote_CityTerminal_C"
-    weapon_admin_blink_rifle: str = "/Game/Extinction/Weapon_AdminBlinkRifle/PrimalItem_WeaponAdminBlinkRifle.PrimalItem_WeaponAdminBlinkRifle_C"
     sanguine_elixir: str = "/Game/Fjordur/Dinos/Desmodus/PrimalItem_SanguineElixir.PrimalItem_SanguineElixir_C"
-    spawner_hover_skiff: str = "/Game/Genesis/CoreBlueprints/Items/PrimalItem_Spawner_HoverSkiff.PrimalItem_Spawner_HoverSkiff_C"
-    weapon_tek_cruise_missile: str = "/Game/Genesis/Weapons/CruiseMissile/PrimalItem_WeaponTekCruiseMissile.PrimalItem_WeaponTekCruiseMissile_C"
-    weapon_fishing_net: str = "/Game/Genesis/Weapons/FishingNet/PrimalItem_WeaponFishingNet.PrimalItem_WeaponFishingNet_C"
     hotbar_skill_base: str = "/Game/LostColony/CoreBlueprints/Skills/PrimalItem_HotbarSkill_Base.PrimalItem_HotbarSkill_Base_C"
     empty_cryopod_angel_fox: str = "/Game/LostColony/Dinos/AngelFox/CoreBlueprints/PrimalItem_EmptyCryopod_AngelFox.PrimalItem_EmptyCryopod_AngelFox_C"
     pristine_vulpite: str = "/Game/LostColony/Dinos/AngelFox/CoreBlueprints/PrimalItem_PristineVulpite.PrimalItem_PristineVulpite_C"
     corrupted_vulpite: str = "/Game/LostColony/Dinos/DevilFox/CoreBlueprints/PrimalItem_CorruptedVulpite.PrimalItem_CorruptedVulpite_C"
     empty_cryopod_gargoyle: str = "/Game/LostColony/Dinos/Gargoyle/PrimalItem_EmptyCryopod_Gargoyle.PrimalItem_EmptyCryopod_Gargoyle_C"
-    taxidermy_dermis_gargoyle: str = "/Game/LostColony/Dinos/Gargoyle/PrimalItem_TaxidermyDermis_Gargoyle.PrimalItem_TaxidermyDermis_Gargoyle_C"
-    weapon_lost_charge_pet: str = "/Game/LostColony/Dinos/LostChargePet/Weapon/PrimalItem_WeaponLostChargePet.PrimalItem_WeaponLostChargePet_C"
     dino_companion_whistle_young_ice_fox: str = "/Game/LostColony/Dinos/YoungIceFox/PrimalItem_DinoCompanion_Whistle_YoungIceFox.PrimalItem_DinoCompanion_Whistle_YoungIceFox_C"
     lost_colony_bunker_module: str = "/Game/LostColony/Structures/TekBunker/Modules/PrimalItem_LostColony_BunkerModule.PrimalItem_LostColony_BunkerModule_C"
-    weapon_base_clipboard_and_hammer: str = "/Game/LostColony/Weapons/ClipboardAndHammer/PrimalItem_WeaponBaseClipboardAndHammer.PrimalItem_WeaponBaseClipboardAndHammer_C"
     holo_decoy: str = "/Game/LostColony/Weapons/HoloDecoy/PrimalItem_HoloDecoy.PrimalItem_HoloDecoy_C"
     coffin_snapshot: str = "/Game/Packs/Frontier/CoreBlueprints/Items/PrimalItem_CoffinSnapshot.PrimalItem_CoffinSnapshot_C"
     death_essence_bp: str = "/Game/Packs/Frontier/CoreBlueprints/Items/PrimalItem_DeathEssence_BP.PrimalItem_DeathEssence_BP_C"
     train_engine: str = "/Game/Packs/Frontier/Dinos/Train/PrimalItem_TrainEngine.PrimalItem_TrainEngine_C"
-    spawner_helper_bot: str = "/Game/Packs/Steampunk/Dinos/HelperBot/PrimalItem_Spawner_HelperBot.PrimalItem_Spawner_HelperBot_C"
-    dino_spawner_zeppelin: str = "/Game/Packs/Steampunk/Dinos/Zeppelin/PrimalItem_DinoSpawner_Zeppelin.PrimalItem_DinoSpawner_Zeppelin_C"
     bounty_page: str = "/Game/Packs/TidesOfFortune/Structures/BountyBoard/PrimalItem_BountyPage.PrimalItem_BountyPage_C"
     charge_battery_mini: str = "/Game/Packs/Wasteland/CoreBlueprints/Items/PrimalItem_ChargeBattery_Mini.PrimalItem_ChargeBattery_Mini_C"
     dino_companion_whistle_doggo: str = "/Game/Packs/Wasteland/Dinos/Doggo/PrimalItem_DinoCompanion_Whistle_Doggo.PrimalItem_DinoCompanion_Whistle_Doggo_C"
@@ -437,28 +448,18 @@ class Misc:
     craft_car: str = "/Game/Packs/Wasteland/Structures/Garage/PrimalItem_CraftCar.PrimalItem_CraftCar_C"
     repair_car: str = "/Game/Packs/Wasteland/Structures/Garage/PrimalItem_RepairCar.PrimalItem_RepairCar_C"
     antifire_grenade: str = "/Game/Packs/Wasteland/Weapons/AntiFireGrenade/PrimalItem_AntifireGrenade.PrimalItem_AntifireGrenade_C"
-    weapon_spear_explosive: str = "/Game/Packs/Wasteland/Weapons/ExplosiveSpear/PrimalItem_WeaponSpear_Explosive.PrimalItem_WeaponSpear_Explosive_C"
-    dungeon_entrance_tek_cave_easy: str = "/Game/PrimalEarth/CoreBlueprints/Items/Armor/Cloth/PrimalItem_DungeonEntrance_TekCave_Easy.PrimalItem_DungeonEntrance_TekCave_Easy_C"
-    dungeon_entrance_tek_cave_hard: str = "/Game/PrimalEarth/CoreBlueprints/Items/Armor/Cloth/PrimalItem_DungeonEntrance_TekCave_Hard.PrimalItem_DungeonEntrance_TekCave_Hard_C"
-    dungeon_entrance_tek_cave_medium: str = "/Game/PrimalEarth/CoreBlueprints/Items/Armor/Cloth/PrimalItem_DungeonEntrance_TekCave_Medium.PrimalItem_DungeonEntrance_TekCave_Medium_C"
     power_node_charge: str = "/Game/PrimalEarth/CoreBlueprints/Items/Armor/Cloth/PrimalItem_PowerNodeCharge.PrimalItem_PowerNodeCharge_C"
     chibi_dino_random_craftable: str = "/Game/PrimalEarth/CoreBlueprints/Items/Armor/Skin/ChibiDinos/PrimalItem_ChibiDino_RandomCraftable.PrimalItem_ChibiDino_RandomCraftable_C"
     note: str = "/Game/PrimalEarth/CoreBlueprints/Items/Notes/PrimalItem_Note.PrimalItem_Note_C"
     starting_note: str = "/Game/PrimalEarth/CoreBlueprints/Items/Notes/PrimalItem_StartingNote.PrimalItem_StartingNote_C"
     fish_basket_filled: str = "/Game/PrimalEarth/CoreBlueprints/Items/PrimalItem_FishBasketFilled.PrimalItem_FishBasketFilled_C"
     pliers: str = "/Game/PrimalEarth/CoreBlueprints/Items/PrimalItem_Pliers.PrimalItem_Pliers_C"
-    weapon_lasso: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponLasso.PrimalItem_WeaponLasso_C"
     motorboat: str = "/Game/PrimalEarth/Items/Raft/PrimalItemMotorboat.PrimalItemMotorboat_C"
     love_tap_club: str = "/Game/PrimalEarth/Structures/Skins/LoveEvolved/LoveExtrasV2/Lovely_RoseClub/PrimalItem_LoveTap_Club.PrimalItem_LoveTap_Club_C"
     template_tablet: str = "/Game/PrimalEarth/Structures/Templates/PrimalItem_TemplateTablet.PrimalItem_TemplateTablet_C"
     dino_costume_custom: str = "/Game/PrimalEarth/Test/PrimalItemDinoCostume_Custom.PrimalItemDinoCostume_Custom_C"
     blood_extractor: str = "/Game/PrimalEarth/Test/PrimalItem_BloodExtractor.PrimalItem_BloodExtractor_C"
     camera: str = "/Game/PrimalEarth/Test/PrimalItem_Camera.PrimalItem_Camera_C"
-    weapon_magnifying_glass: str = "/Game/PrimalEarth/Test/PrimalItem_WeaponMagnifyingGlass.PrimalItem_WeaponMagnifyingGlass_C"
-    weapon_spyglass: str = "/Game/PrimalEarth/Test/PrimalItem_WeaponSpyglass.PrimalItem_WeaponSpyglass_C"
-    weapon_cluster_grenade: str = "/Game/ScorchedEarth/WeaponClusterGrenade/PrimalItem_WeaponClusterGrenade.PrimalItem_WeaponClusterGrenade_C"
-    weapon_electronic_binoculars: str = "/Game/ScorchedEarth/WeaponElectronicBinoculars/PrimalItem_WeaponElectronicBinoculars.PrimalItem_WeaponElectronicBinoculars_C"
-    weapon_oil_jar: str = "/Game/ScorchedEarth/WeaponOilJar/PrimalItem_WeaponOilJar.PrimalItem_WeaponOilJar_C"
     val_megaraptor_spike: str = "/Game/ASA/Dinos/Megaraptor/Spike/ValMegaraptorSpike.ValMegaraptorSpike_C"
     polar_bear: str = "/Game/Mods/Ragnarok/Custom_Assets/Dinos/Polar_Bear/Polar_Bear.Polar_Bear_C"
     mb_button: str = "/Game/Mods/Ragnarok/Custom_Assets/Trap/Multi_Switch_Door/MB_Button.MB_Button_C"
@@ -467,37 +468,36 @@ class Misc:
     byte_array_object: str = "/Game/PrimalEarth/CoreBlueprints/ByteArrayObject.ByteArrayObject_C"
     pda_voice_collection: str = "/Game/PrimalEarth/Sound/PlayerVoice/PDA_VoiceCollection.PDA_VoiceCollection_C"
 
-    all_bps = [black_hole_dino, rag_item_egg_wyvern_fertilized_ice, weapon_shoulder_dragon_autumn,
-               weapon_shoulder_dragon_spring, weapon_shoulder_dragon_winter, charge_battery, glow_stick,
-               plant_species_z_grenade, tek_sniper, accessory_draconic_cape, weapon_drake_claw,
-               spawner_enforcer, spawner_mek, taxidermy_dermis, taxidermy_dermis_no_upload,
-               weapon_taxidermy_tool, weapon_scout_remote, spawner_enforcer_city_terminal,
-               weapon_scout_remote_city_terminal, weapon_admin_blink_rifle, sanguine_elixir,
-               spawner_hover_skiff, weapon_tek_cruise_missile, weapon_fishing_net, hotbar_skill_base,
-               empty_cryopod_angel_fox, pristine_vulpite, corrupted_vulpite, empty_cryopod_gargoyle,
-               taxidermy_dermis_gargoyle, weapon_lost_charge_pet, dino_companion_whistle_young_ice_fox,
-               lost_colony_bunker_module, weapon_base_clipboard_and_hammer, holo_decoy, coffin_snapshot,
-               death_essence_bp, train_engine, spawner_helper_bot, dino_spawner_zeppelin, bounty_page,
-               charge_battery_mini, dino_companion_whistle_doggo, car_saved, craft_car, repair_car,
-               antifire_grenade, weapon_spear_explosive, dungeon_entrance_tek_cave_easy,
-               dungeon_entrance_tek_cave_hard, dungeon_entrance_tek_cave_medium, power_node_charge,
-               chibi_dino_random_craftable, note, starting_note, fish_basket_filled, pliers, weapon_lasso,
-               motorboat, love_tap_club, template_tablet, dino_costume_custom, blood_extractor, camera,
-               weapon_magnifying_glass, weapon_spyglass, weapon_cluster_grenade, weapon_electronic_binoculars,
-               weapon_oil_jar, val_megaraptor_spike, polar_bear, mb_button, helper_bot_ai_data,
+    all_bps = [black_hole_dino, rag_item_egg_wyvern_fertilized_ice, charge_battery, glow_stick,
+               plant_species_z_grenade, tek_sniper, accessory_draconic_cape, sanguine_elixir,
+               hotbar_skill_base, empty_cryopod_angel_fox, pristine_vulpite, corrupted_vulpite,
+               empty_cryopod_gargoyle, dino_companion_whistle_young_ice_fox, lost_colony_bunker_module,
+               holo_decoy, coffin_snapshot, death_essence_bp, train_engine, bounty_page, charge_battery_mini,
+               dino_companion_whistle_doggo, car_saved, craft_car, repair_car, antifire_grenade,
+               power_node_charge, chibi_dino_random_craftable, note, starting_note, fish_basket_filled,
+               pliers, motorboat, love_tap_club, template_tablet, dino_costume_custom, blood_extractor,
+               camera, val_megaraptor_spike, polar_bear, mb_button, helper_bot_ai_data,
                helper_bot_docking_bay, byte_array_object, pda_voice_collection]
 
 class Items:
-    item_traits: ItemTraits = ItemTraits()
+    armor_traits: ArmorTraits = ArmorTraits()
+    gun_traits: GunTraits = GunTraits()
+    melee_traits: MeleeTraits = MeleeTraits()
+    projectile_traits: ProjectileTraits = ProjectileTraits()
     boss_tributes: BossTributes = BossTributes()
     vehicle_parts: VehicleParts = VehicleParts()
     recipes: Recipes = Recipes()
     repair_kits: RepairKits = RepairKits()
     treasure_maps: TreasureMaps = TreasureMaps()
+    spawners: Spawners = Spawners()
+    dungeon_entrances: DungeonEntrances = DungeonEntrances()
+    taxidermy: Taxidermy = Taxidermy()
     inventories: Inventories = Inventories()
     buffs: Buffs = Buffs()
     misc: Misc = Misc()
 
-    all_bps = item_traits.all_bps + boss_tributes.all_bps + vehicle_parts.all_bps + recipes.all_bps + \
-        repair_kits.all_bps + treasure_maps.all_bps + inventories.all_bps + buffs.all_bps + \
+    all_bps = armor_traits.all_bps + gun_traits.all_bps + melee_traits.all_bps + \
+        projectile_traits.all_bps + boss_tributes.all_bps + vehicle_parts.all_bps + \
+        recipes.all_bps + repair_kits.all_bps + treasure_maps.all_bps + spawners.all_bps + \
+        dungeon_entrances.all_bps + taxidermy.all_bps + inventories.all_bps + buffs.all_bps + \
         misc.all_bps

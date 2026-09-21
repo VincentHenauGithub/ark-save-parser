@@ -1,256 +1,290 @@
 """Per-species components attached to a dino: stats, inventory, AI and harvest tables."""
 
 class StatusComponents:
-    acrocanthosaurus: str = "/Game/ASA/Dinos/Acrocanthosaurus/DinoCharacterStatusComponent_BP_Acrocanthosaurus.DinoCharacterStatusComponent_BP_Acrocanthosaurus_C"
-    archelon_asa: str = "/Game/ASA/Dinos/Archelon/Dinos/DinoCharacterStatus_BP_Archelon_ASA.DinoCharacterStatus_BP_Archelon_ASA_C"
-    bison: str = "/Game/ASA/Dinos/Bison/DinoCharacterStatusComponent_BP_Bison.DinoCharacterStatusComponent_BP_Bison_C"
-    boaratos: str = "/Game/ASA/Dinos/Boaratos/DinoCharacterStatusComponent_BP_Boaratos.DinoCharacterStatusComponent_BP_Boaratos_C"
-    cat: str = "/Game/ASA/Dinos/Cat/DinoCharacterStatusComponent_BP_Cat.DinoCharacterStatusComponent_BP_Cat_C"
-    ceratosaurus_asa: str = "/Game/ASA/Dinos/Ceratosaurus/Dinos/DinoCharacterStatusComponent_BP_Ceratosaurus_ASA.DinoCharacterStatusComponent_BP_Ceratosaurus_ASA_C"
-    concavenator: str = "/Game/ASA/Dinos/Concavenator/DinoCharacterStatusComponent_BP_Concavenator.DinoCharacterStatusComponent_BP_Concavenator_C"
-    cryolophosaurus: str = "/Game/ASA/Dinos/Cryolophosaurus/DinoCharacterStatusComponent_BP_Cryolophosaurus.DinoCharacterStatusComponent_BP_Cryolophosaurus_C"
-    dark_pegasus: str = "/Game/ASA/Dinos/DarkPegasus/DinoCharacterStatusComponent_BP_DarkPegasus.DinoCharacterStatusComponent_BP_DarkPegasus_C"
-    deino_asa: str = "/Game/ASA/Dinos/Deinosuchus/DinoCharacterStatus_BP_Deino_ASA.DinoCharacterStatus_BP_Deino_ASA_C"
-    deinotherium_asa: str = "/Game/ASA/Dinos/Deinotherium/Dinos/DinoCharacterStatusComponent_BP_Deinotherium_ASA.DinoCharacterStatusComponent_BP_Deinotherium_ASA_C"
-    dreadnoughtus: str = "/Game/ASA/Dinos/Dreadnoughtus/DinoCharacterStatusComponent_BP_Dreadnoughtus.DinoCharacterStatusComponent_BP_Dreadnoughtus_C"
-    fasola: str = "/Game/ASA/Dinos/Fasolasuchus/DinoCharacterStatusComponent_BP_Fasola.DinoCharacterStatusComponent_BP_Fasola_C"
-    fire_lion: str = "/Game/ASA/Dinos/FireLion/DinoCharacterStatusComponent_BP_FireLion.DinoCharacterStatusComponent_BP_FireLion_C"
-    gigantoraptor: str = "/Game/ASA/Dinos/Gigantoraptor/DinoCharacterStatusComponent_BP_Gigantoraptor.DinoCharacterStatusComponent_BP_Gigantoraptor_C"
-    helicoprion: str = "/Game/ASA/Dinos/Helicoprion/DinoCharacterStatusComponent_BP_Helicoprion.DinoCharacterStatusComponent_BP_Helicoprion_C"
-    jackalope: str = "/Game/ASA/Dinos/Jackalope/DinoCharacterStatusComponent_BP_Jackalope.DinoCharacterStatusComponent_BP_Jackalope_C"
-    val_megaraptor: str = "/Game/ASA/Dinos/Megaraptor/DinoCharacterStatusComponent_BP_ValMegaraptor.DinoCharacterStatusComponent_BP_ValMegaraptor_C"
-    shastasaurus: str = "/Game/ASA/Dinos/Shastasaurus/DinoCharacterStatusComponent_BP_Shastasaurus.DinoCharacterStatusComponent_BP_Shastasaurus_C"
-    shoulder_dragon: str = "/Game/ASA/Dinos/ShoulderDragon/DinoCharacterStatusComponent_BP_ShoulderDragon.DinoCharacterStatusComponent_BP_ShoulderDragon_C"
-    s_bear: str = "/Game/ASA/Dinos/SpiritBear/Gameplay/DinoCharacterStatusComponent_BP_SBear.DinoCharacterStatusComponent_BP_SBear_C"
-    xiph_asa: str = "/Game/ASA/Dinos/Xiphactinus/Dinos/DinoCharacterStatus_BP_Xiph_ASA.DinoCharacterStatus_BP_Xiph_ASA_C"
-    yi_ling: str = "/Game/ASA/Dinos/YiLing/DinoCharacterStatusComponent_BP_YiLing.DinoCharacterStatusComponent_BP_YiLing_C"
-    basilisk: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_Basilisk.DinoCharacterStatusComponent_BP_Basilisk_C"
-    basilisk_alpha: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_Basilisk_Alpha.DinoCharacterStatusComponent_BP_Basilisk_Alpha_C"
-    cave_crab: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_CaveCrab.DinoCharacterStatusComponent_BP_CaveCrab_C"
-    cave_crab_alpha: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_CaveCrab_Alpha.DinoCharacterStatusComponent_BP_CaveCrab_Alpha_C"
-    chupa_cabra: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_ChupaCabra.DinoCharacterStatusComponent_BP_ChupaCabra_C"
-    lantern_bird: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_LanternBird.DinoCharacterStatusComponent_BP_LanternBird_C"
-    lantern_goat: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_LanternGoat.DinoCharacterStatusComponent_BP_LanternGoat_C"
-    lantern_lizard: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_LanternLizard.DinoCharacterStatusComponent_BP_LanternLizard_C"
-    lantern_pug: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_LanternPug.DinoCharacterStatusComponent_BP_LanternPug_C"
-    mole_rat: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_MoleRat.DinoCharacterStatusComponent_BP_MoleRat_C"
-    pteroteuthis: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_Pteroteuthis.DinoCharacterStatusComponent_BP_Pteroteuthis_C"
-    xenomorph_chupa: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_Xenomorph_Chupa.DinoCharacterStatusComponent_BP_Xenomorph_Chupa_C"
-    xenomorph_queen: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_Xenomorph_Queen.DinoCharacterStatusComponent_BP_Xenomorph_Queen_C"
-    xenomorph_reaper_surface: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_Xenomorph_Reaper_Surface.DinoCharacterStatusComponent_BP_Xenomorph_Reaper_Surface_C"
-    xenomorph_reaper_surface_alpha: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_Xenomorph_Reaper_Surface_Alpha.DinoCharacterStatusComponent_BP_Xenomorph_Reaper_Surface_Alpha_C"
-    cave_wolf: str = "/Game/Aberration/Dinos/CaveWolf/DinoCharacterStatusComponent_BP_CaveWolf.DinoCharacterStatusComponent_BP_CaveWolf_C"
-    light_bug: str = "/Game/Aberration/Dinos/Lightbug/DinoCharacterStatusComponent_BP_LightBug.DinoCharacterStatusComponent_BP_LightBug_C"
-    rock_drake: str = "/Game/Aberration/Dinos/RockDrake/DinoCharacterStatusComponent_BP_RockDrake.DinoCharacterStatusComponent_BP_RockDrake_C"
-    draco_umbra_lumina: str = "/Game/Dragontopia/Dragons/Eclipsar/Lumina/DinoCharacterStatusComponent_BP_Draco_Umbra_Lumina.DinoCharacterStatusComponent_BP_Draco_Umbra_Lumina_C"
-    drone: str = "/Game/EndGame/Dinos/Drone/DinoCharacterStatusComponent_BP_Drone.DinoCharacterStatusComponent_BP_Drone_C"
-    end_tank: str = "/Game/EndGame/Dinos/Tank/DinoCharacterStatusComponent_BP_EndTank.DinoCharacterStatusComponent_BP_EndTank_C"
-    enforcer: str = "/Game/Extinction/CoreBlueprints/DinoCharacterStatusComponent_BP_Enforcer.DinoCharacterStatusComponent_BP_Enforcer_C"
-    gacha: str = "/Game/Extinction/CoreBlueprints/DinoCharacterStatusComponent_BP_Gacha.DinoCharacterStatusComponent_BP_Gacha_C"
-    gas_bag: str = "/Game/Extinction/CoreBlueprints/DinoCharacterStatusComponent_BP_GasBag.DinoCharacterStatusComponent_BP_GasBag_C"
-    gigant_corrupt: str = "/Game/Extinction/CoreBlueprints/DinoCharacterStatusComponent_BP_Gigant_Corrupt.DinoCharacterStatusComponent_BP_Gigant_Corrupt_C"
-    mega_rex_corrupted: str = "/Game/Extinction/CoreBlueprints/DinoCharacterStatusComponent_BP_MegaRex_Corrupted.DinoCharacterStatusComponent_BP_MegaRex_Corrupted_C"
-    owl: str = "/Game/Extinction/CoreBlueprints/DinoCharacterStatusComponent_BP_Owl.DinoCharacterStatusComponent_BP_Owl_C"
-    reaper_corrupt: str = "/Game/Extinction/CoreBlueprints/DinoCharacterStatusComponent_BP_Reaper_Corrupt.DinoCharacterStatusComponent_BP_Reaper_Corrupt_C"
-    scout: str = "/Game/Extinction/CoreBlueprints/DinoCharacterStatusComponent_BP_Scout.DinoCharacterStatusComponent_BP_Scout_C"
-    andrewsarchus: str = "/Game/Fjordur/Dinos/Andrewsarchus/DinoCharacterStatusComponent_BP_Andrewsarchus.DinoCharacterStatusComponent_BP_Andrewsarchus_C"
-    desmodus: str = "/Game/Fjordur/Dinos/Desmodus/DinoCharacterStatusComponent_BP_Desmodus.DinoCharacterStatusComponent_BP_Desmodus_C"
-    bog_spider: str = "/Game/Genesis/CoreBlueprints/DinoCharacterStatusComponent_BP_BogSpider.DinoCharacterStatusComponent_BP_BogSpider_C"
-    cherufe: str = "/Game/Genesis/CoreBlueprints/DinoCharacterStatusComponent_BP_Cherufe.DinoCharacterStatusComponent_BP_Cherufe_C"
-    insect_swarm: str = "/Game/Genesis/CoreBlueprints/DinoCharacterStatusComponent_BP_InsectSwarm.DinoCharacterStatusComponent_BP_InsectSwarm_C"
-    microbe_swarm: str = "/Game/Genesis/CoreBlueprints/DinoCharacterStatusComponent_BP_MicrobeSwarm.DinoCharacterStatusComponent_BP_MicrobeSwarm_C"
-    space_whale: str = "/Game/Genesis/CoreBlueprints/DinoCharacterStatusComponent_BP_SpaceWhale.DinoCharacterStatusComponent_BP_SpaceWhale_C"
-    giant_turtle: str = "/Game/Genesis/Dinos/GiantTurtle/DinoCharacterStatusComponent_BP_GiantTurtle.DinoCharacterStatusComponent_BP_GiantTurtle_C"
-    milk_glider: str = "/Game/Genesis2/Dinos/MilkGlider/DinoCharacterStatusComponent_BP_MilkGlider.DinoCharacterStatusComponent_BP_MilkGlider_C"
-    angel_fox: str = "/Game/LostColony/Dinos/AngelFox/DinoCharacterStatusComponent_BP_AngelFox.DinoCharacterStatusComponent_BP_AngelFox_C"
-    boss_bat: str = "/Game/LostColony/Dinos/BossBat/DinoCharacterStatusComponent_BP_BossBat.DinoCharacterStatusComponent_BP_BossBat_C"
-    devil_fox: str = "/Game/LostColony/Dinos/DevilFox/DinoCharacterStatusComponent_BP_DevilFox.DinoCharacterStatusComponent_BP_DevilFox_C"
-    lcp: str = "/Game/LostColony/Dinos/LostChargePet/DinoCharacterStatusComponent_BP_LCP.DinoCharacterStatusComponent_BP_LCP_C"
-    flyer_ride_snow_dragon: str = "/Game/LostColony/Dinos/SnowDragon/DinoCharacterStatusComponent_BP_FlyerRide_SnowDragon.DinoCharacterStatusComponent_BP_FlyerRide_SnowDragon_C"
-    mega_snow_monster: str = "/Game/LostColony/Dinos/SnowMonster/DinoCharacterStatusComponent_BP_MegaSnowMonster.DinoCharacterStatusComponent_BP_MegaSnowMonster_C"
-    snow_monster: str = "/Game/LostColony/Dinos/SnowMonster/DinoCharacterStatusComponent_BP_SnowMonster.DinoCharacterStatusComponent_BP_SnowMonster_C"
-    thrall_base: str = "/Game/LostColony/Dinos/Thrall/Components/DinoCharacterStatusComponent_BP_Thrall_Base.DinoCharacterStatusComponent_BP_Thrall_Base_C"
-    young_ice_fox: str = "/Game/LostColony/Dinos/YoungIceFox/DinoCharacterStatusComponent_BP_YoungIceFox.DinoCharacterStatusComponent_BP_YoungIceFox_C"
-    zombie_bloated: str = "/Game/LostColony/Dinos/Zombie/DinoCharacterStatusComponent_BP_Zombie_Bloated.DinoCharacterStatusComponent_BP_Zombie_Bloated_C"
-    zombie_hulking: str = "/Game/LostColony/Dinos/Zombie/DinoCharacterStatusComponent_BP_Zombie_Hulking.DinoCharacterStatusComponent_BP_Zombie_Hulking_C"
-    zombie_hulking_mega: str = "/Game/LostColony/Dinos/Zombie/DinoCharacterStatusComponent_BP_Zombie_Hulking_Mega.DinoCharacterStatusComponent_BP_Zombie_Hulking_Mega_C"
-    zombie_skinny: str = "/Game/LostColony/Dinos/Zombie/DinoCharacterStatusComponent_BP_Zombie_Skinny.DinoCharacterStatusComponent_BP_Zombie_Skinny_C"
-    oasisaur: str = "/Game/Packs/Frontier/Dinos/Oasisaur/DinoCharacterStatusComponent_BP_Oasisaur.DinoCharacterStatusComponent_BP_Oasisaur_C"
-    train: str = "/Game/Packs/Frontier/Dinos/Train/DinoCharacterStatusComponent_BP_Train.DinoCharacterStatusComponent_BP_Train_C"
-    helper_bot: str = "/Game/Packs/Steampunk/Dinos/HelperBot/DinoCharacterStatusComponent_BP_HelperBot.DinoCharacterStatusComponent_BP_HelperBot_C"
-    jumping_spider: str = "/Game/Packs/Steampunk/Dinos/JumpingSpider/DinoCharacterStatusComponent_BP_JumpingSpider.DinoCharacterStatusComponent_BP_JumpingSpider_C"
-    zeppelin: str = "/Game/Packs/Steampunk/Dinos/Zeppelin/DinoCharacterStatusComponent_BP_Zeppelin.DinoCharacterStatusComponent_BP_Zeppelin_C"
-    axolotl_small: str = "/Game/Packs/TidesOfFortune/Dinos/Axolotl/Axolotl_Small/DinoCharacterStatusComponent_BP_Axolotl_Small.DinoCharacterStatusComponent_BP_Axolotl_Small_C"
-    paleoctopus: str = "/Game/Packs/TidesOfFortune/Dinos/Paleoctopus/DinoCharacterStatusComponent_BP_Paleoctopus.DinoCharacterStatusComponent_BP_Paleoctopus_C"
-    parrot: str = "/Game/Packs/TidesOfFortune/Dinos/Parrot/DinoCharacterStatusComponent_BP_Parrot.DinoCharacterStatusComponent_BP_Parrot_C"
-    doggo: str = "/Game/Packs/Wasteland/Dinos/Doggo/DinoCharacterStatusComponent_BP_Doggo.DinoCharacterStatusComponent_BP_Doggo_C"
-    car: str = "/Game/Packs/Wasteland/Vehicles/Car/DinoCharacterStatusComponent_BP_Car.DinoCharacterStatusComponent_BP_Car_C"
-    allo: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Allo.DinoCharacterStatusComponent_BP_Allo_C"
-    alpha_m_ega: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_AlphaMEga.DinoCharacterStatusComponent_BP_AlphaMega_C"
-    angler: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Angler.DinoCharacterStatusComponent_BP_Angler_C"
-    ankylo: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Ankylo.DinoCharacterStatusComponent_BP_Ankylo_C"
-    ant: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Ant.DinoCharacterStatusComponent_BP_Ant_C"
-    archa: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Archa.DinoCharacterStatusComponent_BP_Archa_C"
-    argent: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Argent.DinoCharacterStatusComponent_BP_Argent_C"
-    arthro: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Arthro.DinoCharacterStatusComponent_BP_Arthro_C"
-    baryonyx: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Baryonyx.DinoCharacterStatusComponent_BP_Baryonyx_C"
-    bat: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Bat.DinoCharacterStatusComponent_BP_Bat_C"
-    beaver: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Beaver.DinoCharacterStatusComponent_BP_Beaver_C"
-    beetle: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Beetle.DinoCharacterStatusComponent_BP_Beetle_C"
-    bigfoot: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Bigfoot.DinoCharacterStatusComponent_BP_Bigfoot_C"
-    boa_frill: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_BoaFrill.DinoCharacterStatusComponent_BP_BoaFrill_C"
-    camel: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Camel.DinoCharacterStatusComponent_BP_Camel_C"
-    carcha: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Carcha.DinoCharacterStatusComponent_BP_Carcha_C"
-    carno: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Carno.DinoCharacterStatusComponent_BP_Carno_C"
-    cnidaria: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Cnidaria.DinoCharacterStatusComponent_BP_Cnidaria_C"
-    coel: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Coel.DinoCharacterStatusComponent_BP_Coel_C"
-    compy: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Compy.DinoCharacterStatusComponent_BP_Compy_C"
-    daeodon: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Daeodon.DinoCharacterStatusComponent_BP_Daeodon_C"
-    dilo: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Dilo.DinoCharacterStatusComponent_BP_Dilo_C"
-    dimetrodon: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Dimetrodon.DinoCharacterStatusComponent_BP_Dimetrodon_C"
-    dimorph: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Dimorph.DinoCharacterStatusComponent_BP_Dimorph_C"
-    diplocaulus: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Diplocaulus.DinoCharacterStatusComponent_BP_Diplocaulus_C"
-    diplodocus: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Diplodocus.DinoCharacterStatusComponent_BP_Diplodocus_C"
-    direbear: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Direbear.DinoCharacterStatusComponent_BP_Direbear_C"
-    direwolf: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Direwolf.DinoCharacterStatusComponent_BP_Direwolf_C"
-    dodo: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Dodo.DinoCharacterStatusComponent_BP_Dodo_C"
-    dodo_rex: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_DodoRex.DinoCharacterStatusComponent_BP_DodoRex_C"
-    doed: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Doed.DinoCharacterStatusComponent_BP_Doed_C"
-    dolphin: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Dolphin.DinoCharacterStatusComponent_BP_Dolphin_C"
-    dragonfly: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Dragonfly.DinoCharacterStatusComponent_BP_Dragonfly_C"
-    dunkle: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Dunkle.DinoCharacterStatusComponent_BP_Dunkle_C"
-    eel: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Eel.DinoCharacterStatusComponent_BP_Eel_C"
-    equus: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Equus.DinoCharacterStatusComponent_BP_Equus_C"
-    flying_ant: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_FlyingAnt.DinoCharacterStatusComponent_BP_FlyingAnt_C"
-    galli: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Galli.DinoCharacterStatusComponent_BP_Galli_C"
-    gigant: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Gigant.DinoCharacterStatusComponent_BP_Gigant_C"
-    griffin: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Griffin.DinoCharacterStatusComponent_BP_Griffin_C"
-    hesperornis: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Hesperornis.DinoCharacterStatusComponent_BP_Hesperornis_C"
-    hyaenodon: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Hyaenodon.DinoCharacterStatusComponent_BP_Hyaenodon_C"
-    ice_jumper: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_IceJumper.DinoCharacterStatusComponent_BP_IceJumper_C"
-    ichthyornis: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Ichthyornis.DinoCharacterStatusComponent_BP_Ichthyornis_C"
-    iguanodon: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Iguanodon.DinoCharacterStatusComponent_BP_Iguanodon_C"
-    kairuku: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Kairuku.DinoCharacterStatusComponent_BP_Kairuku_C"
-    kaprosuchus: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Kaprosuchus.DinoCharacterStatusComponent_BP_Kaprosuchus_C"
-    kentro: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Kentro.DinoCharacterStatusComponent_BP_Kentro_C"
-    liopleurodon: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Liopleurodon.DinoCharacterStatusComponent_BP_Liopleurodon_C"
-    lystro: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Lystro.DinoCharacterStatusComponent_BP_Lystro_C"
-    mammoth: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Mammoth.DinoCharacterStatusComponent_BP_Mammoth_C"
-    manta: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Manta.DinoCharacterStatusComponent_BP_Manta_C"
-    mega: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Mega.DinoCharacterStatusComponent_BP_Mega_C"
-    mega_carno: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_MegaCarno.DinoCharacterStatusComponent_BP_MegaCarno_C"
-    mega_raptor: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_MegaRaptor.DinoCharacterStatusComponent_BP_MegaRaptor_C"
-    mega_rex: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_MegaRex.DinoCharacterStatusComponent_BP_MegaRex_C"
-    megalania: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Megalania.DinoCharacterStatusComponent_BP_Megalania_C"
-    megatherium: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Megatherium.DinoCharacterStatusComponent_BP_Megatherium_C"
-    microraptor: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Microraptor.DinoCharacterStatusComponent_BP_Microraptor_C"
-    monkey: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Monkey.DinoCharacterStatusComponent_BP_Monkey_C"
-    moschops: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Moschops.DinoCharacterStatusComponent_BP_Moschops_C"
-    motorboat: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Motorboat.DinoCharacterStatusComponent_BP_Motorboat_C"
-    otter: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Otter.DinoCharacterStatusComponent_BP_Otter_C"
-    oviraptor: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Oviraptor.DinoCharacterStatusComponent_BP_Oviraptor_C"
-    pachy: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Pachy.DinoCharacterStatusComponent_BP_Pachy_C"
-    pachyrhino: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Pachyrhino.DinoCharacterStatusComponent_BP_Pachyrhino_C"
-    para: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Para.DinoCharacterStatusComponent_BP_Para_C"
-    paracer: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Paracer.DinoCharacterStatusComponent_BP_Paracer_C"
-    pela: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Pela.DinoCharacterStatusComponent_BP_Pela_C"
-    phiomia: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Phiomia.DinoCharacterStatusComponent_BP_Phiomia_C"
-    phoenix: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Phoenix.DinoCharacterStatusComponent_BP_Phoenix_C"
-    piranha: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Piranha.DinoCharacterStatusComponent_BP_Piranha_C"
-    plesiosaur: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Plesiosaur.DinoCharacterStatusComponent_BP_Plesiosaur_C"
-    proc: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Proc.DinoCharacterStatusComponent_BP_Proc_C"
-    ptero: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Ptero.DinoCharacterStatusComponent_BP_Ptero_C"
-    queen_bee: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_QueenBee.DinoCharacterStatusComponent_BP_QueenBee_C"
-    quetz: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Quetz.DinoCharacterStatusComponent_BP_Quetz_C"
-    raft: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Raft.DinoCharacterStatusComponent_BP_Raft_C"
-    raptor: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Raptor.DinoCharacterStatusComponent_BP_Raptor_C"
-    rex: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Rex.DinoCharacterStatusComponent_BP_Rex_C"
-    rhino: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Rhino.DinoCharacterStatusComponent_BP_Rhino_C"
-    saber: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Saber.DinoCharacterStatusComponent_BP_Saber_C"
-    salmon: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Salmon.DinoCharacterStatusComponent_BP_Salmon_C"
-    sarco: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Sarco.DinoCharacterStatusComponent_BP_Sarco_C"
-    sauropod: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Sauropod.DinoCharacterStatusComponent_BP_Sauropod_C"
-    scorpion: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Scorpion.DinoCharacterStatusComponent_BP_Scorpion_C"
-    sheep: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Sheep.DinoCharacterStatusComponent_BP_Sheep_C"
-    spider: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Spider.DinoCharacterStatusComponent_BP_Spider_C"
-    spindles: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Spindles.DinoCharacterStatusComponent_BP_Spindles_C"
-    spino: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Spino.DinoCharacterStatusComponent_BP_Spino_C"
-    stag: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Stag.DinoCharacterStatusComponent_BP_Stag_C"
-    stego: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Stego.DinoCharacterStatusComponent_BP_Stego_C"
-    tape: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Tape.DinoCharacterStatusComponent_BP_Tape_C"
-    terror_bird: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_TerrorBird.DinoCharacterStatusComponent_BP_TerrorBird_C"
-    therizino: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Therizino.DinoCharacterStatusComponent_BP_Therizino_C"
-    thylaco: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Thylaco.DinoCharacterStatusComponent_BP_Thylaco_C"
-    titanosaur: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Titanosaur.DinoCharacterStatusComponent_BP_Titanosaur_C"
-    toad: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Toad.DinoCharacterStatusComponent_BP_Toad_C"
-    trike: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Trike.DinoCharacterStatusComponent_BP_Trike_C"
-    turtle: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Turtle.DinoCharacterStatusComponent_BP_Turtle_C"
-    tuso: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Tuso.DinoCharacterStatusComponent_BP_Tuso_C"
-    yeti: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Yeti.DinoCharacterStatusComponent_BP_Yeti_C"
-    yutyrannus: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Yutyrannus.DinoCharacterStatusComponent_BP_Yutyrannus_C"
-    zomdod: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Zomdod.DinoCharacterStatusComponent_BP_Zomdod_C"
-    mega_tuso: str = "/Game/PrimalEarth/CoreBlueprints/Mega_DinoCharacterStatusComponent_BP_Tuso.Mega_DinoCharacterStatusComponent_BP_Tuso_C"
-    achatina: str = "/Game/PrimalEarth/Dinos/Achatina/DinoCharacterStatusComponent_BP_Achatina.DinoCharacterStatusComponent_BP_Achatina_C"
-    basil: str = "/Game/PrimalEarth/Dinos/Basilosaurus/DinoCharacterStatusComponent_BP_Basil.DinoCharacterStatusComponent_BP_Basil_C"
-    chalico: str = "/Game/PrimalEarth/Dinos/Chalicotherium/DinoCharacterStatusComponent_BP_Chalico.DinoCharacterStatusComponent_BP_Chalico_C"
-    leedsichthys: str = "/Game/PrimalEarth/Dinos/Leedsichthys/DinoCharacterStatusComponent_BP_Leedsichthys.DinoCharacterStatusComponent_BP_Leedsichthys_C"
-    megalosaurus: str = "/Game/PrimalEarth/Dinos/Megalosaurus/DinoCharacterStatusComponent_BP_Megalosaurus.DinoCharacterStatusComponent_BP_Megalosaurus_C"
-    mosasaur: str = "/Game/PrimalEarth/Dinos/Mosasaurus/DinoCharacterStatusComponent_BP_Mosasaur.DinoCharacterStatusComponent_BP_Mosasaur_C"
-    mosasaur_mega: str = "/Game/PrimalEarth/Dinos/Mosasaurus/DinoCharacterStatusComponent_BP_Mosasaur_Mega.DinoCharacterStatusComponent_BP_Mosasaur_Mega_C"
-    pegomastax: str = "/Game/PrimalEarth/Dinos/Pegomastax/DinoCharacterStatusComponent_BP_Pegomastax.DinoCharacterStatusComponent_BP_Pegomastax_C"
-    purlovia: str = "/Game/PrimalEarth/Dinos/Purlovia/DinoCharacterStatusComponent_BP_Purlovia.DinoCharacterStatusComponent_BP_Purlovia_C"
-    purlovia_polar: str = "/Game/PrimalEarth/Dinos/Purlovia/DinoCharacterStatusComponent_BP_Purlovia_Polar.DinoCharacterStatusComponent_BP_Purlovia_Polar_C"
-    rhynio: str = "/Game/PrimalEarth/Dinos/Rhyniognatha/DinoCharacterStatusComponent_BP_Rhynio.DinoCharacterStatusComponent_BP_Rhynio_C"
-    ammonite: str = "/Game/PrimalEarth/Dinos/Trilobite/DinoCharacterStatusComponent_BP_Ammonite.DinoCharacterStatusComponent_BP_Ammonite_C"
-    leech: str = "/Game/PrimalEarth/Dinos/Trilobite/DinoCharacterStatusComponent_BP_Leech.DinoCharacterStatusComponent_BP_Leech_C"
-    leech_diseased: str = "/Game/PrimalEarth/Dinos/Trilobite/DinoCharacterStatusComponent_BP_Leech_Diseased.DinoCharacterStatusComponent_BP_Leech_Diseased_C"
-    trilobite: str = "/Game/PrimalEarth/Dinos/Trilobite/DinoCharacterStatusComponent_BP_Trilobite.DinoCharacterStatusComponent_BP_Trilobite_C"
-    troodon: str = "/Game/PrimalEarth/Dinos/Troodon/DinoCharacterStatusComponent_BP_Troodon.DinoCharacterStatusComponent_BP_Troodon_C"
-    deathworm: str = "/Game/ScorchedEarth/Dinos/Deathworm/DinoCharacterStatusComponent_BP_Deathworm.DinoCharacterStatusComponent_BP_Deathworm_C"
-    deathworm_alpha: str = "/Game/ScorchedEarth/Dinos/Deathworm/DinoCharacterStatusComponent_BP_Deathworm_Alpha.DinoCharacterStatusComponent_BP_Deathworm_Alpha_C"
-    dodo_wyvern: str = "/Game/ScorchedEarth/Dinos/DodoWyvern/DinoCharacterStatusComponent_BP_DodoWyvern.DinoCharacterStatusComponent_BP_DodoWyvern_C"
-    jerboa: str = "/Game/ScorchedEarth/Dinos/Jerboa/DinoCharacterStatusComponent_BP_Jerboa.DinoCharacterStatusComponent_BP_Jerboa_C"
-    jug_bug: str = "/Game/ScorchedEarth/Dinos/JugBug/DinoCharacterStatusComponent_BP_JugBug.DinoCharacterStatusComponent_BP_JugBug_C"
-    deathworm_minion: str = "/Game/ScorchedEarth/Dinos/Manticore/Minions/DinoCharacterStatusComponent_BP_Deathworm_Minion.DinoCharacterStatusComponent_BP_Deathworm_Minion_C"
-    mantis: str = "/Game/ScorchedEarth/Dinos/Mantis/DinoCharacterStatusComponent_BP_Mantis.DinoCharacterStatusComponent_BP_Mantis_C"
-    moth: str = "/Game/ScorchedEarth/Dinos/Moth/DinoCharacterStatusComponent_BP_Moth.DinoCharacterStatusComponent_BP_Moth_C"
-    rock_golem: str = "/Game/ScorchedEarth/Dinos/RockGolem/DinoCharacterStatusComponent_BP_RockGolem.DinoCharacterStatusComponent_BP_RockGolem_C"
-    rubble_golem: str = "/Game/ScorchedEarth/Dinos/RockGolem/DinoCharacterStatusComponent_BP_RubbleGolem.DinoCharacterStatusComponent_BP_RubbleGolem_C"
-    spiney_lizard: str = "/Game/ScorchedEarth/Dinos/SpineyLizard/DinoCharacterStatusComponent_BP_SpineyLizard.DinoCharacterStatusComponent_BP_SpineyLizard_C"
-    vulture: str = "/Game/ScorchedEarth/Dinos/Vulture/DinoCharacterStatusComponent_BP_Vulture.DinoCharacterStatusComponent_BP_Vulture_C"
-    mega_wyvern: str = "/Game/ScorchedEarth/Dinos/Wyvern/DinoCharacterStatusComponent_BP_MegaWyvern.DinoCharacterStatusComponent_BP_MegaWyvern_C"
-    wyvern: str = "/Game/ScorchedEarth/Dinos/Wyvern/DinoCharacterStatusComponent_BP_Wyvern.DinoCharacterStatusComponent_BP_Wyvern_C"
-    brig_ship: str = "/Game/Water/Vessels/Brig/DinoCharacterStatusComponent_BP_BrigShip.DinoCharacterStatusComponent_BP_BrigShip_C"
-    brig_ship_player_following_miniboss: str = "/Game/Water/Vessels/Brig/DinoCharacterStatusComponent_BP_BrigShipPlayerFollowing_Miniboss.DinoCharacterStatusComponent_BP_BrigShipPlayerFollowing_Miniboss_C"
-    sloop_ship: str = "/Game/Water/Vessels/Sloop/DinoCharacterStatusComponent_BP_SloopShip.DinoCharacterStatusComponent_BP_SloopShip_C"
+    dino_status_acrocanthosaurus: str = "/Game/ASA/Dinos/Acrocanthosaurus/DinoCharacterStatusComponent_BP_Acrocanthosaurus.DinoCharacterStatusComponent_BP_Acrocanthosaurus_C"
+    dino_status_archelon_asa: str = "/Game/ASA/Dinos/Archelon/Dinos/DinoCharacterStatus_BP_Archelon_ASA.DinoCharacterStatus_BP_Archelon_ASA_C"
+    dino_status_bison: str = "/Game/ASA/Dinos/Bison/DinoCharacterStatusComponent_BP_Bison.DinoCharacterStatusComponent_BP_Bison_C"
+    dino_status_boaratos: str = "/Game/ASA/Dinos/Boaratos/DinoCharacterStatusComponent_BP_Boaratos.DinoCharacterStatusComponent_BP_Boaratos_C"
+    dino_status_cat: str = "/Game/ASA/Dinos/Cat/DinoCharacterStatusComponent_BP_Cat.DinoCharacterStatusComponent_BP_Cat_C"
+    dino_status_ceratosaurus_asa: str = "/Game/ASA/Dinos/Ceratosaurus/Dinos/DinoCharacterStatusComponent_BP_Ceratosaurus_ASA.DinoCharacterStatusComponent_BP_Ceratosaurus_ASA_C"
+    dino_status_concavenator: str = "/Game/ASA/Dinos/Concavenator/DinoCharacterStatusComponent_BP_Concavenator.DinoCharacterStatusComponent_BP_Concavenator_C"
+    dino_status_cryolophosaurus: str = "/Game/ASA/Dinos/Cryolophosaurus/DinoCharacterStatusComponent_BP_Cryolophosaurus.DinoCharacterStatusComponent_BP_Cryolophosaurus_C"
+    dino_status_dark_pegasus: str = "/Game/ASA/Dinos/DarkPegasus/DinoCharacterStatusComponent_BP_DarkPegasus.DinoCharacterStatusComponent_BP_DarkPegasus_C"
+    dino_status_deino_asa: str = "/Game/ASA/Dinos/Deinosuchus/DinoCharacterStatus_BP_Deino_ASA.DinoCharacterStatus_BP_Deino_ASA_C"
+    dino_status_deinotherium_asa: str = "/Game/ASA/Dinos/Deinotherium/Dinos/DinoCharacterStatusComponent_BP_Deinotherium_ASA.DinoCharacterStatusComponent_BP_Deinotherium_ASA_C"
+    dino_status_dreadnoughtus: str = "/Game/ASA/Dinos/Dreadnoughtus/DinoCharacterStatusComponent_BP_Dreadnoughtus.DinoCharacterStatusComponent_BP_Dreadnoughtus_C"
+    dino_status_fasola: str = "/Game/ASA/Dinos/Fasolasuchus/DinoCharacterStatusComponent_BP_Fasola.DinoCharacterStatusComponent_BP_Fasola_C"
+    dino_status_fire_lion: str = "/Game/ASA/Dinos/FireLion/DinoCharacterStatusComponent_BP_FireLion.DinoCharacterStatusComponent_BP_FireLion_C"
+    dino_status_gigantoraptor: str = "/Game/ASA/Dinos/Gigantoraptor/DinoCharacterStatusComponent_BP_Gigantoraptor.DinoCharacterStatusComponent_BP_Gigantoraptor_C"
+    dino_status_helicoprion: str = "/Game/ASA/Dinos/Helicoprion/DinoCharacterStatusComponent_BP_Helicoprion.DinoCharacterStatusComponent_BP_Helicoprion_C"
+    dino_status_jackalope: str = "/Game/ASA/Dinos/Jackalope/DinoCharacterStatusComponent_BP_Jackalope.DinoCharacterStatusComponent_BP_Jackalope_C"
+    dino_status_val_megaraptor: str = "/Game/ASA/Dinos/Megaraptor/DinoCharacterStatusComponent_BP_ValMegaraptor.DinoCharacterStatusComponent_BP_ValMegaraptor_C"
+    dino_status_shastasaurus: str = "/Game/ASA/Dinos/Shastasaurus/DinoCharacterStatusComponent_BP_Shastasaurus.DinoCharacterStatusComponent_BP_Shastasaurus_C"
+    dino_status_shoulder_dragon: str = "/Game/ASA/Dinos/ShoulderDragon/DinoCharacterStatusComponent_BP_ShoulderDragon.DinoCharacterStatusComponent_BP_ShoulderDragon_C"
+    dino_status_s_bear: str = "/Game/ASA/Dinos/SpiritBear/Gameplay/DinoCharacterStatusComponent_BP_SBear.DinoCharacterStatusComponent_BP_SBear_C"
+    dino_status_xiph_asa: str = "/Game/ASA/Dinos/Xiphactinus/Dinos/DinoCharacterStatus_BP_Xiph_ASA.DinoCharacterStatus_BP_Xiph_ASA_C"
+    dino_status_yi_ling: str = "/Game/ASA/Dinos/YiLing/DinoCharacterStatusComponent_BP_YiLing.DinoCharacterStatusComponent_BP_YiLing_C"
+    dino_status_basilisk: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_Basilisk.DinoCharacterStatusComponent_BP_Basilisk_C"
+    dino_status_basilisk_alpha: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_Basilisk_Alpha.DinoCharacterStatusComponent_BP_Basilisk_Alpha_C"
+    dino_status_cave_crab: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_CaveCrab.DinoCharacterStatusComponent_BP_CaveCrab_C"
+    dino_status_cave_crab_alpha: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_CaveCrab_Alpha.DinoCharacterStatusComponent_BP_CaveCrab_Alpha_C"
+    dino_status_chupa_cabra: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_ChupaCabra.DinoCharacterStatusComponent_BP_ChupaCabra_C"
+    dino_status_lantern_bird: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_LanternBird.DinoCharacterStatusComponent_BP_LanternBird_C"
+    dino_status_lantern_goat: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_LanternGoat.DinoCharacterStatusComponent_BP_LanternGoat_C"
+    dino_status_lantern_lizard: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_LanternLizard.DinoCharacterStatusComponent_BP_LanternLizard_C"
+    dino_status_lantern_pug: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_LanternPug.DinoCharacterStatusComponent_BP_LanternPug_C"
+    dino_status_mole_rat: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_MoleRat.DinoCharacterStatusComponent_BP_MoleRat_C"
+    dino_status_pteroteuthis: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_Pteroteuthis.DinoCharacterStatusComponent_BP_Pteroteuthis_C"
+    dino_status_xenomorph_chupa: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_Xenomorph_Chupa.DinoCharacterStatusComponent_BP_Xenomorph_Chupa_C"
+    dino_status_xenomorph_queen: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_Xenomorph_Queen.DinoCharacterStatusComponent_BP_Xenomorph_Queen_C"
+    dino_status_xenomorph_reaper_surface: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_Xenomorph_Reaper_Surface.DinoCharacterStatusComponent_BP_Xenomorph_Reaper_Surface_C"
+    dino_status_xenomorph_reaper_surface_alpha: str = "/Game/Aberration/CoreBlueprints/DinoCharacterStatusComponent_BP_Xenomorph_Reaper_Surface_Alpha.DinoCharacterStatusComponent_BP_Xenomorph_Reaper_Surface_Alpha_C"
+    dino_status_cave_wolf: str = "/Game/Aberration/Dinos/CaveWolf/DinoCharacterStatusComponent_BP_CaveWolf.DinoCharacterStatusComponent_BP_CaveWolf_C"
+    dino_status_light_bug: str = "/Game/Aberration/Dinos/Lightbug/DinoCharacterStatusComponent_BP_LightBug.DinoCharacterStatusComponent_BP_LightBug_C"
+    dino_status_rock_drake: str = "/Game/Aberration/Dinos/RockDrake/DinoCharacterStatusComponent_BP_RockDrake.DinoCharacterStatusComponent_BP_RockDrake_C"
+    dino_status_draco_umbra_lumina: str = "/Game/Dragontopia/Dragons/Eclipsar/Lumina/DinoCharacterStatusComponent_BP_Draco_Umbra_Lumina.DinoCharacterStatusComponent_BP_Draco_Umbra_Lumina_C"
+    dino_status_drone: str = "/Game/EndGame/Dinos/Drone/DinoCharacterStatusComponent_BP_Drone.DinoCharacterStatusComponent_BP_Drone_C"
+    dino_status_end_tank: str = "/Game/EndGame/Dinos/Tank/DinoCharacterStatusComponent_BP_EndTank.DinoCharacterStatusComponent_BP_EndTank_C"
+    dino_status_enforcer: str = "/Game/Extinction/CoreBlueprints/DinoCharacterStatusComponent_BP_Enforcer.DinoCharacterStatusComponent_BP_Enforcer_C"
+    dino_status_gacha: str = "/Game/Extinction/CoreBlueprints/DinoCharacterStatusComponent_BP_Gacha.DinoCharacterStatusComponent_BP_Gacha_C"
+    dino_status_gas_bag: str = "/Game/Extinction/CoreBlueprints/DinoCharacterStatusComponent_BP_GasBag.DinoCharacterStatusComponent_BP_GasBag_C"
+    dino_status_gigant_corrupt: str = "/Game/Extinction/CoreBlueprints/DinoCharacterStatusComponent_BP_Gigant_Corrupt.DinoCharacterStatusComponent_BP_Gigant_Corrupt_C"
+    dino_status_mega_rex_corrupted: str = "/Game/Extinction/CoreBlueprints/DinoCharacterStatusComponent_BP_MegaRex_Corrupted.DinoCharacterStatusComponent_BP_MegaRex_Corrupted_C"
+    dino_status_owl: str = "/Game/Extinction/CoreBlueprints/DinoCharacterStatusComponent_BP_Owl.DinoCharacterStatusComponent_BP_Owl_C"
+    dino_status_reaper_corrupt: str = "/Game/Extinction/CoreBlueprints/DinoCharacterStatusComponent_BP_Reaper_Corrupt.DinoCharacterStatusComponent_BP_Reaper_Corrupt_C"
+    dino_status_scout: str = "/Game/Extinction/CoreBlueprints/DinoCharacterStatusComponent_BP_Scout.DinoCharacterStatusComponent_BP_Scout_C"
+    dino_status_andrewsarchus: str = "/Game/Fjordur/Dinos/Andrewsarchus/DinoCharacterStatusComponent_BP_Andrewsarchus.DinoCharacterStatusComponent_BP_Andrewsarchus_C"
+    dino_status_desmodus: str = "/Game/Fjordur/Dinos/Desmodus/DinoCharacterStatusComponent_BP_Desmodus.DinoCharacterStatusComponent_BP_Desmodus_C"
+    dino_status_bog_spider: str = "/Game/Genesis/CoreBlueprints/DinoCharacterStatusComponent_BP_BogSpider.DinoCharacterStatusComponent_BP_BogSpider_C"
+    dino_status_cherufe: str = "/Game/Genesis/CoreBlueprints/DinoCharacterStatusComponent_BP_Cherufe.DinoCharacterStatusComponent_BP_Cherufe_C"
+    dino_status_insect_swarm: str = "/Game/Genesis/CoreBlueprints/DinoCharacterStatusComponent_BP_InsectSwarm.DinoCharacterStatusComponent_BP_InsectSwarm_C"
+    dino_status_microbe_swarm: str = "/Game/Genesis/CoreBlueprints/DinoCharacterStatusComponent_BP_MicrobeSwarm.DinoCharacterStatusComponent_BP_MicrobeSwarm_C"
+    dino_status_space_whale: str = "/Game/Genesis/CoreBlueprints/DinoCharacterStatusComponent_BP_SpaceWhale.DinoCharacterStatusComponent_BP_SpaceWhale_C"
+    dino_status_giant_turtle: str = "/Game/Genesis/Dinos/GiantTurtle/DinoCharacterStatusComponent_BP_GiantTurtle.DinoCharacterStatusComponent_BP_GiantTurtle_C"
+    dino_status_milk_glider: str = "/Game/Genesis2/Dinos/MilkGlider/DinoCharacterStatusComponent_BP_MilkGlider.DinoCharacterStatusComponent_BP_MilkGlider_C"
+    dino_status_angel_fox: str = "/Game/LostColony/Dinos/AngelFox/DinoCharacterStatusComponent_BP_AngelFox.DinoCharacterStatusComponent_BP_AngelFox_C"
+    dino_status_boss_bat: str = "/Game/LostColony/Dinos/BossBat/DinoCharacterStatusComponent_BP_BossBat.DinoCharacterStatusComponent_BP_BossBat_C"
+    dino_status_devil_fox: str = "/Game/LostColony/Dinos/DevilFox/DinoCharacterStatusComponent_BP_DevilFox.DinoCharacterStatusComponent_BP_DevilFox_C"
+    dino_status_lcp: str = "/Game/LostColony/Dinos/LostChargePet/DinoCharacterStatusComponent_BP_LCP.DinoCharacterStatusComponent_BP_LCP_C"
+    dino_status_flyer_ride_snow_dragon: str = "/Game/LostColony/Dinos/SnowDragon/DinoCharacterStatusComponent_BP_FlyerRide_SnowDragon.DinoCharacterStatusComponent_BP_FlyerRide_SnowDragon_C"
+    dino_status_mega_snow_monster: str = "/Game/LostColony/Dinos/SnowMonster/DinoCharacterStatusComponent_BP_MegaSnowMonster.DinoCharacterStatusComponent_BP_MegaSnowMonster_C"
+    dino_status_snow_monster: str = "/Game/LostColony/Dinos/SnowMonster/DinoCharacterStatusComponent_BP_SnowMonster.DinoCharacterStatusComponent_BP_SnowMonster_C"
+    dino_status_thrall_base: str = "/Game/LostColony/Dinos/Thrall/Components/DinoCharacterStatusComponent_BP_Thrall_Base.DinoCharacterStatusComponent_BP_Thrall_Base_C"
+    dino_status_young_ice_fox: str = "/Game/LostColony/Dinos/YoungIceFox/DinoCharacterStatusComponent_BP_YoungIceFox.DinoCharacterStatusComponent_BP_YoungIceFox_C"
+    dino_status_zombie_bloated: str = "/Game/LostColony/Dinos/Zombie/DinoCharacterStatusComponent_BP_Zombie_Bloated.DinoCharacterStatusComponent_BP_Zombie_Bloated_C"
+    dino_status_zombie_hulking: str = "/Game/LostColony/Dinos/Zombie/DinoCharacterStatusComponent_BP_Zombie_Hulking.DinoCharacterStatusComponent_BP_Zombie_Hulking_C"
+    dino_status_zombie_hulking_mega: str = "/Game/LostColony/Dinos/Zombie/DinoCharacterStatusComponent_BP_Zombie_Hulking_Mega.DinoCharacterStatusComponent_BP_Zombie_Hulking_Mega_C"
+    dino_status_zombie_skinny: str = "/Game/LostColony/Dinos/Zombie/DinoCharacterStatusComponent_BP_Zombie_Skinny.DinoCharacterStatusComponent_BP_Zombie_Skinny_C"
+    dino_status_oasisaur: str = "/Game/Packs/Frontier/Dinos/Oasisaur/DinoCharacterStatusComponent_BP_Oasisaur.DinoCharacterStatusComponent_BP_Oasisaur_C"
+    dino_status_train: str = "/Game/Packs/Frontier/Dinos/Train/DinoCharacterStatusComponent_BP_Train.DinoCharacterStatusComponent_BP_Train_C"
+    dino_status_helper_bot: str = "/Game/Packs/Steampunk/Dinos/HelperBot/DinoCharacterStatusComponent_BP_HelperBot.DinoCharacterStatusComponent_BP_HelperBot_C"
+    dino_status_jumping_spider: str = "/Game/Packs/Steampunk/Dinos/JumpingSpider/DinoCharacterStatusComponent_BP_JumpingSpider.DinoCharacterStatusComponent_BP_JumpingSpider_C"
+    dino_status_zeppelin: str = "/Game/Packs/Steampunk/Dinos/Zeppelin/DinoCharacterStatusComponent_BP_Zeppelin.DinoCharacterStatusComponent_BP_Zeppelin_C"
+    dino_status_axolotl_small: str = "/Game/Packs/TidesOfFortune/Dinos/Axolotl/Axolotl_Small/DinoCharacterStatusComponent_BP_Axolotl_Small.DinoCharacterStatusComponent_BP_Axolotl_Small_C"
+    dino_status_paleoctopus: str = "/Game/Packs/TidesOfFortune/Dinos/Paleoctopus/DinoCharacterStatusComponent_BP_Paleoctopus.DinoCharacterStatusComponent_BP_Paleoctopus_C"
+    dino_status_parrot: str = "/Game/Packs/TidesOfFortune/Dinos/Parrot/DinoCharacterStatusComponent_BP_Parrot.DinoCharacterStatusComponent_BP_Parrot_C"
+    dino_status_doggo: str = "/Game/Packs/Wasteland/Dinos/Doggo/DinoCharacterStatusComponent_BP_Doggo.DinoCharacterStatusComponent_BP_Doggo_C"
+    dino_status_car: str = "/Game/Packs/Wasteland/Vehicles/Car/DinoCharacterStatusComponent_BP_Car.DinoCharacterStatusComponent_BP_Car_C"
+    dino_status_allo: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Allo.DinoCharacterStatusComponent_BP_Allo_C"
+    dino_status_alpha_m_ega: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_AlphaMEga.DinoCharacterStatusComponent_BP_AlphaMega_C"
+    dino_status_angler: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Angler.DinoCharacterStatusComponent_BP_Angler_C"
+    dino_status_ankylo: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Ankylo.DinoCharacterStatusComponent_BP_Ankylo_C"
+    dino_status_ant: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Ant.DinoCharacterStatusComponent_BP_Ant_C"
+    dino_status_archa: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Archa.DinoCharacterStatusComponent_BP_Archa_C"
+    dino_status_argent: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Argent.DinoCharacterStatusComponent_BP_Argent_C"
+    dino_status_arthro: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Arthro.DinoCharacterStatusComponent_BP_Arthro_C"
+    dino_status_baryonyx: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Baryonyx.DinoCharacterStatusComponent_BP_Baryonyx_C"
+    dino_status_bat: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Bat.DinoCharacterStatusComponent_BP_Bat_C"
+    dino_status_beaver: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Beaver.DinoCharacterStatusComponent_BP_Beaver_C"
+    dino_status_beetle: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Beetle.DinoCharacterStatusComponent_BP_Beetle_C"
+    dino_status_bigfoot: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Bigfoot.DinoCharacterStatusComponent_BP_Bigfoot_C"
+    dino_status_boa_frill: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_BoaFrill.DinoCharacterStatusComponent_BP_BoaFrill_C"
+    dino_status_camel: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Camel.DinoCharacterStatusComponent_BP_Camel_C"
+    dino_status_carcha: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Carcha.DinoCharacterStatusComponent_BP_Carcha_C"
+    dino_status_carno: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Carno.DinoCharacterStatusComponent_BP_Carno_C"
+    dino_status_cnidaria: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Cnidaria.DinoCharacterStatusComponent_BP_Cnidaria_C"
+    dino_status_coel: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Coel.DinoCharacterStatusComponent_BP_Coel_C"
+    dino_status_compy: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Compy.DinoCharacterStatusComponent_BP_Compy_C"
+    dino_status_daeodon: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Daeodon.DinoCharacterStatusComponent_BP_Daeodon_C"
+    dino_status_dilo: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Dilo.DinoCharacterStatusComponent_BP_Dilo_C"
+    dino_status_dimetrodon: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Dimetrodon.DinoCharacterStatusComponent_BP_Dimetrodon_C"
+    dino_status_dimorph: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Dimorph.DinoCharacterStatusComponent_BP_Dimorph_C"
+    dino_status_diplocaulus: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Diplocaulus.DinoCharacterStatusComponent_BP_Diplocaulus_C"
+    dino_status_diplodocus: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Diplodocus.DinoCharacterStatusComponent_BP_Diplodocus_C"
+    dino_status_direbear: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Direbear.DinoCharacterStatusComponent_BP_Direbear_C"
+    dino_status_direwolf: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Direwolf.DinoCharacterStatusComponent_BP_Direwolf_C"
+    dino_status_dodo: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Dodo.DinoCharacterStatusComponent_BP_Dodo_C"
+    dino_status_dodo_rex: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_DodoRex.DinoCharacterStatusComponent_BP_DodoRex_C"
+    dino_status_doed: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Doed.DinoCharacterStatusComponent_BP_Doed_C"
+    dino_status_dolphin: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Dolphin.DinoCharacterStatusComponent_BP_Dolphin_C"
+    dino_status_dragonfly: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Dragonfly.DinoCharacterStatusComponent_BP_Dragonfly_C"
+    dino_status_dunkle: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Dunkle.DinoCharacterStatusComponent_BP_Dunkle_C"
+    dino_status_eel: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Eel.DinoCharacterStatusComponent_BP_Eel_C"
+    dino_status_equus: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Equus.DinoCharacterStatusComponent_BP_Equus_C"
+    dino_status_flying_ant: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_FlyingAnt.DinoCharacterStatusComponent_BP_FlyingAnt_C"
+    dino_status_galli: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Galli.DinoCharacterStatusComponent_BP_Galli_C"
+    dino_status_gigant: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Gigant.DinoCharacterStatusComponent_BP_Gigant_C"
+    dino_status_griffin: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Griffin.DinoCharacterStatusComponent_BP_Griffin_C"
+    dino_status_hesperornis: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Hesperornis.DinoCharacterStatusComponent_BP_Hesperornis_C"
+    dino_status_hyaenodon: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Hyaenodon.DinoCharacterStatusComponent_BP_Hyaenodon_C"
+    dino_status_ice_jumper: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_IceJumper.DinoCharacterStatusComponent_BP_IceJumper_C"
+    dino_status_ichthyornis: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Ichthyornis.DinoCharacterStatusComponent_BP_Ichthyornis_C"
+    dino_status_iguanodon: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Iguanodon.DinoCharacterStatusComponent_BP_Iguanodon_C"
+    dino_status_kairuku: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Kairuku.DinoCharacterStatusComponent_BP_Kairuku_C"
+    dino_status_kaprosuchus: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Kaprosuchus.DinoCharacterStatusComponent_BP_Kaprosuchus_C"
+    dino_status_kentro: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Kentro.DinoCharacterStatusComponent_BP_Kentro_C"
+    dino_status_liopleurodon: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Liopleurodon.DinoCharacterStatusComponent_BP_Liopleurodon_C"
+    dino_status_lystro: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Lystro.DinoCharacterStatusComponent_BP_Lystro_C"
+    dino_status_mammoth: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Mammoth.DinoCharacterStatusComponent_BP_Mammoth_C"
+    dino_status_manta: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Manta.DinoCharacterStatusComponent_BP_Manta_C"
+    dino_status_mega: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Mega.DinoCharacterStatusComponent_BP_Mega_C"
+    dino_status_mega_carno: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_MegaCarno.DinoCharacterStatusComponent_BP_MegaCarno_C"
+    dino_status_mega_raptor: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_MegaRaptor.DinoCharacterStatusComponent_BP_MegaRaptor_C"
+    dino_status_mega_rex: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_MegaRex.DinoCharacterStatusComponent_BP_MegaRex_C"
+    dino_status_megalania: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Megalania.DinoCharacterStatusComponent_BP_Megalania_C"
+    dino_status_megatherium: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Megatherium.DinoCharacterStatusComponent_BP_Megatherium_C"
+    dino_status_microraptor: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Microraptor.DinoCharacterStatusComponent_BP_Microraptor_C"
+    dino_status_monkey: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Monkey.DinoCharacterStatusComponent_BP_Monkey_C"
+    dino_status_moschops: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Moschops.DinoCharacterStatusComponent_BP_Moschops_C"
+    dino_status_motorboat: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Motorboat.DinoCharacterStatusComponent_BP_Motorboat_C"
+    dino_status_otter: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Otter.DinoCharacterStatusComponent_BP_Otter_C"
+    dino_status_oviraptor: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Oviraptor.DinoCharacterStatusComponent_BP_Oviraptor_C"
+    dino_status_pachy: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Pachy.DinoCharacterStatusComponent_BP_Pachy_C"
+    dino_status_pachyrhino: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Pachyrhino.DinoCharacterStatusComponent_BP_Pachyrhino_C"
+    dino_status_para: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Para.DinoCharacterStatusComponent_BP_Para_C"
+    dino_status_paracer: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Paracer.DinoCharacterStatusComponent_BP_Paracer_C"
+    dino_status_pela: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Pela.DinoCharacterStatusComponent_BP_Pela_C"
+    dino_status_phiomia: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Phiomia.DinoCharacterStatusComponent_BP_Phiomia_C"
+    dino_status_phoenix: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Phoenix.DinoCharacterStatusComponent_BP_Phoenix_C"
+    dino_status_piranha: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Piranha.DinoCharacterStatusComponent_BP_Piranha_C"
+    dino_status_plesiosaur: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Plesiosaur.DinoCharacterStatusComponent_BP_Plesiosaur_C"
+    dino_status_proc: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Proc.DinoCharacterStatusComponent_BP_Proc_C"
+    dino_status_ptero: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Ptero.DinoCharacterStatusComponent_BP_Ptero_C"
+    dino_status_queen_bee: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_QueenBee.DinoCharacterStatusComponent_BP_QueenBee_C"
+    dino_status_quetz: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Quetz.DinoCharacterStatusComponent_BP_Quetz_C"
+    dino_status_raft: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Raft.DinoCharacterStatusComponent_BP_Raft_C"
+    dino_status_raptor: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Raptor.DinoCharacterStatusComponent_BP_Raptor_C"
+    dino_status_rex: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Rex.DinoCharacterStatusComponent_BP_Rex_C"
+    dino_status_rhino: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Rhino.DinoCharacterStatusComponent_BP_Rhino_C"
+    dino_status_saber: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Saber.DinoCharacterStatusComponent_BP_Saber_C"
+    dino_status_salmon: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Salmon.DinoCharacterStatusComponent_BP_Salmon_C"
+    dino_status_sarco: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Sarco.DinoCharacterStatusComponent_BP_Sarco_C"
+    dino_status_sauropod: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Sauropod.DinoCharacterStatusComponent_BP_Sauropod_C"
+    dino_status_scorpion: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Scorpion.DinoCharacterStatusComponent_BP_Scorpion_C"
+    dino_status_sheep: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Sheep.DinoCharacterStatusComponent_BP_Sheep_C"
+    dino_status_spider: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Spider.DinoCharacterStatusComponent_BP_Spider_C"
+    dino_status_spindles: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Spindles.DinoCharacterStatusComponent_BP_Spindles_C"
+    dino_status_spino: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Spino.DinoCharacterStatusComponent_BP_Spino_C"
+    dino_status_stag: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Stag.DinoCharacterStatusComponent_BP_Stag_C"
+    dino_status_stego: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Stego.DinoCharacterStatusComponent_BP_Stego_C"
+    dino_status_tape: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Tape.DinoCharacterStatusComponent_BP_Tape_C"
+    dino_status_terror_bird: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_TerrorBird.DinoCharacterStatusComponent_BP_TerrorBird_C"
+    dino_status_therizino: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Therizino.DinoCharacterStatusComponent_BP_Therizino_C"
+    dino_status_thylaco: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Thylaco.DinoCharacterStatusComponent_BP_Thylaco_C"
+    dino_status_titanosaur: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Titanosaur.DinoCharacterStatusComponent_BP_Titanosaur_C"
+    dino_status_toad: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Toad.DinoCharacterStatusComponent_BP_Toad_C"
+    dino_status_trike: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Trike.DinoCharacterStatusComponent_BP_Trike_C"
+    dino_status_turtle: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Turtle.DinoCharacterStatusComponent_BP_Turtle_C"
+    dino_status_tuso: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Tuso.DinoCharacterStatusComponent_BP_Tuso_C"
+    dino_status_yeti: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Yeti.DinoCharacterStatusComponent_BP_Yeti_C"
+    dino_status_yutyrannus: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Yutyrannus.DinoCharacterStatusComponent_BP_Yutyrannus_C"
+    dino_status_zomdod: str = "/Game/PrimalEarth/CoreBlueprints/DinoCharacterStatusComponent_BP_Zomdod.DinoCharacterStatusComponent_BP_Zomdod_C"
+    mega_dino_status_tuso: str = "/Game/PrimalEarth/CoreBlueprints/Mega_DinoCharacterStatusComponent_BP_Tuso.Mega_DinoCharacterStatusComponent_BP_Tuso_C"
+    dino_status_achatina: str = "/Game/PrimalEarth/Dinos/Achatina/DinoCharacterStatusComponent_BP_Achatina.DinoCharacterStatusComponent_BP_Achatina_C"
+    dino_status_basil: str = "/Game/PrimalEarth/Dinos/Basilosaurus/DinoCharacterStatusComponent_BP_Basil.DinoCharacterStatusComponent_BP_Basil_C"
+    dino_status_chalico: str = "/Game/PrimalEarth/Dinos/Chalicotherium/DinoCharacterStatusComponent_BP_Chalico.DinoCharacterStatusComponent_BP_Chalico_C"
+    dino_status_leedsichthys: str = "/Game/PrimalEarth/Dinos/Leedsichthys/DinoCharacterStatusComponent_BP_Leedsichthys.DinoCharacterStatusComponent_BP_Leedsichthys_C"
+    dino_status_megalosaurus: str = "/Game/PrimalEarth/Dinos/Megalosaurus/DinoCharacterStatusComponent_BP_Megalosaurus.DinoCharacterStatusComponent_BP_Megalosaurus_C"
+    dino_status_mosasaur: str = "/Game/PrimalEarth/Dinos/Mosasaurus/DinoCharacterStatusComponent_BP_Mosasaur.DinoCharacterStatusComponent_BP_Mosasaur_C"
+    dino_status_mosasaur_mega: str = "/Game/PrimalEarth/Dinos/Mosasaurus/DinoCharacterStatusComponent_BP_Mosasaur_Mega.DinoCharacterStatusComponent_BP_Mosasaur_Mega_C"
+    dino_status_pegomastax: str = "/Game/PrimalEarth/Dinos/Pegomastax/DinoCharacterStatusComponent_BP_Pegomastax.DinoCharacterStatusComponent_BP_Pegomastax_C"
+    dino_status_purlovia: str = "/Game/PrimalEarth/Dinos/Purlovia/DinoCharacterStatusComponent_BP_Purlovia.DinoCharacterStatusComponent_BP_Purlovia_C"
+    dino_status_purlovia_polar: str = "/Game/PrimalEarth/Dinos/Purlovia/DinoCharacterStatusComponent_BP_Purlovia_Polar.DinoCharacterStatusComponent_BP_Purlovia_Polar_C"
+    dino_status_rhynio: str = "/Game/PrimalEarth/Dinos/Rhyniognatha/DinoCharacterStatusComponent_BP_Rhynio.DinoCharacterStatusComponent_BP_Rhynio_C"
+    dino_status_ammonite: str = "/Game/PrimalEarth/Dinos/Trilobite/DinoCharacterStatusComponent_BP_Ammonite.DinoCharacterStatusComponent_BP_Ammonite_C"
+    dino_status_leech: str = "/Game/PrimalEarth/Dinos/Trilobite/DinoCharacterStatusComponent_BP_Leech.DinoCharacterStatusComponent_BP_Leech_C"
+    dino_status_leech_diseased: str = "/Game/PrimalEarth/Dinos/Trilobite/DinoCharacterStatusComponent_BP_Leech_Diseased.DinoCharacterStatusComponent_BP_Leech_Diseased_C"
+    dino_status_trilobite: str = "/Game/PrimalEarth/Dinos/Trilobite/DinoCharacterStatusComponent_BP_Trilobite.DinoCharacterStatusComponent_BP_Trilobite_C"
+    dino_status_troodon: str = "/Game/PrimalEarth/Dinos/Troodon/DinoCharacterStatusComponent_BP_Troodon.DinoCharacterStatusComponent_BP_Troodon_C"
+    dino_status_deathworm: str = "/Game/ScorchedEarth/Dinos/Deathworm/DinoCharacterStatusComponent_BP_Deathworm.DinoCharacterStatusComponent_BP_Deathworm_C"
+    dino_status_deathworm_alpha: str = "/Game/ScorchedEarth/Dinos/Deathworm/DinoCharacterStatusComponent_BP_Deathworm_Alpha.DinoCharacterStatusComponent_BP_Deathworm_Alpha_C"
+    dino_status_dodo_wyvern: str = "/Game/ScorchedEarth/Dinos/DodoWyvern/DinoCharacterStatusComponent_BP_DodoWyvern.DinoCharacterStatusComponent_BP_DodoWyvern_C"
+    dino_status_jerboa: str = "/Game/ScorchedEarth/Dinos/Jerboa/DinoCharacterStatusComponent_BP_Jerboa.DinoCharacterStatusComponent_BP_Jerboa_C"
+    dino_status_jug_bug: str = "/Game/ScorchedEarth/Dinos/JugBug/DinoCharacterStatusComponent_BP_JugBug.DinoCharacterStatusComponent_BP_JugBug_C"
+    dino_status_deathworm_minion: str = "/Game/ScorchedEarth/Dinos/Manticore/Minions/DinoCharacterStatusComponent_BP_Deathworm_Minion.DinoCharacterStatusComponent_BP_Deathworm_Minion_C"
+    dino_status_mantis: str = "/Game/ScorchedEarth/Dinos/Mantis/DinoCharacterStatusComponent_BP_Mantis.DinoCharacterStatusComponent_BP_Mantis_C"
+    dino_status_moth: str = "/Game/ScorchedEarth/Dinos/Moth/DinoCharacterStatusComponent_BP_Moth.DinoCharacterStatusComponent_BP_Moth_C"
+    dino_status_rock_golem: str = "/Game/ScorchedEarth/Dinos/RockGolem/DinoCharacterStatusComponent_BP_RockGolem.DinoCharacterStatusComponent_BP_RockGolem_C"
+    dino_status_rubble_golem: str = "/Game/ScorchedEarth/Dinos/RockGolem/DinoCharacterStatusComponent_BP_RubbleGolem.DinoCharacterStatusComponent_BP_RubbleGolem_C"
+    dino_status_spiney_lizard: str = "/Game/ScorchedEarth/Dinos/SpineyLizard/DinoCharacterStatusComponent_BP_SpineyLizard.DinoCharacterStatusComponent_BP_SpineyLizard_C"
+    dino_status_vulture: str = "/Game/ScorchedEarth/Dinos/Vulture/DinoCharacterStatusComponent_BP_Vulture.DinoCharacterStatusComponent_BP_Vulture_C"
+    dino_status_mega_wyvern: str = "/Game/ScorchedEarth/Dinos/Wyvern/DinoCharacterStatusComponent_BP_MegaWyvern.DinoCharacterStatusComponent_BP_MegaWyvern_C"
+    dino_status_wyvern: str = "/Game/ScorchedEarth/Dinos/Wyvern/DinoCharacterStatusComponent_BP_Wyvern.DinoCharacterStatusComponent_BP_Wyvern_C"
+    dino_status_brig_ship: str = "/Game/Water/Vessels/Brig/DinoCharacterStatusComponent_BP_BrigShip.DinoCharacterStatusComponent_BP_BrigShip_C"
+    dino_status_brig_ship_player_following_miniboss: str = "/Game/Water/Vessels/Brig/DinoCharacterStatusComponent_BP_BrigShipPlayerFollowing_Miniboss.DinoCharacterStatusComponent_BP_BrigShipPlayerFollowing_Miniboss_C"
+    dino_status_sloop_ship: str = "/Game/Water/Vessels/Sloop/DinoCharacterStatusComponent_BP_SloopShip.DinoCharacterStatusComponent_BP_SloopShip_C"
 
-    all_bps = [acrocanthosaurus, archelon_asa, bison, boaratos, cat, ceratosaurus_asa, concavenator,
-               cryolophosaurus, dark_pegasus, deino_asa, deinotherium_asa, dreadnoughtus, fasola, fire_lion,
-               gigantoraptor, helicoprion, jackalope, val_megaraptor, shastasaurus, shoulder_dragon, s_bear,
-               xiph_asa, yi_ling, basilisk, basilisk_alpha, cave_crab, cave_crab_alpha, chupa_cabra,
-               lantern_bird, lantern_goat, lantern_lizard, lantern_pug, mole_rat, pteroteuthis,
-               xenomorph_chupa, xenomorph_queen, xenomorph_reaper_surface, xenomorph_reaper_surface_alpha,
-               cave_wolf, light_bug, rock_drake, draco_umbra_lumina, drone, end_tank, enforcer, gacha,
-               gas_bag, gigant_corrupt, mega_rex_corrupted, owl, reaper_corrupt, scout, andrewsarchus,
-               desmodus, bog_spider, cherufe, insect_swarm, microbe_swarm, space_whale, giant_turtle,
-               milk_glider, angel_fox, boss_bat, devil_fox, lcp, flyer_ride_snow_dragon, mega_snow_monster,
-               snow_monster, thrall_base, young_ice_fox, zombie_bloated, zombie_hulking, zombie_hulking_mega,
-               zombie_skinny, oasisaur, train, helper_bot, jumping_spider, zeppelin, axolotl_small,
-               paleoctopus, parrot, doggo, car, allo, alpha_m_ega, angler, ankylo, ant, archa, argent, arthro,
-               baryonyx, bat, beaver, beetle, bigfoot, boa_frill, camel, carcha, carno, cnidaria, coel, compy,
-               daeodon, dilo, dimetrodon, dimorph, diplocaulus, diplodocus, direbear, direwolf, dodo,
-               dodo_rex, doed, dolphin, dragonfly, dunkle, eel, equus, flying_ant, galli, gigant, griffin,
-               hesperornis, hyaenodon, ice_jumper, ichthyornis, iguanodon, kairuku, kaprosuchus, kentro,
-               liopleurodon, lystro, mammoth, manta, mega, mega_carno, mega_raptor, mega_rex, megalania,
-               megatherium, microraptor, monkey, moschops, motorboat, otter, oviraptor, pachy, pachyrhino,
-               para, paracer, pela, phiomia, phoenix, piranha, plesiosaur, proc, ptero, queen_bee, quetz,
-               raft, raptor, rex, rhino, saber, salmon, sarco, sauropod, scorpion, sheep, spider, spindles,
-               spino, stag, stego, tape, terror_bird, therizino, thylaco, titanosaur, toad, trike, turtle,
-               tuso, yeti, yutyrannus, zomdod, mega_tuso, achatina, basil, chalico, leedsichthys,
-               megalosaurus, mosasaur, mosasaur_mega, pegomastax, purlovia, purlovia_polar, rhynio, ammonite,
-               leech, leech_diseased, trilobite, troodon, deathworm, deathworm_alpha, dodo_wyvern, jerboa,
-               jug_bug, deathworm_minion, mantis, moth, rock_golem, rubble_golem, spiney_lizard, vulture,
-               mega_wyvern, wyvern, brig_ship, brig_ship_player_following_miniboss, sloop_ship]
+    all_bps = [dino_status_acrocanthosaurus, dino_status_archelon_asa, dino_status_bison,
+               dino_status_boaratos, dino_status_cat, dino_status_ceratosaurus_asa, dino_status_concavenator,
+               dino_status_cryolophosaurus, dino_status_dark_pegasus, dino_status_deino_asa,
+               dino_status_deinotherium_asa, dino_status_dreadnoughtus, dino_status_fasola,
+               dino_status_fire_lion, dino_status_gigantoraptor, dino_status_helicoprion,
+               dino_status_jackalope, dino_status_val_megaraptor, dino_status_shastasaurus,
+               dino_status_shoulder_dragon, dino_status_s_bear, dino_status_xiph_asa, dino_status_yi_ling,
+               dino_status_basilisk, dino_status_basilisk_alpha, dino_status_cave_crab,
+               dino_status_cave_crab_alpha, dino_status_chupa_cabra, dino_status_lantern_bird,
+               dino_status_lantern_goat, dino_status_lantern_lizard, dino_status_lantern_pug,
+               dino_status_mole_rat, dino_status_pteroteuthis, dino_status_xenomorph_chupa,
+               dino_status_xenomorph_queen, dino_status_xenomorph_reaper_surface,
+               dino_status_xenomorph_reaper_surface_alpha, dino_status_cave_wolf, dino_status_light_bug,
+               dino_status_rock_drake, dino_status_draco_umbra_lumina, dino_status_drone,
+               dino_status_end_tank, dino_status_enforcer, dino_status_gacha, dino_status_gas_bag,
+               dino_status_gigant_corrupt, dino_status_mega_rex_corrupted, dino_status_owl,
+               dino_status_reaper_corrupt, dino_status_scout, dino_status_andrewsarchus, dino_status_desmodus,
+               dino_status_bog_spider, dino_status_cherufe, dino_status_insect_swarm,
+               dino_status_microbe_swarm, dino_status_space_whale, dino_status_giant_turtle,
+               dino_status_milk_glider, dino_status_angel_fox, dino_status_boss_bat, dino_status_devil_fox,
+               dino_status_lcp, dino_status_flyer_ride_snow_dragon, dino_status_mega_snow_monster,
+               dino_status_snow_monster, dino_status_thrall_base, dino_status_young_ice_fox,
+               dino_status_zombie_bloated, dino_status_zombie_hulking, dino_status_zombie_hulking_mega,
+               dino_status_zombie_skinny, dino_status_oasisaur, dino_status_train, dino_status_helper_bot,
+               dino_status_jumping_spider, dino_status_zeppelin, dino_status_axolotl_small,
+               dino_status_paleoctopus, dino_status_parrot, dino_status_doggo, dino_status_car,
+               dino_status_allo, dino_status_alpha_m_ega, dino_status_angler, dino_status_ankylo,
+               dino_status_ant, dino_status_archa, dino_status_argent, dino_status_arthro,
+               dino_status_baryonyx, dino_status_bat, dino_status_beaver, dino_status_beetle,
+               dino_status_bigfoot, dino_status_boa_frill, dino_status_camel, dino_status_carcha,
+               dino_status_carno, dino_status_cnidaria, dino_status_coel, dino_status_compy,
+               dino_status_daeodon, dino_status_dilo, dino_status_dimetrodon, dino_status_dimorph,
+               dino_status_diplocaulus, dino_status_diplodocus, dino_status_direbear, dino_status_direwolf,
+               dino_status_dodo, dino_status_dodo_rex, dino_status_doed, dino_status_dolphin,
+               dino_status_dragonfly, dino_status_dunkle, dino_status_eel, dino_status_equus,
+               dino_status_flying_ant, dino_status_galli, dino_status_gigant, dino_status_griffin,
+               dino_status_hesperornis, dino_status_hyaenodon, dino_status_ice_jumper,
+               dino_status_ichthyornis, dino_status_iguanodon, dino_status_kairuku, dino_status_kaprosuchus,
+               dino_status_kentro, dino_status_liopleurodon, dino_status_lystro, dino_status_mammoth,
+               dino_status_manta, dino_status_mega, dino_status_mega_carno, dino_status_mega_raptor,
+               dino_status_mega_rex, dino_status_megalania, dino_status_megatherium, dino_status_microraptor,
+               dino_status_monkey, dino_status_moschops, dino_status_motorboat, dino_status_otter,
+               dino_status_oviraptor, dino_status_pachy, dino_status_pachyrhino, dino_status_para,
+               dino_status_paracer, dino_status_pela, dino_status_phiomia, dino_status_phoenix,
+               dino_status_piranha, dino_status_plesiosaur, dino_status_proc, dino_status_ptero,
+               dino_status_queen_bee, dino_status_quetz, dino_status_raft, dino_status_raptor,
+               dino_status_rex, dino_status_rhino, dino_status_saber, dino_status_salmon, dino_status_sarco,
+               dino_status_sauropod, dino_status_scorpion, dino_status_sheep, dino_status_spider,
+               dino_status_spindles, dino_status_spino, dino_status_stag, dino_status_stego, dino_status_tape,
+               dino_status_terror_bird, dino_status_therizino, dino_status_thylaco, dino_status_titanosaur,
+               dino_status_toad, dino_status_trike, dino_status_turtle, dino_status_tuso, dino_status_yeti,
+               dino_status_yutyrannus, dino_status_zomdod, mega_dino_status_tuso, dino_status_achatina,
+               dino_status_basil, dino_status_chalico, dino_status_leedsichthys, dino_status_megalosaurus,
+               dino_status_mosasaur, dino_status_mosasaur_mega, dino_status_pegomastax, dino_status_purlovia,
+               dino_status_purlovia_polar, dino_status_rhynio, dino_status_ammonite, dino_status_leech,
+               dino_status_leech_diseased, dino_status_trilobite, dino_status_troodon, dino_status_deathworm,
+               dino_status_deathworm_alpha, dino_status_dodo_wyvern, dino_status_jerboa, dino_status_jug_bug,
+               dino_status_deathworm_minion, dino_status_mantis, dino_status_moth, dino_status_rock_golem,
+               dino_status_rubble_golem, dino_status_spiney_lizard, dino_status_vulture,
+               dino_status_mega_wyvern, dino_status_wyvern, dino_status_brig_ship,
+               dino_status_brig_ship_player_following_miniboss, dino_status_sloop_ship]
 
 class InventoryComponents:
     acrocanthosaurus: str = "/Game/ASA/Dinos/Acrocanthosaurus/DinoTamedInventoryComponent_Acrocanthosaurus.DinoTamedInventoryComponent_Acrocanthosaurus_C"
@@ -273,7 +307,7 @@ class InventoryComponents:
     shoulder_dragon_summer: str = "/Game/ASA/Dinos/ShoulderDragon/Variants/Summer/DinoTamedInventoryComponent_ShoulderDragon_Summer.DinoTamedInventoryComponent_ShoulderDragon_Summer_C"
     shoulder_dragon_winter: str = "/Game/ASA/Dinos/ShoulderDragon/Variants/Winter/DinoTamedInventoryComponent_ShoulderDragon_Winter.DinoTamedInventoryComponent_ShoulderDragon_Winter_C"
     spirit_bear: str = "/Game/ASA/Dinos/SpiritBear/Gameplay/DinoTamedInventoryComponent_SpiritBear.DinoTamedInventoryComponent_SpiritBear_C"
-    dino_wild_inventory_component_s_bear: str = "/Game/ASA/Dinos/SpiritBear/Gameplay/DinoWildInventoryComponent_SBear.DinoWildInventoryComponent_SBear_C"
+    dino_wild_inventory_s_bear: str = "/Game/ASA/Dinos/SpiritBear/Gameplay/DinoWildInventoryComponent_SBear.DinoWildInventoryComponent_SBear_C"
     yi_ling: str = "/Game/ASA/Dinos/YiLing/DinoTamedInventoryComponent_YiLing.DinoTamedInventoryComponent_YiLing_C"
     basilisk: str = "/Game/Aberration/CoreBlueprints/Inventories/DinoTamedInventoryComponent_Basilisk.DinoTamedInventoryComponent_Basilisk_C"
     lantern_bird: str = "/Game/Aberration/CoreBlueprints/Inventories/DinoTamedInventoryComponent_LanternBird.DinoTamedInventoryComponent_LanternBird_C"
@@ -312,10 +346,10 @@ class InventoryComponents:
     parrot: str = "/Game/Packs/TidesOfFortune/Dinos/Parrot/DinoTamedInventoryComponent_Parrot.DinoTamedInventoryComponent_Parrot_C"
     dino_companion_doggo: str = "/Game/Packs/Wasteland/Dinos/Doggo/DinoTamedInventoryComponent_DinoCompanion_Doggo.DinoTamedInventoryComponent_DinoCompanion_Doggo_C"
     car: str = "/Game/Packs/Wasteland/Vehicles/Car/DinoTamedInventoryComponent_Car.DinoTamedInventoryComponent_Car_C"
-    dino_drop_inventory_component_carnivore_large_allo: str = "/Game/PrimalEarth/CoreBlueprints/Inventories/DinoDropInventoryComponent_Carnivore_Large_Allo.DinoDropInventoryComponent_Carnivore_Large_Allo_C"
-    dino_drop_inventory_component_carnivore_large_treasure: str = "/Game/PrimalEarth/CoreBlueprints/Inventories/DinoDropInventoryComponent_Carnivore_Large_Treasure.DinoDropInventoryComponent_Carnivore_Large_Treasure_C"
-    dino_drop_inventory_component_carnivore_medium_treasure: str = "/Game/PrimalEarth/CoreBlueprints/Inventories/DinoDropInventoryComponent_Carnivore_Medium_Treasure.DinoDropInventoryComponent_Carnivore_Medium_Treasure_C"
-    dino_drop_inventory_component_carnivore_small_otter: str = "/Game/PrimalEarth/CoreBlueprints/Inventories/DinoDropInventoryComponent_Carnivore_Small_Otter.DinoDropInventoryComponent_Carnivore_Small_Otter_C"
+    dino_drop_inventory_carnivore_large_allo: str = "/Game/PrimalEarth/CoreBlueprints/Inventories/DinoDropInventoryComponent_Carnivore_Large_Allo.DinoDropInventoryComponent_Carnivore_Large_Allo_C"
+    dino_drop_inventory_carnivore_large_treasure: str = "/Game/PrimalEarth/CoreBlueprints/Inventories/DinoDropInventoryComponent_Carnivore_Large_Treasure.DinoDropInventoryComponent_Carnivore_Large_Treasure_C"
+    dino_drop_inventory_carnivore_medium_treasure: str = "/Game/PrimalEarth/CoreBlueprints/Inventories/DinoDropInventoryComponent_Carnivore_Medium_Treasure.DinoDropInventoryComponent_Carnivore_Medium_Treasure_C"
+    dino_drop_inventory_carnivore_small_otter: str = "/Game/PrimalEarth/CoreBlueprints/Inventories/DinoDropInventoryComponent_Carnivore_Small_Otter.DinoDropInventoryComponent_Carnivore_Small_Otter_C"
     angler: str = "/Game/PrimalEarth/CoreBlueprints/Inventories/DinoTamedInventoryComponent_Angler.DinoTamedInventoryComponent_Angler_C"
     ankylo: str = "/Game/PrimalEarth/CoreBlueprints/Inventories/DinoTamedInventoryComponent_Ankylo.DinoTamedInventoryComponent_Ankylo_C"
     archa: str = "/Game/PrimalEarth/CoreBlueprints/Inventories/DinoTamedInventoryComponent_Archa.DinoTamedInventoryComponent_Archa_C"
@@ -403,9 +437,9 @@ class InventoryComponents:
     turtle: str = "/Game/PrimalEarth/CoreBlueprints/Inventories/DinoTamedInventoryComponent_Turtle.DinoTamedInventoryComponent_Turtle_C"
     wyvern: str = "/Game/PrimalEarth/CoreBlueprints/Inventories/DinoTamedInventoryComponent_Wyvern.DinoTamedInventoryComponent_Wyvern_C"
     zom_wyvern: str = "/Game/PrimalEarth/CoreBlueprints/Inventories/DinoTamedInventoryComponent_ZomWyvern.DinoTamedInventoryComponent_ZomWyvern_C"
-    dino_wild_inventory_component_pegomastax: str = "/Game/PrimalEarth/CoreBlueprints/Inventories/DinoWildInventoryComponent_Pegomastax.DinoWildInventoryComponent_Pegomastax_C"
+    dino_wild_inventory_pegomastax: str = "/Game/PrimalEarth/CoreBlueprints/Inventories/DinoWildInventoryComponent_Pegomastax.DinoWildInventoryComponent_Pegomastax_C"
     rhynio: str = "/Game/PrimalEarth/Dinos/Rhyniognatha/DinoTamedInventoryComponent_Rhynio.DinoTamedInventoryComponent_Rhynio_C"
-    dino_inventory_component_motor_raft: str = "/Game/PrimalEarth/Items/Raft/DinoInventoryComponent_MotorRaft.DinoInventoryComponent_MotorRaft_C"
+    dino_inventory_motor_raft: str = "/Game/PrimalEarth/Items/Raft/DinoInventoryComponent_MotorRaft.DinoInventoryComponent_MotorRaft_C"
     camelsaurus: str = "/Game/ScorchedEarth/Dinos/Camelsaurus/DinoTamedInventoryComponent_Camelsaurus.DinoTamedInventoryComponent_Camelsaurus_C"
     mantis: str = "/Game/ScorchedEarth/Dinos/Mantis/DinoTamedInventoryComponent_Mantis.DinoTamedInventoryComponent_Mantis_C"
     moth: str = "/Game/ScorchedEarth/Dinos/Moth/DinoTamedInventoryComponent_Moth.DinoTamedInventoryComponent_Moth_C"
@@ -415,26 +449,25 @@ class InventoryComponents:
     all_bps = [acrocanthosaurus, archelon_asa, bison, boaratos, cat, cryolophosaurus, dark_pegasus, deino_asa,
                dreadnoughtus, fasola, fire_lion, gigantoraptor, helicoprion, val_megaraptor, shasta,
                shoulder_dragon_autumn, shoulder_dragon_spring, shoulder_dragon_summer, shoulder_dragon_winter,
-               spirit_bear, dino_wild_inventory_component_s_bear, yi_ling, basilisk, lantern_bird,
-               lantern_goat, lantern_lizard, lantern_pug, mole_rat, cave_wolf, crab, nameless, rock_drake,
-               draco, enforcer, gacha, gas_bag, owl, spindles, ice_jumper, desmodus, forge_capable_cherufe,
-               milk_glider, boss_bat, devil_fox, lost_charge_pet, snow_dragon, snow_monster, thrall,
+               spirit_bear, dino_wild_inventory_s_bear, yi_ling, basilisk, lantern_bird, lantern_goat,
+               lantern_lizard, lantern_pug, mole_rat, cave_wolf, crab, nameless, rock_drake, draco, enforcer,
+               gacha, gas_bag, owl, spindles, ice_jumper, desmodus, forge_capable_cherufe, milk_glider,
+               boss_bat, devil_fox, lost_charge_pet, snow_dragon, snow_monster, thrall,
                dino_companion_young_ice_fox, oasisaur, train, helper_bot, jumping_spider, zeppelin,
                axolotl_small, paleactopus, parrot, dino_companion_doggo, car,
-               dino_drop_inventory_component_carnivore_large_allo,
-               dino_drop_inventory_component_carnivore_large_treasure,
-               dino_drop_inventory_component_carnivore_medium_treasure,
-               dino_drop_inventory_component_carnivore_small_otter, angler, ankylo, archa, argent, arthro,
-               achatina, dino_tamed_inventory_component_bp_base, basilosaurus, bigfoot, lystro, tuso,
-               baryonyx, beaver, beetle, carcha, carno, carno_hyaenodon, chalico, compy, daeodon, dilo,
-               dimetrodon, dimorph, diplocaulus, direbear, direwolf, dodo, dodo_rex, doed, dolphin, dunkle,
-               equus, galli, gigant, griffin, hesperonis, ice_wyvern, ichthyornis, iguanodon, jerboa, kairuku,
-               kaprosuchus, kentro, liopleur, mammoth, mega, megalosaurus, megatherium, microraptor, monkey,
-               moschops, oviraptor, pachy, pachyrhino, para, paracer, pegomastax, pelagornis, phiomia,
-               phoenix, plesio, proc, ptero, purlovia, quetz, raptor, rex, rhino, saber, sarco, sauro,
-               scorpion, spider_s, spiney_beaver, spino, stag, stego, tapejara, terrorbird, therizino, thyla,
-               titan, toad, trike, turtle, wyvern, zom_wyvern, dino_wild_inventory_component_pegomastax,
-               rhynio, dino_inventory_component_motor_raft, camelsaurus, mantis, moth, rock_golem, vulture]
+               dino_drop_inventory_carnivore_large_allo, dino_drop_inventory_carnivore_large_treasure,
+               dino_drop_inventory_carnivore_medium_treasure, dino_drop_inventory_carnivore_small_otter,
+               angler, ankylo, archa, argent, arthro, achatina, dino_tamed_inventory_component_bp_base,
+               basilosaurus, bigfoot, lystro, tuso, baryonyx, beaver, beetle, carcha, carno, carno_hyaenodon,
+               chalico, compy, daeodon, dilo, dimetrodon, dimorph, diplocaulus, direbear, direwolf, dodo,
+               dodo_rex, doed, dolphin, dunkle, equus, galli, gigant, griffin, hesperonis, ice_wyvern,
+               ichthyornis, iguanodon, jerboa, kairuku, kaprosuchus, kentro, liopleur, mammoth, mega,
+               megalosaurus, megatherium, microraptor, monkey, moschops, oviraptor, pachy, pachyrhino, para,
+               paracer, pegomastax, pelagornis, phiomia, phoenix, plesio, proc, ptero, purlovia, quetz,
+               raptor, rex, rhino, saber, sarco, sauro, scorpion, spider_s, spiney_beaver, spino, stag, stego,
+               tapejara, terrorbird, therizino, thyla, titan, toad, trike, turtle, wyvern, zom_wyvern,
+               dino_wild_inventory_pegomastax, rhynio, dino_inventory_motor_raft, camelsaurus, mantis, moth,
+               rock_golem, vulture]
 
 class AIControllers:
     acro: str = "/Game/ASA/Dinos/Acrocanthosaurus/Acro_AIController_BP.Acro_AIController_BP_C"
@@ -617,7 +650,7 @@ class AIControllers:
                mantis, moth, phoenix, rock_golem, spiney_lizard, vulture, wyvern, wyvern_lightning]
 
 class HarvestComponents:
-    gargoyle_harvest_component: str = "/Game/LostColony/Dinos/Gargoyle/GargoyleHarvestComponent.GargoyleHarvestComponent_C"
+    gargoyle_harvest: str = "/Game/LostColony/Dinos/Gargoyle/GargoyleHarvestComponent.GargoyleHarvestComponent_C"
     huge: str = "/Game/PrimalEarth/CoreBlueprints/HarvestComponents/DinoDeathHarvestingComponent_Huge.DinoDeathHarvestingComponent_Huge_C"
     huge_more_meat: str = "/Game/PrimalEarth/CoreBlueprints/HarvestComponents/DinoDeathHarvestingComponent_Huge_MoreMeat.DinoDeathHarvestingComponent_Huge_MoreMeat_C"
     lamb: str = "/Game/PrimalEarth/CoreBlueprints/HarvestComponents/DinoDeathHarvestingComponent_Lamb.DinoDeathHarvestingComponent_Lamb_C"
@@ -636,7 +669,7 @@ class HarvestComponents:
     huge_wyvern: str = "/Game/ScorchedEarth/CoreBlueprints/HarvestComponents/DinoDeathHarvestingComponent_Huge_Wyvern.DinoDeathHarvestingComponent_Huge_Wyvern_C"
     tiny_lots_hide: str = "/Game/ScorchedEarth/CoreBlueprints/HarvestComponents/DinoDeathHarvestingComponent_Tiny_LotsHide.DinoDeathHarvestingComponent_Tiny_LotsHide_C"
 
-    all_bps = [gargoyle_harvest_component, huge, huge_more_meat, lamb, large, large_less_keratin, medium,
+    all_bps = [gargoyle_harvest, huge, huge_more_meat, lamb, large, large_less_keratin, medium,
                medium_keratin_and_hide, medium_more_hide, small, small_less_keratin, small_pelt, tiny,
                tiny_meat_only, tiny_organo_polymer, tiny_pelt, huge_wyvern, tiny_lots_hide]
 
