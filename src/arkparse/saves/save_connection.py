@@ -494,6 +494,11 @@ class SaveConnection:
             if reader_config.selected_property_names
             else None
         )
+        excluded_prop_ids = []
+        for prop in reader_config.excluded_property_names:
+            id_ = self.save_context.get_name_id(prop)
+            if id_ is not None:
+                excluded_prop_ids.append(id_.to_bytes(4, byteorder="little") + b'\x00\x00\x00\x00')
 
         for prop in reader_config.property_names:
             id_ = self.save_context.get_name_id(prop)
@@ -510,6 +515,13 @@ class SaveConnection:
             # WHERE clause is added, which keeps the old "no property filter" path.
             query += " WHERE " + " OR ".join(["instr(value, ?) > 0"] * len(prop_ids))
             params = tuple(prop_ids)
+
+        if excluded_prop_ids:
+            # The same byte scan in reverse: rows whose blob carries any excluded
+            # property name never reach Python at all.
+            clause = " AND ".join(["instr(value, ?) = 0"] * len(excluded_prop_ids))
+            query += (" AND " if prop_ids else " WHERE ") + clause
+            params = params + tuple(excluded_prop_ids)
 
         ArkSaveLogger.enter_struct("GameObjects")
 
