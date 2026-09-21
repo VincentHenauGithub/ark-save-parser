@@ -36,12 +36,19 @@ def strip_markers(leaf: str, markers) -> str:
     return name
 
 
-def apply(paths, rules, fallback="Misc", attr=None, renames=None):
+def apply(paths, rules, fallback="Misc", attr=None, renames=None, noise=(),
+          keep_markers=False):
     """Return ``[(GroupName, [(attr, path), ...]), ...]`` in rule order.
 
     ``attr`` optionally overrides how an attribute name is derived from a leaf,
     for families whose names do not follow the usual ``<kind>_<what>`` shape.
+    ``noise`` lists tokens stripped from every name in the module, for the
+    boilerplate a whole family carries (``Zombie_Character_BP_Bloated`` reads as
+    ``zombie_bloated``). ``keep_markers`` leaves the group marker in the name,
+    for modules where it is part of what the thing is called rather than a
+    category label -- a zombie dino is still a zombie once it is in ``Zombies``.
     """
+    noise = tuple(noise)
     buckets, order = {}, []
     for name, _ in rules:
         if name not in order:
@@ -53,11 +60,12 @@ def apply(paths, rules, fallback="Misc", attr=None, renames=None):
         leaf = leaf_of(path)
         for name, markers in rules:
             if any(m in leaf for m in markers):
-                derived = attr(leaf) if attr else snake(strip_markers(leaf, markers))
+                strip = noise if keep_markers else tuple(markers) + noise
+                derived = attr(leaf) if attr else snake(strip_markers(leaf, strip))
                 break
         else:
             name = fallback
-            derived = attr(leaf) if attr else snake(strip_noise(leaf))
+            derived = attr(leaf) if attr else snake(strip_markers(leaf, noise))
         buckets.setdefault(name, []).append(((renames or {}).get(leaf, derived), path))
 
     return [(name, buckets[name]) for name in order if name in buckets]

@@ -60,6 +60,19 @@ STRUCTURE_ROLES = [
     ("Ships", ("Ship", "Raft", "Boat")),
 ]
 
+# Every dino asset carries the same boilerplate -- Rex_Character_BP,
+# DinoCharacterStatusComponent_BP_Rex, Rex_AIController_BP -- which says what
+# kind of asset it is, not which creature. The class it lives in already says
+# that, so it is stripped from the attribute name.
+DINO_NOISE = ("Character", "Char", "BP")
+
+COMPONENT_NOISE = DINO_NOISE + (
+    "DinoCharacterStatusComponent", "DinoCharacterStatus", "DinoTamedInventoryComponent",
+    "DinoTamedInventory", "DinoDeathHarvestingComponent", "AIController", "AI",
+    "Controller", "Blueprint", "Component",
+)
+
+
 # Which body slot a cosmetic covers.
 SKIN_SLOTS = [
     ("Hats", ("Hat", "Helmet", "Mask", "Goggles", "Crown", "Antlers")),
@@ -137,6 +150,7 @@ MODULES = [
         header="Per-species components attached to a dino: stats, inventory, AI and harvest tables.",
         categories=["dino_status", "dino_inventory", "dino_ai", "dino_harvesting"],
         split_by_category=True,
+        noise=COMPONENT_NOISE,
         category_classes={
             "dino_status": "StatusComponents",
             "dino_inventory": "InventoryComponents",
@@ -216,6 +230,8 @@ EXTENSIONS = [
         aggregate="Dinos",
         categories=["dinos"],
         fallback="Misc",
+        noise=DINO_NOISE,
+        keep_markers=True,
         existing=["Abberant", "Corrupted", "Alphas", "event"],
         rules=[
             ("Thralls", ("Thrall",)),

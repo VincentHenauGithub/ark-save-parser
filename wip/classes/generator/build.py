@@ -18,7 +18,8 @@ import grouping
 import patch
 from categorize import group_all
 from emit import render_group, render_module
-from naming import snake, strip_noise, leaf_of
+from grouping import strip_markers
+from naming import snake, leaf_of
 from sources import load
 from spec import MODULES, EXTENSIONS, RENAMES
 
@@ -36,15 +37,18 @@ def _groups_for(entry, buckets, skip=()):
         for category in entry["categories"]:
             paths = [p for p in buckets.get(category, []) if p not in skip]
             if paths:
+                noise = entry.get("noise", ())
                 out.append((entry["category_classes"][category],
-                            [(_safe(snake(strip_noise(leaf_of(p)))), p) for p in paths]))
+                            [(_safe(snake(strip_markers(leaf_of(p), noise))), p) for p in paths]))
         return out
 
     paths = [p for category in entry["categories"] for p in buckets.get(category, [])
              if p not in skip]
     groups = grouping.apply(paths, entry.get("rules", []),
                             fallback=entry.get("fallback", "Misc"),
-                            attr=entry.get("attr"), renames=RENAMES)
+                            attr=entry.get("attr"), renames=RENAMES,
+                            noise=entry.get("noise", ()),
+                            keep_markers=entry.get("keep_markers", False))
     return [(name, [(_safe(a), p) for a, p in entries]) for name, entries in groups]
 
 
