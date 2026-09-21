@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Tuple
+from typing import Collection, Dict, List, Optional, Tuple
 from uuid import UUID, uuid4
 from pathlib import Path
 import os
@@ -73,11 +73,17 @@ class DinoApi:
         self.parsed_cryopods: Dict[UUID, Cryopod] = {}
 
     @staticmethod
-    def _create_dino(uuid: UUID, save: AsaSave, is_tamed: bool, is_baby: bool, bypass_inventory: bool = True) -> Dino:
+    def _create_dino(uuid: UUID, save: AsaSave, is_tamed: bool, is_baby: bool, bypass_inventory: bool = True,
+                     selected_property_names: Optional[Collection[str]] = None) -> Dino:
         if is_tamed:
-            return TamedBaby(uuid, save=save) if is_baby else TamedDino(uuid, save=save, bypass_inventory=bypass_inventory)
+            if is_baby:
+                return TamedBaby(uuid, save=save, selected_property_names=selected_property_names)
+            return TamedDino(uuid, save=save, bypass_inventory=bypass_inventory,
+                             selected_property_names=selected_property_names)
         else:
-            return Baby(uuid, save=save) if is_baby else Dino(uuid, save=save)
+            if is_baby:
+                return Baby(uuid, save=save, selected_property_names=selected_property_names)
+            return Dino(uuid, save=save, selected_property_names=selected_property_names)
 
     @staticmethod
     def is_applicable_bp(blueprint: str) -> bool:
@@ -142,6 +148,14 @@ class DinoApi:
         if self.all_objects and len(objects) != len(self.all_objects):
             ArkSaveLogger.api_log(f"Found {len(objects)} dinos, parsing them... (and retrieving inventories)")
 
+        # A caller-supplied selection propagates to the per-dino (and per-status-
+        # component) reads below, so only the properties asked for get decoded.
+        selected_property_names = (
+            frozenset(config.selected_property_names)
+            if config is not None and config.selected_property_names
+            else None
+        )
+
         # Classify objects into categories for parallel processing
         dino_objects_to_parse: List[Tuple[UUID, ArkGameObject, bool, bool]] = []  # (uuid, obj, is_tamed, is_baby)
         cryopod_objects_to_parse: List[Tuple[UUID, ArkGameObject]] = []  # (uuid, obj)
@@ -168,7 +182,8 @@ class DinoApi:
         
         # Parse dinos - parallel when GIL is disabled
         if dino_objects_to_parse:
-            self._parse_dinos_batch(dino_objects_to_parse, dinos, max_workers, bypass_inventory)
+            self._parse_dinos_batch(dino_objects_to_parse, dinos, max_workers, bypass_inventory,
+                                    selected_property_names)
         
         # Parse cryopods - parallel when GIL is disabled
         if cryopod_objects_to_parse:
@@ -194,7 +209,8 @@ class DinoApi:
                 dinos[key] = cryopod.dino
                 self.parsed_dinos[cryopod.dino.uuid] = cryopod.dino
 
-    def _parse_dinos_batch(self, dino_objects_to_parse: List[Tuple[UUID, ArkGameObject, bool, bool]], dinos: Dict[UUID, Dino], max_workers: int, bypass_inventory: bool = True):
+    def _parse_dinos_batch(self, dino_objects_to_parse: List[Tuple[UUID, ArkGameObject, bool, bool]], dinos: Dict[UUID, Dino], max_workers: int, bypass_inventory: bool = True,
+                           selected_property_names: Optional[Collection[str]] = None):
         if _PARALLEL_ENABLED and max_workers > 1:
             ArkSaveLogger.api_log(f"Parsing {len(dino_objects_to_parse)} dinos with {max_workers} workers...")
             save = self.save
@@ -207,7 +223,8 @@ class DinoApi:
                     _worker_initialized.done = True
                 key, obj, is_tamed, is_baby = item
                 try:
-                    return (key, DinoApi._create_dino(obj.uuid, save, is_tamed, is_baby, bypass_inventory))
+                    return (key, DinoApi._create_dino(obj.uuid, save, is_tamed, is_baby, bypass_inventory,
+                                                      selected_property_names))
                 except Exception as e:
                     error_count[0] += 1
                     if error_count[0] <= 3:
@@ -224,7 +241,8 @@ class DinoApi:
         else:
             for key, obj, is_tamed, is_baby in dino_objects_to_parse:
                 try:
-                    dino = DinoApi._create_dino(obj.uuid, self.save, is_tamed, is_baby, bypass_inventory)
+                    dino = DinoApi._create_dino(obj.uuid, self.save, is_tamed, is_baby, bypass_inventory,
+                                                selected_property_names)
                     dinos[key] = dino
                     self.parsed_dinos[dino.uuid] = dino
                 except Exception as e:
@@ -294,8 +312,9 @@ class DinoApi:
     def get_all_wild(self) -> Dict[UUID, Dino]:
         return self.get_all(include_cryos=False, include_tamed=False)
 
-    def get_all_wild_tamables(self) -> Dict[UUID, Dino]:
-        return {key: dino for key, dino in self.get_all_wild().items() if dino.get_short_name() + "_C" not in Dinos.non_tameable.all_bps}
+    def get_all_wild_tamables(self, config: GameObjectReaderConfiguration = None) -> Dict[UUID, Dino]:
+        dinos = self.get_all(config=config, include_cryos=False, include_tamed=False, include_wild=True)
+        return {key: dino for key, dino in dinos.items() if dino.get_short_name() + "_C" not in Dinos.non_tameable.all_bps}
 
     def get_all_tamed(self, include_cryopodded=True, only_cryopodded=False) -> Dict[UUID, TamedDino]:
         config = self._get_tamed_reader_config(

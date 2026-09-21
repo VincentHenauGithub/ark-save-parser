@@ -1,5 +1,5 @@
 import uuid
-from typing import List, Dict, Optional, Tuple, TYPE_CHECKING
+from typing import Collection, List, Dict, Optional, Tuple, TYPE_CHECKING
 from pathlib import Path
 from uuid import UUID
 
@@ -131,7 +131,7 @@ class PlayerApi:
         OBJECT = 0
         DINO = 1
 
-    def __init__(self, save: AsaSave, ignore_error: bool = False, no_pawns: bool = False, bypass_inventory: bool = False, pawn_objects: Optional[list[ArkGameObject]] = None, force_legacy_store: bool = False, cluster_data_dir: Optional[Path] = None):
+    def __init__(self, save: AsaSave, ignore_error: bool = False, no_pawns: bool = False, bypass_inventory: bool = False, pawn_objects: Optional[list[ArkGameObject]] = None, force_legacy_store: bool = False, cluster_data_dir: Optional[Path] = None, pawn_selected_property_names: Optional[Collection[str]] = None):
         self.players: List[ArkPlayer] = []
         self.tribes: List[ArkTribe] = []
         self.tribe_to_player_map: Dict[int, List[ArkPlayer]] = {}
@@ -155,7 +155,7 @@ class PlayerApi:
 
         if self.save is not None and not no_pawns:
             ArkSaveLogger.api_log(f"Retrieving player pawns")
-            self.__init_pawns()
+            self.__init_pawns(pawn_selected_property_names)
         elif pawn_objects is not None:
             self.pawns = {}
             for pawn in pawn_objects:
@@ -203,11 +203,12 @@ class PlayerApi:
         self.save = None
         ArkSaveLogger.api_log("PlayerApi stopped")
 
-    def __init_pawns(self):
+    def __init_pawns(self, selected_property_names: Optional[Collection[str]] = None):
         if self.save is not None:
             pawn_bps = [Player.pawn_female, Player.pawn_male]
             config = GameObjectReaderConfiguration(
                 blueprint_name_filter=lambda name: name is not None and name in pawn_bps,
+                selected_property_names=list(selected_property_names) if selected_property_names else [],
             )
             self.pawns = self.save.get_game_objects(config)
     
