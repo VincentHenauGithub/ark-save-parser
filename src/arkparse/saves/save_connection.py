@@ -11,7 +11,6 @@ from arkparse.logging import ArkSaveLogger
 from arkparse.logging.ark_save_logger import mark_as_worker_thread
 from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.parsing import ArkBinaryParser, GameObjectReaderConfiguration
-from arkparse.parsing._fast_shim import contains_any_pattern
 from arkparse.saves.header_location import HeaderLocation
 from arkparse.saves.save_context import SaveContext
 from arkparse.utils import TEMP_FILES_DIR
@@ -466,8 +465,8 @@ class SaveConnection:
 
     def get_game_objects(self, reader_config: GameObjectReaderConfiguration = GameObjectReaderConfiguration()) -> Dict[uuid.UUID, 'ArkGameObject']:
         query = "SELECT key, value FROM game"
+        params: Tuple[bytes, ...] = ()
         game_objects = {}
-        objects = []
         prop_ids = []
 
         for prop in reader_config.property_names:
@@ -475,17 +474,27 @@ class SaveConnection:
             if id_ is not None:
                 prop_ids.append(id_.to_bytes(4, byteorder="little") + b'\x00\x00\x00\x00')
 
+        if prop_ids:
+            # Let SQLite do the byte scan for the requested property names. This is
+            # the same test `contains_any_pattern` would do in Python, but it runs
+            # in C over the blobs SQLite already has, so rows that can't match are
+            # never handed to Python at all — no UUID, no class name, no blob copy.
+            # A property name absent from the save's name table yields no pattern
+            # (nothing could carry it); if *none* resolve, prop_ids is empty and no
+            # WHERE clause is added, which keeps the old "no property filter" path.
+            query += " WHERE " + " OR ".join(["instr(value, ?) > 0"] * len(prop_ids))
+            params = tuple(prop_ids)
+
         ArkSaveLogger.enter_struct("GameObjects")
 
         # Collect items from SQLite (single-threaded due to SQLite constraints)
         items_to_parse: List[Tuple[UUID, str, bytes]] = []
         
-        with self.connection as conn:   
-            cursor = conn.execute(query)
+        with self.connection as conn:
+            cursor = conn.execute(query, params)
             for row in cursor:
                 obj_uuid = self.byte_array_to_uuid(row[0])
                 binary_data = row[1]
-                self.save_context.all_uuids.append(obj_uuid)
                 
                 if reader_config.uuid_filter and not reader_config.uuid_filter(obj_uuid):
                     continue
@@ -503,10 +512,10 @@ class SaveConnection:
                     self.faulty_objects += 1
                     continue
 
-                if class_name not in objects:
-                    objects.append(class_name)
-                
                 if obj_uuid in self.parsed_objects:
+                    # The byte scan above only proves the name id appears somewhere
+                    # in the blob; for an already-parsed object the property list is
+                    # the authoritative check.
                     found = len(prop_ids) == 0
                     for prop in reader_config.property_names:
                         if self.parsed_objects[obj_uuid].has_property(prop):
@@ -515,10 +524,8 @@ class SaveConnection:
                     if found:
                         game_objects[obj_uuid] = self.parsed_objects[obj_uuid]
                     continue
-                
-                found = len(prop_ids) == 0 or contains_any_pattern(binary_data, prop_ids)
-                if found:
-                    items_to_parse.append((obj_uuid, class_name, binary_data))
+
+                items_to_parse.append((obj_uuid, class_name, binary_data))
 
         ArkSaveLogger.exit_struct()
 
