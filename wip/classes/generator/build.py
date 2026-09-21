@@ -14,6 +14,7 @@ run changes nothing.
 
 from pathlib import Path
 
+import fixups
 import grouping
 import patch
 from categorize import group_all
@@ -91,6 +92,7 @@ def _extend_module(entry, buckets):
 
 def build():
     buckets = group_all(load("all_classes"))
+    fixups.prepare()
     report = []
     for entry in MODULES:
         count, fresh = _write_module(entry, buckets)
@@ -99,6 +101,7 @@ def build():
         count, fresh = _extend_module(entry, buckets)
         report.append((entry["module"] + ".py", count, fresh))
 
+    fixups.apply()
     for name, count, fresh in report:
         note = "  new classes: " + ", ".join(fresh) if fresh else ""
         print(f"{name:26s} {count:5d} blueprints{note}")

@@ -28,6 +28,12 @@ RENAMES = {
 }
 
 
+# Structure assets are spelled SM_ (static mesh), BP_ (blueprint) or
+# Structure_ depending on the era they were made in; none of that says what the
+# structure is.
+STRUCTURE_NOISE = ("SM", "BP", "Structure")
+
+
 # Building materials, shared by placed structures and the items that place them.
 # Order matters: the first material found in a name wins.
 MATERIALS = [
@@ -46,7 +52,11 @@ STRUCTURE_ROLES = [
     ("TributeTerminals", ("TributeTerminal", "Terminal")),
     ("Water", ("WaterPipe", "WaterTank", "Irrigation", "Aqueduct")),
     ("Crafting", ("Forge", "Bench", "Fabricator", "CookingPot", "Grill", "Campfire",
-                  "Mortar", "Compost", "Cauldron", "Smithy", "Loom", "Refinery")),
+                  "Mortar", "Compost", "Cauldron", "Smithy", "Loom", "Refinery",
+                  "Incubator", "Infuser", "Grinder", "PreservingBin", "Windmill")),
+    ("Traps", ("BearTrap", "AlarmTrap", "PoisonTrap", "Snare", "Leash", "Pitfall")),
+    ("Halloween", ("Gravestone", "Tombstone", "Pumpkin", "Coffin", "Skull", "Cobweb")),
+    ("Christmas", ("Xmas", "Christmas", "Wreath", "Snowman", "Gingerbread")),
     ("Missions", ("Mission", "Outpost", "Defend")),
     ("Taxidermy", ("Taxidermy",)),
     ("Flags", ("Flag",)),
@@ -58,6 +68,9 @@ STRUCTURE_ROLES = [
                    "Shelf", "Stool", "Sofa", "Cabinet", "Hammock")),
     ("Plants", ("PlantSpecies", "CropPlot", "Plant", "Crop")),
     ("Ships", ("Ship", "Raft", "Boat")),
+    ("Displays", ("TrophyBase", "TrophyWall", "FishMount", "DisplayCase", "SharkJaws",
+                  "PaintingCanvas", "Mirror")),
+    ("Elevators", ("Elevator",)),
 ]
 
 # Every dino asset carries the same boilerplate -- Rex_Character_BP,
@@ -75,7 +88,7 @@ COMPONENT_NOISE = DINO_NOISE + (
 
 # Which body slot a cosmetic covers.
 SKIN_SLOTS = [
-    ("Hats", ("Hat", "Helmet", "Mask", "Goggles", "Crown", "Antlers")),
+    ("Hats", ("Hat", "Helmet", "Mask", "Goggles", "Crown", "Antlers", "Tiara", "Visor")),
     ("Shirts", ("Shirt", "Chest", "Jacket")),
     ("Pants", ("Pants", "Bottoms", "Leggings")),
     ("Boots", ("Boots", "Shoes")),
@@ -111,11 +124,14 @@ MODULES = [
         rules=[
             ("Chibis", ("ChibiDino",)),
             ("DinoSkinPacks", ("AAA",)),
-            ("WinterWonderland", ("WW_", "Christmas", "Gingerbread")),
-            ("FearEvolved", ("FE_", "Halloween", "Witch", "Werewolf", "Zombie")),
-            ("TurkeyTrial", ("TT_",)),
-            ("Valentines", ("Vday", "Valentine")),
-            ("SummerBash", ("Summer", "Hawaiian", "Bounce", "Swim")),
+            ("WinterWonderland", ("WW_", "Winter", "Xmas", "Christmas", "Gingerbread",
+                                  "Sweater", "CandyCane", "Santa", "Cocoa", "Festive",
+                                  "Krampus", "Reindeer", "Lolipop", "Cookie", "Stocking")),
+            ("FearEvolved", ("FE_", "Halloween", "Witch", "Werewolf", "Zombie",
+                             "Scary", "Vampire", "Strawman", "Skeleton")),
+            ("TurkeyTrial", ("TT_", "Turkey", "Cornucopia")),
+            ("Valentines", ("Vday", "Valentine", "Love", "Lovely", "Heart", "Rose")),
+            ("SummerBash", ("Summer", "Hawaiian", "Bounce")),
             ("Easter", ("Easter", "Eggcellent", "Bunny")),
             ("Thralls", ("Thrall",)),
             ("Characters", ("CharacterSkin",)),
@@ -123,7 +139,10 @@ MODULES = [
             ("GhostCostumes", ("Ghost",)),
             ("CorruptedCostumes", ("Corrupted", "Corrupt")),
             ("Tilesets", ("Tileset",)),
-        ] + SKIN_SLOTS,
+        ] + SKIN_SLOTS + [
+            # After the slot rules, so the garden rake stays a weapon skin.
+            ("Garden", ("Garden", "Flower", "Vase")),
+        ],
     ),
     dict(
         module="trophies",
@@ -142,6 +161,7 @@ MODULES = [
         header="Inventory items that place a structure, grouped by material and then by purpose.",
         categories=["structure_items"],
         fallback="Misc",
+        noise=STRUCTURE_NOISE,
         rules=MATERIALS + STRUCTURE_ROLES,
     ),
     dict(
@@ -165,12 +185,18 @@ MODULES = [
         categories=["misc_items", "inventories", "buffs", "misc"],
         fallback="Misc",
         rules=[
-            ("ItemTraits", ("ItemTrait",)),
+            ("ArmorTraits", ("ItemTrait_Armor",)),
+            ("GunTraits", ("ItemTrait_Gun",)),
+            ("MeleeTraits", ("ItemTrait_Melee",)),
+            ("ProjectileTraits", ("ItemTrait_Projectile",)),
             ("BossTributes", ("BossTribute",)),
             ("VehicleParts", ("Car_", "Ship", "Raft")),
             ("Recipes", ("RecipeNote", "CustomFoodRecipe", "CustomDrinkRecipe")),
             ("RepairKits", ("RepairKit",)),
             ("TreasureMaps", ("TreasureMap",)),
+            ("Spawners", ("Spawner",)),
+            ("DungeonEntrances", ("DungeonEntrance",)),
+            ("Taxidermy", ("Taxidermy",)),
             ("Inventories", ("PrimalInventory",)),
             ("Buffs", ("Buff",)),
         ],
@@ -215,8 +241,12 @@ EXTENSIONS = [
         aggregate="Consumables",
         categories=["consumables"],
         fallback="Misc",
+        # Every one of the 190 eggs says "Egg"; the class it lands in says it too.
+        noise=("Egg",),
         existing=["Seeds", "Misc"],
         rules=[
+            ("UnderwaterEggs", ("UnderwaterEgg",)),
+            ("FertilizedEggs", ("Fertilized",)),
             ("Eggs", ("Egg",)),
             ("Emotes", ("UnlockEmote",)),
             ("Seeds", ("Seed",)),
@@ -249,6 +279,7 @@ EXTENSIONS = [
         aggregate="PlacedStructures",
         categories=["structures"],
         fallback="Misc",
+        noise=STRUCTURE_NOISE,
         existing=["Stone", "Metal", "Thatch", "Adobe", "Tek", "Wood", "Crafting",
                   "Utility", "TributeTerminals", "Water", "Turrets", "Aberration"],
         rules=MATERIALS + STRUCTURE_ROLES,
@@ -257,8 +288,8 @@ EXTENSIONS = [
         module="equipment",
         aggregate="Equipment",
         categories=["armor", "saddles", "weapons", "ammo"],
-        fallback="Misc",
-        existing=["Saddles", "Ammo", "Shields", "Utilities", "Misc"],
+        fallback="Tools",
+        existing=["Saddles", "Ammo", "Shields", "Utilities", "Tools"],
         rules=[
             ("Attachments", ("WeaponAttachment",)),
             ("Saddles", ("Saddle", "Platform", "ForSBear", "MekBackpack", "MekTransformer")),

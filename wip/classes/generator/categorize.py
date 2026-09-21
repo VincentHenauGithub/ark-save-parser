@@ -47,8 +47,8 @@ RULES = [
     ("saddles", lambda leaf, path: leaf.startswith("PrimalItemArmor")
      and ("Saddle" in leaf or "/Saddle" in path)),
     ("armor", lambda leaf, path: leaf.startswith("PrimalItemArmor")),
-    ("weapons", lambda leaf, path: leaf.startswith("PrimalItemWeapon")
-     or leaf.startswith("Weap")),
+    ("weapons", lambda leaf, path: leaf.startswith(("PrimalItemWeapon", "PrimalItem_Weapon",
+                                                     "Weap"))),
     ("misc_items", lambda leaf, path: leaf.startswith("PrimalItem") or "_Item_" in leaf),
 
     # --- rideable things that are neither dino nor structure ---------------

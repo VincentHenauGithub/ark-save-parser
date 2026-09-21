@@ -49,15 +49,15 @@ class Abberant:
     sabertooth_salmon = "/Game/PrimalEarth/Dinos/Salmon/Salmon_Character_Aberrant.Salmon_Character_Aberrant_C"
     meganeura = "/Game/PrimalEarth/Dinos/Dragonfly/Dragonfly_Character_BP_Aberrant.Dragonfly_Character_BP_Aberrant_C"
     
-    concavenator_aberrant = "/Game/ASA/Dinos/Concavenator/Concavenator_Character_BP_Aberrant.Concavenator_Character_BP_Aberrant_C"
-
-    all_bps = [carbonemys, pteranodon, castoroides, nameless, carnotaurus, arthropluera, diplocaulus, dodo,
-               ankylosaurus, dimetrodon, cnidaria, lystrosaurus, purlovia, piranha, coelacanth, beelzebufo,
-               megalosaurus, stegosaurus, dung_beetle, iguanodon, achatina, oviraptor, featherlight,
-               gigantopithecus, doedicurus, triceratops, titanboa, raptor, baryonyx, direbear, scorpion,
-               anglerfish, spino, equus, manta, araneo, electrophorus, moschops, diplodocus, megalania, ovis,
-               paraceratherium, sarco, dimorphodon, fasolasuchus, gigantoraptor, trilobite, sabertooth_salmon,
-               meganeura, concavenator_aberrant]
+    all_bps = [carbonemys, pteranodon, castoroides, nameless, carnotaurus, 
+           arthropluera, diplocaulus, dodo, ankylosaurus, dimetrodon, 
+           cnidaria, lystrosaurus, purlovia, piranha, coelacanth, beelzebufo, 
+           megalosaurus, stegosaurus, dung_beetle, iguanodon, achatina, 
+           oviraptor, featherlight, gigantopithecus, doedicurus, triceratops, 
+           titanboa, raptor, baryonyx, direbear, scorpion, anglerfish, spino, 
+           equus, manta, araneo, electrophorus, moschops, diplodocus, megalania, 
+           ovis, paraceratherium, sarco, dimorphodon, fasolasuchus, gigantoraptor, 
+           trilobite, sabertooth_salmon, meganeura]
 
 class PaleoAlphas:
     alpha_rex = "/PA_EVO_Pack_01/Dinos/EVO_Rex/Alpha/EVO_Alpha_Rex_Character_BP.EVO_Alpha_Rex_Character_BP_C"
@@ -84,16 +84,12 @@ class Alphas:
 
     paleo = PaleoAlphas()
 
-    alpha_chupa_cabra = "/Game/Aberration/Dinos/ChupaCabra/ALPHA_ChupaCabra_Character_BP.ALPHA_ChupaCabra_Character_BP_C"
-    ocean_megalodon = "/Game/Genesis/Dinos/BiomeVariants/Ocean_Megalodon/Ocean_Megalodon_Character_BP.Ocean_Megalodon_Character_BP_C"
-    astral_megalodon = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/Astral_Creatures/Megalodon/AstralMegalodon_Character_BP.AstralMegalodon_Character_BP_C"
-    mega_palaeoctopus = "/Game/Packs/TidesOfFortune/Dinos/Paleoctopus/MegaPalaeoctopus_Character_BP.MegaPalaeoctopus_Character_BP_C"
-    megalosaurus_tek_cave = "/Game/PrimalEarth/Dinos/Megalosaurus/Megalosaurus_Character_BP_TekCave.Megalosaurus_Character_BP_TekCave_C"
-
-    all_bps = [alpha_reaper_king, alpha_karkinos, alpha_basilisk, alpha_carnotaurus, alpha_megalodon,
-               alpha_mosasaurus, alpha_raptor, alpha_deathworm, alpha_rex, alpha_tuso, alpha_leedsichthys,
-               alpha_fire_wyvern, alpha_revenant, alpha_ossidon, alpha_chupa_cabra, ocean_megalodon,
-               astral_megalodon, mega_palaeoctopus, megalosaurus_tek_cave]
+    all_bps = [
+        alpha_reaper_king, alpha_karkinos, alpha_basilisk,
+        alpha_carnotaurus, alpha_megalodon, alpha_mosasaurus, alpha_raptor, 
+        alpha_deathworm, alpha_rex, alpha_tuso, alpha_leedsichthys, alpha_fire_wyvern,
+        alpha_revenant
+    ] + paleo.all_bps
 
 class Flyers:
     class Wyverns:
@@ -194,49 +190,15 @@ class Corrupted:
     trike = "/Game/Extinction/Dinos/Corrupt/Trike/Trike_Character_BP_Corrupt.Trike_Character_BP_Corrupt_C"
     wyvern = "/Game/Extinction/Dinos/Corrupt/Wyvern/Wyvern_Character_BP_Fire_Corrupt.Wyvern_Character_BP_Fire_Corrupt_C"
 
-    zombie_bloated = "/Game/LostColony/Dinos/Zombie/Zombie_Character_BP_Bloated.Zombie_Character_BP_Bloated_C"
-    zombie_hulking = "/Game/LostColony/Dinos/Zombie/Zombie_Character_BP_Hulking.Zombie_Character_BP_Hulking_C"
-    zombie_skinny = "/Game/LostColony/Dinos/Zombie/Zombie_Character_BP_Skinny.Zombie_Character_BP_Skinny_C"
-    carno_child_corrupt_zombie = "/Game/LostColony/Dinos/ZombieDino/Carno/Carno_Character_BP_Child_Corrupt_Zombie.Carno_Character_BP_Child_Corrupt_Zombie_C"
-    devil_fox_corrupt_zombie = "/Game/LostColony/Dinos/ZombieDino/DevilFox/DevilFox_Character_BP_Corrupt_Zombie.DevilFox_Character_BP_Corrupt_Zombie_C"
-    dilo_corrupt_zombie = "/Game/LostColony/Dinos/ZombieDino/Dilo/Dilo_Character_BP_Corrupt_Zombie.Dilo_Character_BP_Corrupt_Zombie_C"
-    dimorph_corrupted_zombie = "/Game/LostColony/Dinos/ZombieDino/Dimorphodon/Dimorph_Character_BP_Corrupted_Zombie.Dimorph_Character_BP_Corrupted_Zombie_C"
-    direwolf_corrupted_zombie = "/Game/LostColony/Dinos/ZombieDino/DireWolf/Direwolf_Character_BP_Corrupted_Zombie.Direwolf_Character_BP_Corrupted_Zombie_C"
-    young_ice_fox_corrupted_zombie = "/Game/LostColony/Dinos/ZombieDino/IceFox/YoungIceFox_Character_BP_Corrupted_Zombie.YoungIceFox_Character_BP_Corrupted_Zombie_C"
-    iguanodon_corrupted_zombie = "/Game/LostColony/Dinos/ZombieDino/Iguanodon/Iguanodon_Character_BP_Corrupted_Zombie.Iguanodon_Character_BP_Corrupted_Zombie_C"
-    mammoth_corrupted_zombie = "/Game/LostColony/Dinos/ZombieDino/Mammoth/Mammoth_Character_BP_Corrupted_Zombie.Mammoth_Character_BP_Corrupted_Zombie_C"
-    para_corrupted_zombie = "/Game/LostColony/Dinos/ZombieDino/Para/Para_Character_BP_Corrupted_Zombie.Para_Character_BP_Corrupted_Zombie_C"
-    ptero_corrupted_zombie = "/Game/LostColony/Dinos/ZombieDino/Ptero/Ptero_Character_BP_Corrupted_Zombie.Ptero_Character_BP_Corrupted_Zombie_C"
-    raptor_corrupted_zombie = "/Game/LostColony/Dinos/ZombieDino/Raptor/Raptor_Character_BP_Corrupted_Zombie.Raptor_Character_BP_Corrupted_Zombie_C"
-    rex_corrupt_zombie = "/Game/LostColony/Dinos/ZombieDino/Rex/Rex_Character_BP_Corrupt_Zombie.Rex_Character_BP_Corrupt_Zombie_C"
-    saber_corrupted_zombie = "/Game/LostColony/Dinos/ZombieDino/Saber/Saber_Character_BP_Corrupted_Zombie.Saber_Character_BP_Corrupted_Zombie_C"
-    sauropod_corrupt_zombie = "/Game/LostColony/Dinos/ZombieDino/Sauropod/Sauropod_Character_BP_Corrupt_Zombie.Sauropod_Character_BP_Corrupt_Zombie_C"
-    snow_monster_corrupt_zombie = "/Game/LostColony/Dinos/ZombieDino/SnowMonster/SnowMonster_Character_BP_Corrupt_Zombie.SnowMonster_Character_BP_Corrupt_Zombie_C"
-    spino_corrupted_zombie = "/Game/LostColony/Dinos/ZombieDino/Spino/Spino_Character_BP_Corrupted_Zombie.Spino_Character_BP_Corrupted_Zombie_C"
-    stego_corrupted_zombie = "/Game/LostColony/Dinos/ZombieDino/Stego/Stego_Character_BP_Corrupted_Zombie.Stego_Character_BP_Corrupted_Zombie_C"
-    therizino_corrupted_zombie = "/Game/LostColony/Dinos/ZombieDino/Therizinosaurus/Therizino_Character_BP_Corrupted_Zombie.Therizino_Character_BP_Corrupted_Zombie_C"
-    troodon_corrupted_zombie = "/Game/LostColony/Dinos/ZombieDino/Troodon/Troodon_Character_BP_Corrupted_Zombie.Troodon_Character_BP_Corrupted_Zombie_C"
-    yutyrannus_corrupted_zombie = "/Game/LostColony/Dinos/ZombieDino/Yutyrannus/Yutyrannus_Character_BP_Corrupted_Zombie.Yutyrannus_Character_BP_Corrupted_Zombie_C"
-    zombie_dodo = "/Game/PrimalEarth/Dinos/Dodo/ZombieDodo_Character_BP.ZombieDodo_Character_BP_C"
-
-    all_bps = [arthropluera, carno, chalicotherium, dilo, giganotosaurus, reaper_king, paraceratherium, ptero,
-               raptor, alpha_rex, rex, rock_drake, spino, stego, trike, wyvern, zombie_bloated,
-               zombie_hulking, zombie_skinny, carno_child_corrupt_zombie, devil_fox_corrupt_zombie,
-               dilo_corrupt_zombie, dimorph_corrupted_zombie, direwolf_corrupted_zombie,
-               young_ice_fox_corrupted_zombie, iguanodon_corrupted_zombie, mammoth_corrupted_zombie,
-               para_corrupted_zombie, ptero_corrupted_zombie, raptor_corrupted_zombie, rex_corrupt_zombie,
-               saber_corrupted_zombie, sauropod_corrupt_zombie, snow_monster_corrupt_zombie,
-               spino_corrupted_zombie, stego_corrupted_zombie, therizino_corrupted_zombie,
-               troodon_corrupted_zombie, yutyrannus_corrupted_zombie, zombie_dodo]
+    all_bps = [ arthropluera, carno, chalicotherium, dilo, giganotosaurus,
+                reaper_king, paraceratherium, ptero, raptor, alpha_rex,
+                rex, rock_drake, spino, stego, trike, wyvern ]
                 
 class event:
     dodo_rex = "/Game/PrimalEarth/Dinos/DodoRex/DodoRex_Character_BP.DodoRex_Character_BP_C"
     dodo_wyvern = "/Game/ScorchedEarth/Dinos/DodoWyvern/DodoWyvern_Character_BP.DodoWyvern_Character_BP_C"
     
-    dodo_bunny = "/Game/PrimalEarth/Dinos/Dodo/Dodo_Character_BP_Bunny.Dodo_Character_BP_Bunny_C"
-    bunny_oviraptor = "/Game/PrimalEarth/Dinos/Oviraptor/BunnyOviraptor_Character_BP.BunnyOviraptor_Character_BP_C"
-
-    all_bps = [dodo_rex, dodo_wyvern, dodo_bunny, bunny_oviraptor]
+    all_bps = [dodo_rex, dodo_wyvern]
 
 class NonTameable:
     lamprey = "/Game/Aberration/Dinos/Lamprey/Lamprey_Character.Lamprey_Character_C"
@@ -298,156 +260,14 @@ class Paleo:
     giga2 = "/PA_EVO_Pack_01/Dinos/EVO_Giga/Paleo/EVO_Paleo_Giga_Character_BP.EVO_Paleo_Giga_Character_BP_C"
     rex = "/PA_EVO_Pack_01/Dinos/EVO_Rex/EVO_Rex_Character_BP.EVO_Rex_Character_BP_C"
     legacy_rex = "/PA_EVO_Pack_01/Dinos/EVO_Rex/Legacy/EVO_Legacy_Rex_Character_BP.EVO_Legacy_Rex_Character_BP_C"
-    paleo_rex = "/PA_EVO_Pack_01/Dinos/EVO_Rex/Paleo/EVO_Paleo_Rex_Character_BP.EVO_Paleo_Rex_Character_BP_C"
+    rex = "/PA_EVO_Pack_01/Dinos/EVO_Rex/Paleo/EVO_Paleo_Rex_Character_BP.EVO_Paleo_Rex_Character_BP_C"
     mosa = "/PA_EVO_Pack_02/Dinos/EVO_Mosa/Paleo/EVO_Paleo_Mosa_Character_BP.EVO_Paleo_Mosa_Character_BP_C"
     mosa2 = "/PA_EVO_Pack_02/Dinos/EVO_Mosa/EVO_Mosa_Character_BP.EVO_Mosa_Character_BP_C"
     deinotherium = "/PA_Ascension/Dinos/PaleoDeinotherium/Paleo_DeinotheriumASA_Character_BP.Paleo_DeinotheriumASA_Character_BP_C"
 
     all_bps = [yuti, fasola, gigantoraptor, kentro, megalosaur, moschops,
                purlovia, raptor, sarco, spino, stego, thyla, trike,
-               giga, rex, legacy_rex, paleo_rex, mosa, mosa2, deinotherium]
-
-class Thralls:
-    carno_thrall: str = "/Game/LostColony/Dinos/Thrall/Characters/RideableCreatures/Carno_Character_BP_Thrall.Carno_Character_BP_Thrall_C"
-    ceratosaurus_thrall: str = "/Game/LostColony/Dinos/Thrall/Characters/RideableCreatures/Ceratosaurus_Character_BP_Thrall.Ceratosaurus_Character_BP_Thrall_C"
-    cryolophosaurus_thrall: str = "/Game/LostColony/Dinos/Thrall/Characters/RideableCreatures/Cryolophosaurus_Character_BP_Thrall.Cryolophosaurus_Character_BP_Thrall_C"
-    devil_fox_thrall: str = "/Game/LostColony/Dinos/Thrall/Characters/RideableCreatures/DevilFox_Character_BP_Thrall.DevilFox_Character_BP_Thrall_C"
-    direbear_thrall: str = "/Game/LostColony/Dinos/Thrall/Characters/RideableCreatures/Direbear_Character_BP_Thrall.Direbear_Character_BP_Thrall_C"
-    megatherium_thrall: str = "/Game/LostColony/Dinos/Thrall/Characters/RideableCreatures/Megatherium_Character_BP_Thrall.Megatherium_Character_BP_Thrall_C"
-    raptor_thrall: str = "/Game/LostColony/Dinos/Thrall/Characters/RideableCreatures/Raptor_Character_BP_Thrall.Raptor_Character_BP_Thrall_C"
-    rex_thrall: str = "/Game/LostColony/Dinos/Thrall/Characters/RideableCreatures/Rex_Character_BP_Thrall.Rex_Character_BP_Thrall_C"
-    rhino_thrall: str = "/Game/LostColony/Dinos/Thrall/Characters/RideableCreatures/Rhino_Character_BP_Thrall.Rhino_Character_BP_Thrall_C"
-    saber_thrall: str = "/Game/LostColony/Dinos/Thrall/Characters/RideableCreatures/Saber_Character_BP_Thrall.Saber_Character_BP_Thrall_C"
-    scorpion_thrall: str = "/Game/LostColony/Dinos/Thrall/Characters/RideableCreatures/Scorpion_Character_BP_Thrall.Scorpion_Character_BP_Thrall_C"
-    snow_monster_thrall: str = "/Game/LostColony/Dinos/Thrall/Characters/RideableCreatures/SnowMonster_Character_BP_Thrall.SnowMonster_Character_BP_Thrall_C"
-    spino_thrall: str = "/Game/LostColony/Dinos/Thrall/Characters/RideableCreatures/Spino_Character_BP_Thrall.Spino_Character_BP_Thrall_C"
-    therizino_thrall: str = "/Game/LostColony/Dinos/Thrall/Characters/RideableCreatures/Therizino_Character_BP_Thrall.Therizino_Character_BP_Thrall_C"
-    thylacoleo_thrall: str = "/Game/LostColony/Dinos/Thrall/Characters/RideableCreatures/Thylacoleo_Character_BP_Thrall.Thylacoleo_Character_BP_Thrall_C"
-    yutyrannus_thrall: str = "/Game/LostColony/Dinos/Thrall/Characters/RideableCreatures/Yutyrannus_Character_BP_Thrall.Yutyrannus_Character_BP_Thrall_C"
-    thrall_cultist: str = "/Game/LostColony/Dinos/Thrall/Characters/Servant/Cultist/Thrall_Character_BP_Cultist.Thrall_Character_BP_Cultist_C"
-    thrall_tamer: str = "/Game/LostColony/Dinos/Thrall/Characters/Servant/Tamer/Thrall_Character_BP_Tamer.Thrall_Character_BP_Tamer_C"
-    thrall_fighter: str = "/Game/LostColony/Dinos/Thrall/Characters/Soldier/Fighter/Thrall_Character_BP_Fighter.Thrall_Character_BP_Fighter_C"
-    thrall_soldier: str = "/Game/LostColony/Dinos/Thrall/Characters/Soldier/Thrall_Character_BP_Soldier.Thrall_Character_BP_Soldier_C"
-    thrall_soldier_with_pistol: str = "/Game/LostColony/Dinos/Thrall/Characters/Soldier/Thrall_Character_BP_SoldierWithPistol.Thrall_Character_BP_SoldierWithPistol_C"
-    thrall_with_bola: str = "/Game/LostColony/Dinos/Thrall/Characters/Test/Thrall_Character_BP_WithBola.Thrall_Character_BP_WithBola_C"
-    thrall_with_crossbow: str = "/Game/LostColony/Dinos/Thrall/Characters/Test/Thrall_Character_BP_WithCrossbow.Thrall_Character_BP_WithCrossbow_C"
-    thrall_with_flamethrower: str = "/Game/LostColony/Dinos/Thrall/Characters/Test/Thrall_Character_BP_WithFlamethrower.Thrall_Character_BP_WithFlamethrower_C"
-    thrall_with_rocket_launcher: str = "/Game/LostColony/Dinos/Thrall/Characters/Test/Thrall_Character_BP_WithRocketLauncher.Thrall_Character_BP_WithRocketLauncher_C"
-    thrall_with_shotgun: str = "/Game/LostColony/Dinos/Thrall/Characters/Test/Thrall_Character_BP_WithShotgun.Thrall_Character_BP_WithShotgun_C"
-    thrall_with_sniper_rifle: str = "/Game/LostColony/Dinos/Thrall/Characters/Test/Thrall_Character_BP_WithSniperRifle.Thrall_Character_BP_WithSniperRifle_C"
-
-    all_bps = [carno_thrall, ceratosaurus_thrall, cryolophosaurus_thrall, devil_fox_thrall, direbear_thrall,
-               megatherium_thrall, raptor_thrall, rex_thrall, rhino_thrall, saber_thrall, scorpion_thrall,
-               snow_monster_thrall, spino_thrall, therizino_thrall, thylacoleo_thrall, yutyrannus_thrall,
-               thrall_cultist, thrall_tamer, thrall_fighter, thrall_soldier, thrall_soldier_with_pistol,
-               thrall_with_bola, thrall_with_crossbow, thrall_with_flamethrower, thrall_with_rocket_launcher,
-               thrall_with_shotgun, thrall_with_sniper_rifle]
-
-class Lightning:
-    arthro_lightning: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/LightningInfused/Arthro/Arthro_Character_BP_Lightning.Arthro_Character_BP_Lightning_C"
-    carno_lightning: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/LightningInfused/Carno/Carno_Character_BP_Lightning.Carno_Character_BP_Lightning_C"
-    chalico_lightning: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/LightningInfused/Chalicotherium/Chalico_Character_BP_Lightning.Chalico_Character_BP_Lightning_C"
-    dilo_lightning: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/LightningInfused/Dilo/Dilo_Character_BP_Lightning.Dilo_Character_BP_Lightning_C"
-    ptero_lightning: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/LightningInfused/PTero/Ptero_Character_BP_Lightning.Ptero_Character_BP_Lightning_C"
-    paracer_lightning: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/LightningInfused/Paraceratherium/Paracer_Character_BP_Lightning.Paracer_Character_BP_Lightning_C"
-    raptor_lightning: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/LightningInfused/Raptor/Raptor_Character_BP_Lightning.Raptor_Character_BP_Lightning_C"
-    rex_lightning: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/LightningInfused/Rex/Rex_Character_BP_Lightning.Rex_Character_BP_Lightning_C"
-    rock_drake_lightning: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/LightningInfused/RockDrake/RockDrake_Character_BP_Lightning.RockDrake_Character_BP_Lightning_C"
-    spino_lightning: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/LightningInfused/Spino/Spino_Character_BP_Lightning.Spino_Character_BP_Lightning_C"
-    stego_lightning: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/LightningInfused/Stegosaurus/Stego_Character_BP_Lightning.Stego_Character_BP_Lightning_C"
-    trike_lightning: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/LightningInfused/Trike/Trike_Character_BP_Lightning.Trike_Character_BP_Lightning_C"
-
-    all_bps = [arthro_lightning, carno_lightning, chalico_lightning, dilo_lightning, ptero_lightning,
-               paracer_lightning, raptor_lightning, rex_lightning, rock_drake_lightning, spino_lightning,
-               stego_lightning, trike_lightning]
-
-class Astral:
-    astral_argent: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/Astral_Creatures/Argentavis/AstralArgent_Character_BP.AstralArgent_Character_BP_C"
-    astral_carno: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/Astral_Creatures/Carno/AstralCarno_Character_BP.AstralCarno_Character_BP_C"
-    astral_direwolf: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/Astral_Creatures/Direwolf/AstralDirewolf_Character_BP.AstralDirewolf_Character_BP_C"
-    astral_mammoth: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/Astral_Creatures/Mammoth/AstralMammoth_Character_BP.AstralMammoth_Character_BP_C"
-    astral_mosa: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/Astral_Creatures/Mosasaurus/Astral_Mosa_Character_BP.Astral_Mosa_Character_BP_C"
-    astral_raptor: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/Astral_Creatures/Raptor/AstralRaptor_Character_BP.AstralRaptor_Character_BP_C"
-    astral_rex: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/Astral_Creatures/Rex/AstralRex_Character_BP.AstralRex_Character_BP_C"
-    astral_tusoteuthis: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/Astral_Creatures/Tusoteuthis/Astral_Tusoteuthis_Character_BP.Astral_Tusoteuthis_Character_BP_C"
-
-    all_bps = [astral_argent, astral_carno, astral_direwolf, astral_mammoth, astral_mosa, astral_raptor,
-               astral_rex, astral_tusoteuthis]
-
-class BiomeVariants:
-    end_drone_lunar: str = "/Game/EndGame/Dinos/Drone/EndDrone_Lunar_Character_BP.EndDrone_Lunar_Character_BP_C"
-    end_tank_lunar: str = "/Game/EndGame/Dinos/Tank/EndTank_Lunar_Character_BP.EndTank_Lunar_Character_BP_C"
-    bog_para: str = "/Game/Genesis/Dinos/BiomeVariants/BogPara/Bog_Para_Character_BP.Bog_Para_Character_BP_C"
-    bog_paracer: str = "/Game/Genesis/Dinos/BiomeVariants/BogParaceratherium/Bog_Paracer_Character_BP.Bog_Paracer_Character_BP_C"
-    bog_acrocanthosaurus: str = "/Game/Genesis/Dinos/BiomeVariants/Bog_Acro/Bog_Acrocanthosaurus_Character_BP.Bog_Acrocanthosaurus_Character_BP_C"
-    bog_deinosuchus: str = "/Game/Genesis/Dinos/BiomeVariants/Bog_Deinosuchus/Bog_Deinosuchus_Character_BP.Bog_Deinosuchus_Character_BP_C"
-    bog_raptor: str = "/Game/Genesis/Dinos/BiomeVariants/Bog_Raptor/Bog_Raptor_Character_BP.Bog_Raptor_Character_BP_C"
-    bog_spino: str = "/Game/Genesis/Dinos/BiomeVariants/Bog_Spino/Bog_Spino_Character_BP.Bog_Spino_Character_BP_C"
-    bog_tapejara: str = "/Game/Genesis/Dinos/BiomeVariants/Bog_Tapejara/Bog_Tapejara_Character_BP.Bog_Tapejara_Character_BP_C"
-    volcano_golem: str = "/Game/Genesis/Dinos/BiomeVariants/Lava_Golem/Volcano_Golem_Character_BP.Volcano_Golem_Character_BP_C"
-    lunar_salmon: str = "/Game/Genesis/Dinos/BiomeVariants/Lunar_Salmon/Lunar_Salmon_Character_BP.Lunar_Salmon_Character_BP_C"
-    ocean_archelon: str = "/Game/Genesis/Dinos/BiomeVariants/Ocean_Archelon/Ocean_Archelon_Character_BP.Ocean_Archelon_Character_BP_C"
-    ocean_basilosaurus: str = "/Game/Genesis/Dinos/BiomeVariants/Ocean_Basilosaurus/Ocean_Basilosaurus_Character_BP.Ocean_Basilosaurus_Character_BP_C"
-    ocean_dolphin: str = "/Game/Genesis/Dinos/BiomeVariants/Ocean_Dolphin/Ocean_Dolphin_Character_BP.Ocean_Dolphin_Character_BP_C"
-    ocean_dunkle: str = "/Game/Genesis/Dinos/BiomeVariants/Ocean_Dunkleosteus/Ocean_Dunkle_Character_BP.Ocean_Dunkle_Character_BP_C"
-    ocean_helicoprion: str = "/Game/Genesis/Dinos/BiomeVariants/Ocean_Helicoprion/Ocean_Helicoprion_Character_BP.Ocean_Helicoprion_Character_BP_C"
-    ocean_mosa: str = "/Game/Genesis/Dinos/BiomeVariants/Ocean_Mosasaurus/Ocean_Mosa_Character_BP.Ocean_Mosa_Character_BP_C"
-    ocean_xiphactinus: str = "/Game/Genesis/Dinos/BiomeVariants/Ocean_Xiphactinus/Ocean_Xiphactinus_Character_BP.Ocean_Xiphactinus_Character_BP_C"
-    snow_argent: str = "/Game/Genesis/Dinos/BiomeVariants/Snow_Argentavis/Snow_Argent_Character_BP.Snow_Argent_Character_BP_C"
-    snow_cryolophosaurus: str = "/Game/Genesis/Dinos/BiomeVariants/Snow_Cryolophosaurus/Snow_Cryolophosaurus_Character_BP.Snow_Cryolophosaurus_Character_BP_C"
-    snow_otter: str = "/Game/Genesis/Dinos/BiomeVariants/Snow_Otter/Snow_Otter_Character_BP.Snow_Otter_Character_BP_C"
-    snow_saber: str = "/Game/Genesis/Dinos/BiomeVariants/Snow_Saber/Snow_Saber_Character_BP.Snow_Saber_Character_BP_C"
-    snow_rhino: str = "/Game/Genesis/Dinos/BiomeVariants/Snow_WoollyRhino/Snow_Rhino_Character_BP.Snow_Rhino_Character_BP_C"
-    snow_yutyrannus: str = "/Game/Genesis/Dinos/BiomeVariants/Snow_Yutyrannus/Snow_Yutyrannus_Character_BP.Snow_Yutyrannus_Character_BP_C"
-    volcano_allo: str = "/Game/Genesis/Dinos/BiomeVariants/Volcano_Allosaurus/Volcano_Allo_Character_BP.Volcano_Allo_Character_BP_C"
-    volcano_ankylo: str = "/Game/Genesis/Dinos/BiomeVariants/Volcano_Ankylosaurus/Volcano_Ankylo_Character_BP.Volcano_Ankylo_Character_BP_C"
-    volcano_concavenator: str = "/Game/Genesis/Dinos/BiomeVariants/Volcano_Conca/Volcano_Concavenator_Character_BP.Volcano_Concavenator_Character_BP_C"
-    volcano_rex: str = "/Game/Genesis/Dinos/BiomeVariants/Volcano_Rex/Volcano_Rex_Character_BP.Volcano_Rex_Character_BP_C"
-    volcano_trike: str = "/Game/Genesis/Dinos/BiomeVariants/Volcano_Trike/Volcano_Trike_Character_BP.Volcano_Trike_Character_BP_C"
-
-    all_bps = [end_drone_lunar, end_tank_lunar, bog_para, bog_paracer, bog_acrocanthosaurus, bog_deinosuchus,
-               bog_raptor, bog_spino, bog_tapejara, volcano_golem, lunar_salmon, ocean_archelon,
-               ocean_basilosaurus, ocean_dolphin, ocean_dunkle, ocean_helicoprion, ocean_mosa,
-               ocean_xiphactinus, snow_argent, snow_cryolophosaurus, snow_otter, snow_saber, snow_rhino,
-               snow_yutyrannus, volcano_allo, volcano_ankylo, volcano_concavenator, volcano_rex, volcano_trike]
-
-class Misc:
-    boaratos: str = "/Game/ASA/Dinos/Boaratos/Boaratos_Character_BP.Boaratos_Character_BP_C"
-    concavenator: str = "/Game/ASA/Dinos/Concavenator/Concavenator_Character_BP.Concavenator_Character_BP_C"
-    ice_golem: str = "/Game/ASA/Dinos/IceGolem/IceGolem_Character_BP.IceGolem_Character_BP_C"
-    jackalope: str = "/Game/ASA/Dinos/Jackalope/Jackalope_Character_BP.Jackalope_Character_BP_C"
-    xenomorph_male_chupa: str = "/Game/Aberration/Dinos/Nameless/Xenomorph_Character_BP_Male_Chupa.Xenomorph_Character_BP_Male_Chupa_C"
-    xenomorph_male_lunar: str = "/Game/Aberration/Dinos/Nameless/Xenomorph_Character_BP_Male_Lunar.Xenomorph_Character_BP_Male_Lunar_C"
-    pteroteuthis: str = "/Game/Aberration/Dinos/Pteroteuthis/Pteroteuthis_Char_BP.Pteroteuthis_Char_BP_C"
-    pteroteuthis_surface: str = "/Game/Aberration/Dinos/Pteroteuthis/Pteroteuthis_Char_BP_Surface.Pteroteuthis_Char_BP_Surface_C"
-    bog_spider: str = "/Game/Genesis/Dinos/BogSpider/BogSpider_Character_BP.BogSpider_Character_BP_C"
-    cherufe: str = "/Game/Genesis/Dinos/Cherufe/Cherufe_Character_BP.Cherufe_Character_BP_C"
-    giant_turtle: str = "/Game/Genesis/Dinos/GiantTurtle/GiantTurtle_Character_BP.GiantTurtle_Character_BP_C"
-    shapeshifter_small: str = "/Game/Genesis/Dinos/Shapeshifter/Shapeshifter_Small/Shapeshifter_Small_Character_BP.Shapeshifter_Small_Character_BP_C"
-    space_whale: str = "/Game/Genesis/Dinos/SpaceWhale/SpaceWhale_Character_BP.SpaceWhale_Character_BP_C"
-    boss_bat: str = "/Game/LostColony/Dinos/BossBat/BossBat_Character_BP.BossBat_Character_BP_C"
-    devil_fox: str = "/Game/LostColony/Dinos/DevilFox/DevilFox_Character_BP.DevilFox_Character_BP_C"
-    young_ice_fox_dino_companion_wild_clone: str = "/Game/LostColony/Dinos/YoungIceFox/YoungIceFox_DinoCompanion_Character_WildClone_BP.YoungIceFox_DinoCompanion_Character_WildClone_BP_C"
-    kirayli: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/Kirayli/Kirayli_Character_BP.Kirayli_Character_BP_C"
-    cave_minotaur_new: str = "/Game/Mods/Astraeos/Assets/CoreBlueprints/Creatures/Minotaur/CaveMinotaur_Character_BP_New.CaveMinotaur_Character_BP_New_C"
-    axolotl_small: str = "/Game/Packs/TidesOfFortune/Dinos/Axolotl/Axolotl_Small/Axolotl_Small_Character_BP.Axolotl_Small_Character_BP_C"
-    palaeoctopus: str = "/Game/Packs/TidesOfFortune/Dinos/Paleoctopus/Palaeoctopus_Character_BP.Palaeoctopus_Character_BP_C"
-    parrot: str = "/Game/Packs/TidesOfFortune/Dinos/Parrot/Parrot_Character_BP.Parrot_Character_BP_C"
-    ammonite: str = "/Game/PrimalEarth/Dinos/Ammonite/Ammonite_Character.Ammonite_Character_C"
-    mosa_cave: str = "/Game/PrimalEarth/Dinos/Mosasaurus/Mosa_Character_BP_Cave.Mosa_Character_BP_Cave_C"
-    purlovia_polar: str = "/Game/PrimalEarth/Dinos/Purlovia/Purlovia_Character_BP_Polar.Purlovia_Character_BP_Polar_C"
-    bionic_trike: str = "/Game/PrimalEarth/Dinos/Trike/BionicTrike_Character_BP.BionicTrike_Character_BP_C"
-
-    all_bps = [boaratos, concavenator, ice_golem, jackalope, xenomorph_male_chupa, xenomorph_male_lunar,
-               pteroteuthis, pteroteuthis_surface, bog_spider, cherufe, giant_turtle, shapeshifter_small,
-               space_whale, boss_bat, devil_fox, young_ice_fox_dino_companion_wild_clone, kirayli,
-               cave_minotaur_new, axolotl_small, palaeoctopus, parrot, ammonite, mosa_cave, purlovia_polar,
-               bionic_trike]
-
-
-
-
-
+               giga, rex, legacy_rex, rex, mosa, deinotherium]
 
 class Dinos:
     # Aberrant Dinos
@@ -576,11 +396,6 @@ class Dinos:
     dlc_dinos = DlcDinos()
     shoulder_pets = ShoulderPets()
     non_tameable = NonTameable()
-    thralls: Thralls = Thralls()
-    lightning: Lightning = Lightning()
-    astral: Astral = Astral()
-    biome_variants: BiomeVariants = BiomeVariants()
-    misc: Misc = Misc()
 
     all_bps = [
         roll_rat, rock_drake, basilisk, ravager, reaper_queen, cosmo,
@@ -611,5 +426,4 @@ class Dinos:
         rubble_golem, helicoprion, acrocanthosaurus, cryolophosaurus, magmasaur
     ]  + abberant.all_bps + flyers.all_bps + \
         dlc_dinos.all_bps + shoulder_pets.all_bps + non_tameable.all_bps + \
-        paleo.all_bps + \
-            thralls.all_bps + lightning.all_bps + astral.all_bps + biome_variants.all_bps + misc.all_bps
+        paleo.all_bps
