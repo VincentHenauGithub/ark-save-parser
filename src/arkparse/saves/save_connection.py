@@ -35,10 +35,27 @@ def _is_parallel_enabled() -> bool:
 _PARALLEL_ENABLED = _is_parallel_enabled()
 
 
-def _parse_single_object(obj_uuid: UUID, class_name: str, binary_data: bytes, save_context: SaveContext) -> Optional[ArkGameObject]:
+def _cache_satisfies(cached_obj, requested_selected: Optional[frozenset]) -> bool:
+    """Whether a cached object can serve a request for `requested_selected` properties.
+
+    A fully parsed object (no selection) satisfies anything. A partially parsed one
+    only satisfies a request whose property set it already covers; otherwise it must
+    be reparsed, or the caller would see unparsed properties as absent.
+    """
+    cached_selected = getattr(cached_obj, "_selected_property_names", None)
+    if cached_selected is None:
+        return True
+    if requested_selected is None:
+        return False
+    return requested_selected.issubset(cached_selected)
+
+
+def _parse_single_object(obj_uuid: UUID, class_name: str, binary_data: bytes, save_context: SaveContext,
+                         selected_property_names: Optional[Collection[str]] = None) -> Optional[ArkGameObject]:
     """Parse a single game object. Thread-safe for use in parallel parsing."""
     byte_buffer = ArkBinaryParser(binary_data, save_context)
-    return SaveConnection.parse_as_predefined_object(obj_uuid, class_name, byte_buffer)
+    return SaveConnection.parse_as_predefined_object(obj_uuid, class_name, byte_buffer,
+                                                     selected_property_names=selected_property_names)
 
 class SaveConnection:
 
@@ -448,15 +465,19 @@ class SaveConnection:
             result = cursor.fetchone() is not None
         return result
 
-    def get_game_object_by_id(self, obj_uuid: uuid.UUID, reparse: bool = False) -> Optional['ArkGameObject']:
-        if obj_uuid in self.parsed_objects and not reparse:
-            return self.parsed_objects[obj_uuid]
+    def get_game_object_by_id(self, obj_uuid: uuid.UUID, reparse: bool = False,
+                              selected_property_names: Optional[Collection[str]] = None) -> Optional['ArkGameObject']:
+        requested_selected = frozenset(selected_property_names) if selected_property_names else None
+        cached_obj = self.parsed_objects.get(obj_uuid)
+        if cached_obj is not None and not reparse and _cache_satisfies(cached_obj, requested_selected):
+            return cached_obj
         bin = self.get_game_obj_binary(obj_uuid)
         reader = ArkBinaryParser(bin, self.save_context)
 
         class_name, *_ = ArkGameObject.read_name(obj_uuid, reader)
 
-        obj = SaveConnection.parse_as_predefined_object(obj_uuid, class_name, reader)
+        obj = SaveConnection.parse_as_predefined_object(obj_uuid, class_name, reader,
+                                                       selected_property_names=requested_selected)
 
         if obj:
             self.parsed_objects[obj_uuid] = obj
@@ -468,6 +489,11 @@ class SaveConnection:
         params: Tuple[bytes, ...] = ()
         game_objects = {}
         prop_ids = []
+        selected_property_names = (
+            frozenset(reader_config.selected_property_names)
+            if reader_config.selected_property_names
+            else None
+        )
 
         for prop in reader_config.property_names:
             id_ = self.save_context.get_name_id(prop)
@@ -489,13 +515,13 @@ class SaveConnection:
 
         # Collect items from SQLite (single-threaded due to SQLite constraints)
         items_to_parse: List[Tuple[UUID, str, bytes]] = []
-        
+
         with self.connection as conn:
             cursor = conn.execute(query, params)
             for row in cursor:
                 obj_uuid = self.byte_array_to_uuid(row[0])
                 binary_data = row[1]
-                
+
                 if reader_config.uuid_filter and not reader_config.uuid_filter(obj_uuid):
                     continue
 
@@ -512,17 +538,18 @@ class SaveConnection:
                     self.faulty_objects += 1
                     continue
 
-                if obj_uuid in self.parsed_objects:
+                cached_obj = self.parsed_objects.get(obj_uuid)
+                if cached_obj is not None and _cache_satisfies(cached_obj, selected_property_names):
                     # The byte scan above only proves the name id appears somewhere
                     # in the blob; for an already-parsed object the property list is
                     # the authoritative check.
                     found = len(prop_ids) == 0
                     for prop in reader_config.property_names:
-                        if self.parsed_objects[obj_uuid].has_property(prop):
+                        if cached_obj.has_property(prop):
                             found = True
                             break
                     if found:
-                        game_objects[obj_uuid] = self.parsed_objects[obj_uuid]
+                        game_objects[obj_uuid] = cached_obj
                     continue
 
                 items_to_parse.append((obj_uuid, class_name, binary_data))
@@ -543,7 +570,8 @@ class SaveConnection:
                         mark_as_worker_thread()
                         _worker_initialized.done = True
                     obj_uuid, class_name, binary_data = item
-                    obj = _parse_single_object(obj_uuid, class_name, binary_data, ctx)
+                    obj = _parse_single_object(obj_uuid, class_name, binary_data, ctx,
+                                               selected_property_names=selected_property_names)
                     return obj_uuid, obj
                 
                 with ThreadPoolExecutor(max_workers=self._max_workers) as executor:
@@ -560,7 +588,8 @@ class SaveConnection:
                 # Sequential parsing (GIL enabled)
                 for obj_uuid, class_name, binary_data in items_to_parse:
                     byte_buffer = ArkBinaryParser(binary_data, self.save_context)
-                    ark_game_object = self.parse_as_predefined_object(obj_uuid, class_name, byte_buffer)
+                    ark_game_object = self.parse_as_predefined_object(obj_uuid, class_name, byte_buffer,
+                                                                      selected_property_names=selected_property_names)
                     
                     if ark_game_object:
                         game_objects[obj_uuid] = ark_game_object
@@ -604,9 +633,11 @@ class SaveConnection:
         return obj_uuid.bytes
 
     @staticmethod
-    def parse_as_predefined_object(obj_uuid, class_name, byte_buffer: ArkBinaryParser):
+    def parse_as_predefined_object(obj_uuid, class_name, byte_buffer: ArkBinaryParser,
+                                   selected_property_names: Optional[Collection[str]] = None):
         try:
-            return ArkGameObject(obj_uuid, class_name, byte_buffer)
+            return ArkGameObject(obj_uuid, class_name, byte_buffer,
+                                 selected_property_names=selected_property_names)
         except Exception as e:
             reraise = False
             if "/Game/" in class_name or "/Script/" in class_name:
@@ -637,7 +668,8 @@ class SaveConnection:
                 ArkSaveLogger.error_log("Reparsing with logging:")
                 ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.PARSER, True)
                 try:
-                    ArkGameObject(obj_uuid, class_name, byte_buffer)
+                    ArkGameObject(obj_uuid, class_name, byte_buffer,
+                                  selected_property_names=selected_property_names)
                 except Exception as _:
                     ArkSaveLogger.set_log_level(ArkSaveLogger.LogTypes.PARSER, False)
                     ArkSaveLogger.open_hex_view(True)

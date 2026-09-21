@@ -9,3 +9,4 @@ class GameObjectReaderConfiguration:
     uuid_filter: Optional[Callable[[UUID], bool]] = None
     blueprint_name_filter: Optional[Callable[[Optional[str]], bool]] = None
     property_names: List[str] = field(default_factory=list)
+    selected_property_names: List[str] = field(default_factory=list)

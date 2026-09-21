@@ -277,21 +277,47 @@ class AsaSave:
                 return self.save_connection.get_all_present_classes()
             return None
 
-    def get_game_object_by_id(self, obj_uuid: uuid.UUID, reparse: bool = False) -> Optional['ArkGameObject']:
-        if obj_uuid in self.parsed_objects and not reparse:
-            return self.parsed_objects[obj_uuid]
-        else:
-            if self.game_obj_binaries is not None and obj_uuid in self.game_obj_binaries:
-                bin = self.game_obj_binaries[obj_uuid]
-                reader = ArkBinaryParser(bin, self.save_context)
-                obj = SaveConnection.parse_as_predefined_object(obj_uuid, reader.read_name(), reader)
-                if obj:
-                    self.parsed_objects[obj_uuid] = obj
-                return obj
-            else:
-                if self.save_connection is not None:
-                    return self.save_connection.get_game_object_by_id(obj_uuid, reparse)
-                return None
+    def get_game_object_by_id(
+        self,
+        obj_uuid: uuid.UUID,
+        reparse: bool = False,
+        selected_property_names: Optional[Collection[str]] = None,
+    ) -> Optional['ArkGameObject']:
+        requested_selected = (
+            frozenset(selected_property_names)
+            if selected_property_names
+            else None
+        )
+        cached_obj = self.parsed_objects.get(obj_uuid)
+        if cached_obj is not None and not reparse:
+            cached_selected = getattr(cached_obj, "_selected_property_names", None)
+            if (
+                requested_selected is None and cached_selected is None
+            ) or (
+                requested_selected is not None
+                and (cached_selected is None or requested_selected.issubset(cached_selected))
+            ):
+                return cached_obj
+        if self.game_obj_binaries is not None and obj_uuid in self.game_obj_binaries:
+            bin = self.game_obj_binaries[obj_uuid]
+            reader = ArkBinaryParser(bin, self.save_context)
+            obj = SaveConnection.parse_as_predefined_object(
+                obj_uuid,
+                reader.read_name(),
+                reader,
+                selected_property_names=requested_selected,
+            )
+            if obj:
+                self.parsed_objects[obj_uuid] = obj
+            return obj
+
+        if self.save_connection is not None:
+            return self.save_connection.get_game_object_by_id(
+                obj_uuid,
+                reparse,
+                selected_property_names=requested_selected,
+            )
+        return None
 
     def get_custom_value(self, key: str) -> Optional['ArkBinaryParser']:
         if "GameModeCustomBytes" in key and self.custom_value_GameModeCustomBytes is not None:
