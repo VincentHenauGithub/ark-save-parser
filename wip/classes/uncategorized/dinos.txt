@@ -1,6 +1,9 @@
 /EggcellentAdventure/Dinos/BunnyOviraptor_Character_BP_Easter.BunnyOviraptor_Character_BP_Easter_C
 /EggcellentAdventure/Dinos/Dodo/Dodo_Character_BP_Bunny_Easter.Dodo_Character_BP_Bunny_Easter_C
 /EggcellentAdventure/Dinos/Sheep/Sheep_Character_BP_Easter.Sheep_Character_BP_Easter_C
+/Game/ASA/Dinos/Boaratos/Boaratos_Character_BP.Boaratos_Character_BP_C
+/Game/ASA/Dinos/Concavenator/Concavenator_Character_BP.Concavenator_Character_BP_C
+/Game/ASA/Dinos/Concavenator/Concavenator_Character_BP_Aberrant.Concavenator_Character_BP_Aberrant_C
 /Game/ASA/Dinos/IceGolem/IceGolem_Character_BP.IceGolem_Character_BP_C
 /Game/ASA/Dinos/Jackalope/Jackalope_Character_BP.Jackalope_Character_BP_C
 /Game/Aberration/Dinos/ChupaCabra/ALPHA_ChupaCabra_Character_BP.ALPHA_ChupaCabra_Character_BP_C
@@ -32,6 +35,7 @@
 /Game/Genesis/Dinos/BiomeVariants/Snow_Yutyrannus/Snow_Yutyrannus_Character_BP.Snow_Yutyrannus_Character_BP_C
 /Game/Genesis/Dinos/BiomeVariants/Volcano_Allosaurus/Volcano_Allo_Character_BP.Volcano_Allo_Character_BP_C
 /Game/Genesis/Dinos/BiomeVariants/Volcano_Ankylosaurus/Volcano_Ankylo_Character_BP.Volcano_Ankylo_Character_BP_C
+/Game/Genesis/Dinos/BiomeVariants/Volcano_Conca/Volcano_Concavenator_Character_BP.Volcano_Concavenator_Character_BP_C
 /Game/Genesis/Dinos/BiomeVariants/Volcano_Rex/Volcano_Rex_Character_BP.Volcano_Rex_Character_BP_C
 /Game/Genesis/Dinos/BiomeVariants/Volcano_Trike/Volcano_Trike_Character_BP.Volcano_Trike_Character_BP_C
 /Game/Genesis/Dinos/BogSpider/BogSpider_Character_BP.BogSpider_Character_BP_C
@@ -98,7 +102,10 @@
 /Game/Packs/TidesOfFortune/Dinos/Paleoctopus/Palaeoctopus_Character_BP.Palaeoctopus_Character_BP_C
 /Game/Packs/TidesOfFortune/Dinos/Parrot/Parrot_Character_BP.Parrot_Character_BP_C
 /Game/PrimalEarth/Dinos/Dodo/Dodo_Character_BP_Bunny.Dodo_Character_BP_Bunny_C
+/Game/PrimalEarth/Dinos/Dodo/ZombieDodo_Character_BP.ZombieDodo_Character_BP_C
+/Game/PrimalEarth/Dinos/Mosasaurus/Mosa_Character_BP_Cave.Mosa_Character_BP_Cave_C
 /Game/PrimalEarth/Dinos/Oviraptor/BunnyOviraptor_Character_BP.BunnyOviraptor_Character_BP_C
+/Game/PrimalEarth/Dinos/Purlovia/Purlovia_Character_BP_Polar.Purlovia_Character_BP_Polar_C
 /Game/PrimalEarth/Dinos/Trike/BionicTrike_Character_BP.BionicTrike_Character_BP_C
 /PA_Ascension/Dinos/PaleoMammoth/Paleo_Mammoth_Character_BP.Paleo_Mammoth_Character_BP_C
 /PA_Ascension/Dinos/PaleoOtter/Paleo_Otter_Character_BP.Paleo_Otter_Character_BP_C
