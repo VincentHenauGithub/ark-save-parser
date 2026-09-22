@@ -1,0 +1,19 @@
+{
+    "0": "/Game/PrimalEarth/CoreBlueprints/Items/Trophies/PrimalItemTrophy_AlphaRex.PrimalItemTrophy_AlphaRex_C",
+    "65": "ItemID",
+    "73": "StructProperty",
+    "85": "ItemNetID",
+    "97": "/Script/ShooterGame",
+    "114": "ItemID1",
+    "122": "UInt32Property",
+    "143": "ItemID2",
+    "151": "UInt32Property",
+    "172": "None",
+    "180": "OwnerInventory",
+    "188": "ObjectProperty",
+    "223": "LastAutoDurabilityDecreaseTime",
+    "231": "DoubleProperty",
+    "256": "ItemVersion",
+    "264": "ByteProperty",
+    "282": "None"
+}
