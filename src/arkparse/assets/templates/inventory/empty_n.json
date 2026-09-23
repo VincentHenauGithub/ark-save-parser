@@ -1,0 +1,8 @@
+{
+    "0": "/Game/PrimalEarth/CoreBlueprints/Inventories/PrimalInventoryBP_FeedingTrough.PrimalInventoryBP_FeedingTrough_C",
+    "105": "bInitializedMe",
+    "113": "BoolProperty",
+    "130": "LastInventoryRefreshTime",
+    "138": "DoubleProperty",
+    "163": "None"
+}

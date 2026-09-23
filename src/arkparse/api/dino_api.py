@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Tuple
+from typing import Collection, Dict, List, Optional, Tuple, Union
 from uuid import UUID, uuid4
 from pathlib import Path
 import os
@@ -57,6 +57,19 @@ _KNOWN_SPECIAL_CASES = [
 ]
 
 
+_CRYOPOD_MARKERS = ("PrimalItem_WeaponEmptyCryopod", "PrimalItem_SCSCryopod",
+                    "ItemDinoball.ItemDinoball_C")
+
+# Properties that only creatures carry, whichever mod they came from. Scanning
+# for these finds creatures without having to recognise their class path.
+_CREATURE_PROPERTIES = ["DinoID1", "DinoID2"]
+_TAMED_PROPERTIES = ["TamedTimeStamp", "TamingTeamID"]
+
+# Creatures and cryopods are selected by different means, so a scan may take
+# more than one configuration and merge what each one returns.
+_ReaderConfigs = Union[GameObjectReaderConfiguration, List[GameObjectReaderConfiguration], None]
+
+
 class DinoApi:
     _DEFAULT_CONFIG = GameObjectReaderConfiguration(
         blueprint_name_filter=lambda name: \
@@ -64,7 +77,7 @@ class DinoApi:
                 (((("/Creatures/" in name) or ("/Dinos/" in name) or ("/SDinoVariants/" in name) or ("/AstraeosCreatures/" in name)) and "_Character_" in name) or \
                 ("DinoCharacterStatusComponent" in name) or \
                 (name in _KNOWN_SPECIAL_CASES) or \
-                ("PrimalItem_WeaponEmptyCryopod" in name or "PrimalItem_SCSCryopod" in name or "ItemDinoball.ItemDinoball_C" in name)))
+                any(marker in name for marker in _CRYOPOD_MARKERS)))
 
     def __init__(self, save: AsaSave):
         self.save = save
@@ -73,31 +86,94 @@ class DinoApi:
         self.parsed_cryopods: Dict[UUID, Cryopod] = {}
 
     @staticmethod
-    def _create_dino(uuid: UUID, save: AsaSave, is_tamed: bool, is_baby: bool, bypass_inventory: bool = True) -> Dino:
+    def _create_dino(uuid: UUID, save: AsaSave, is_tamed: bool, is_baby: bool, bypass_inventory: bool = True,
+                     selected_property_names: Optional[Collection[str]] = None) -> Dino:
         if is_tamed:
-            return TamedBaby(uuid, save=save) if is_baby else TamedDino(uuid, save=save, bypass_inventory=bypass_inventory)
+            if is_baby:
+                return TamedBaby(uuid, save=save, selected_property_names=selected_property_names)
+            return TamedDino(uuid, save=save, bypass_inventory=bypass_inventory,
+                             selected_property_names=selected_property_names)
         else:
-            return Baby(uuid, save=save) if is_baby else Dino(uuid, save=save)
+            if is_baby:
+                return Baby(uuid, save=save, selected_property_names=selected_property_names)
+            return Dino(uuid, save=save, selected_property_names=selected_property_names)
 
     @staticmethod
     def is_applicable_bp(blueprint: str) -> bool:
         return DinoApi._DEFAULT_CONFIG.blueprint_name_filter(blueprint)
 
     @staticmethod
-    def _get_tamed_reader_config(include_cryopodded: bool = True, only_cryopodded: bool = False) -> GameObjectReaderConfiguration:
-        if only_cryopodded:
-            property_names = ["CustomItemDatas"]
-        else:
-            property_names = ["TamedTimeStamp", "TamingTeamID"]
-            if include_cryopodded:
-                property_names.append("CustomItemDatas")
+    def is_cryopod_bp(blueprint: str) -> bool:
+        return blueprint is not None and any(m in blueprint for m in _CRYOPOD_MARKERS)
 
+    def _creature_reader_config(self, property_names: List[str]) -> GameObjectReaderConfiguration:
+        """Select creatures by properties that only creatures carry.
+
+        This is a raw byte-pattern scan over each object's blob, so unlike the
+        class-path filter it is mod-agnostic: a creature from a mod whose class
+        path matches none of the known folder names is still found, without
+        having to be listed in _KNOWN_SPECIAL_CASES.
+        """
+        if all(self.save.save_context.get_name_id(p) is None for p in property_names):
+            # No name ids at all yields an empty pattern list, which the reader
+            # treats as "no property filter" (i.e. parse the entire save), so
+            # fall back to the class-path filter instead.
+            ArkSaveLogger.warning_log(
+                f"Save has no {' or '.join(property_names)} name entry, "
+                "falling back to class-path creature filter")
+            return DinoApi._DEFAULT_CONFIG
+
+        return GameObjectReaderConfiguration(property_names=list(property_names))
+
+    @staticmethod
+    def _support_reader_config() -> GameObjectReaderConfiguration:
+        """Cryopods, plus the status components creatures point at.
+
+        Cryopods stay on the class-path filter: a cryopod carries no creature
+        property of its own, since the creature inside it is serialised into
+        CustomItemDatas, which thousands of unrelated items carry too.
+
+        Status components are never returned as creatures; they are pulled in so
+        that each creature's MyCharacterStatusComponent lookup hits the parse
+        cache instead of going back to the database one row at a time.
+        """
         return GameObjectReaderConfiguration(
-            blueprint_name_filter=lambda name: name is not None and DinoApi.is_applicable_bp(name),
-            property_names=property_names,
+            blueprint_name_filter=lambda name: name is not None and (
+                "DinoCharacterStatusComponent" in name or DinoApi.is_cryopod_bp(name)))
+
+    @staticmethod
+    def _cryopod_reader_config() -> GameObjectReaderConfiguration:
+        """Cryopods that actually hold a creature."""
+        return GameObjectReaderConfiguration(
+            blueprint_name_filter=lambda name: DinoApi.is_cryopod_bp(name),
+            property_names=["CustomItemDatas"],
         )
 
-    def get_all_objects(self, config: GameObjectReaderConfiguration = None) -> Dict[UUID, ArkGameObject]:
+    def _default_reader_configs(self) -> List[GameObjectReaderConfiguration]:
+        return [self._creature_reader_config(_CREATURE_PROPERTIES),
+                DinoApi._support_reader_config()]
+
+    def _get_tamed_reader_config(self, include_cryopodded: bool = True,
+                                 only_cryopodded: bool = False) -> List[GameObjectReaderConfiguration]:
+        """Select tamed creatures, and optionally the cryopods holding them.
+
+        TamedTimeStamp and TamingTeamID are carried by creatures and nothing
+        else, so that half of the scan needs no class-path filter at all.
+        """
+        configs = []
+        if not only_cryopodded:
+            configs.append(self._creature_reader_config(_TAMED_PROPERTIES))
+        if include_cryopodded or only_cryopodded:
+            configs.append(DinoApi._cryopod_reader_config())
+        return configs
+
+    def get_all_objects(self, config: "_ReaderConfigs" = None) -> Dict[UUID, ArkGameObject]:
+        """Objects the dino API works on: creatures, their status components and cryopods.
+
+        Creatures and cryopods are selected in separate passes -- one by the
+        properties every creature carries, one by class path -- so ``config`` may
+        be a list of configurations whose results are merged.
+        """
         reuse = False
 
         if config is None:
@@ -105,10 +181,14 @@ class DinoApi:
             if self.all_objects is not None:
                 return self.all_objects
 
-            config = self._DEFAULT_CONFIG
+            configs = self._default_reader_configs()
+        else:
+            configs = list(config) if isinstance(config, (list, tuple)) else [config]
 
-        objects = self.save.get_game_objects(config)
-        
+        objects: Dict[UUID, ArkGameObject] = {}
+        for reader_config in configs:
+            objects.update(self.save.get_game_objects(reader_config))
+
         if reuse:
             self.all_objects = objects
 
@@ -132,7 +212,7 @@ class DinoApi:
 
         return dino
 
-    def get_all(self, config = None, include_cryos: bool = True, include_wild: bool = True, include_tamed: bool = True, include_babies: bool = True, only_cryopodded: bool = False, max_workers: int = 6, bypass_inventory: bool = True) -> Dict[UUID, Dino]:
+    def get_all(self, config: _ReaderConfigs = None, include_cryos: bool = True, include_wild: bool = True, include_tamed: bool = True, include_babies: bool = True, only_cryopodded: bool = False, max_workers: int = 6, bypass_inventory: bool = True) -> Dict[UUID, Dino]:
         ArkSaveLogger.api_log("Retrieving all dinos from save...")
 
         objects = self.get_all_objects(config)
@@ -141,6 +221,16 @@ class DinoApi:
 
         if self.all_objects and len(objects) != len(self.all_objects):
             ArkSaveLogger.api_log(f"Found {len(objects)} dinos, parsing them... (and retrieving inventories)")
+
+        # A caller-supplied selection propagates to the per-dino (and per-status-
+        # component) reads below, so only the properties asked for get decoded.
+        primary = config[0] if isinstance(config, (list, tuple)) and config else config
+        selected_property_names = (
+            frozenset(primary.selected_property_names)
+            if primary is not None and not isinstance(primary, (list, tuple))
+            and primary.selected_property_names
+            else None
+        )
 
         # Classify objects into categories for parallel processing
         dino_objects_to_parse: List[Tuple[UUID, ArkGameObject, bool, bool]] = []  # (uuid, obj, is_tamed, is_baby)
@@ -168,7 +258,8 @@ class DinoApi:
         
         # Parse dinos - parallel when GIL is disabled
         if dino_objects_to_parse:
-            self._parse_dinos_batch(dino_objects_to_parse, dinos, max_workers, bypass_inventory)
+            self._parse_dinos_batch(dino_objects_to_parse, dinos, max_workers, bypass_inventory,
+                                    selected_property_names)
         
         # Parse cryopods - parallel when GIL is disabled
         if cryopod_objects_to_parse:
@@ -194,7 +285,8 @@ class DinoApi:
                 dinos[key] = cryopod.dino
                 self.parsed_dinos[cryopod.dino.uuid] = cryopod.dino
 
-    def _parse_dinos_batch(self, dino_objects_to_parse: List[Tuple[UUID, ArkGameObject, bool, bool]], dinos: Dict[UUID, Dino], max_workers: int, bypass_inventory: bool = True):
+    def _parse_dinos_batch(self, dino_objects_to_parse: List[Tuple[UUID, ArkGameObject, bool, bool]], dinos: Dict[UUID, Dino], max_workers: int, bypass_inventory: bool = True,
+                           selected_property_names: Optional[Collection[str]] = None):
         if _PARALLEL_ENABLED and max_workers > 1:
             ArkSaveLogger.api_log(f"Parsing {len(dino_objects_to_parse)} dinos with {max_workers} workers...")
             save = self.save
@@ -207,7 +299,8 @@ class DinoApi:
                     _worker_initialized.done = True
                 key, obj, is_tamed, is_baby = item
                 try:
-                    return (key, DinoApi._create_dino(obj.uuid, save, is_tamed, is_baby, bypass_inventory))
+                    return (key, DinoApi._create_dino(obj.uuid, save, is_tamed, is_baby, bypass_inventory,
+                                                      selected_property_names))
                 except Exception as e:
                     error_count[0] += 1
                     if error_count[0] <= 3:
@@ -224,7 +317,8 @@ class DinoApi:
         else:
             for key, obj, is_tamed, is_baby in dino_objects_to_parse:
                 try:
-                    dino = DinoApi._create_dino(obj.uuid, self.save, is_tamed, is_baby, bypass_inventory)
+                    dino = DinoApi._create_dino(obj.uuid, self.save, is_tamed, is_baby, bypass_inventory,
+                                                selected_property_names)
                     dinos[key] = dino
                     self.parsed_dinos[dino.uuid] = dino
                 except Exception as e:
@@ -294,8 +388,9 @@ class DinoApi:
     def get_all_wild(self) -> Dict[UUID, Dino]:
         return self.get_all(include_cryos=False, include_tamed=False)
 
-    def get_all_wild_tamables(self) -> Dict[UUID, Dino]:
-        return {key: dino for key, dino in self.get_all_wild().items() if dino.get_short_name() + "_C" not in Dinos.non_tameable.all_bps}
+    def get_all_wild_tamables(self, config: GameObjectReaderConfiguration = None) -> Dict[UUID, Dino]:
+        dinos = self.get_all(config=config, include_cryos=False, include_tamed=False, include_wild=True)
+        return {key: dino for key, dino in dinos.items() if dino.get_short_name() + "_C" not in Dinos.non_tameable.all_bps}
 
     def get_all_tamed(self, include_cryopodded=True, only_cryopodded=False) -> Dict[UUID, TamedDino]:
         config = self._get_tamed_reader_config(

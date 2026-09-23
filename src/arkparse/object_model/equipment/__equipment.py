@@ -2,8 +2,8 @@ import json
 import math
 from uuid import UUID
 import os
+from typing import TYPE_CHECKING
 
-from arkparse.api.player_api import PlayerApi
 from arkparse.ark_tribe import ArkTribe
 from arkparse.logging import ArkSaveLogger
 from arkparse.object_model.ark_game_object import ArkGameObject
@@ -13,6 +13,9 @@ from arkparse.object_model.misc.inventory_item import InventoryItem
 from arkparse.enums import ArkItemQuality, ArkEquipmentStat
 from arkparse.saves.asa_save import AsaSave
 from arkparse.utils.json_utils import DefaultJsonEncoder
+
+if TYPE_CHECKING:
+    from arkparse.api.player_api import PlayerApi
 
 
 class Equipment(InventoryItem):
@@ -151,12 +154,18 @@ class Equipment(InventoryItem):
     def get_stat_value(self, position: ArkEquipmentStat) -> int:
         return self.object.get_property_value("ItemStatValues", position=position.value, default=0)
     
-    def reidentify(self, new_uuid: UUID = None, new_class: str = None):
-        super().reidentify(new_uuid)
+    def reidentify(self, new_uuid: UUID = None, new_class: str = None, update: bool = True):
+        # The class swap has to happen before the binary is written back, or the
+        # object keeps the template's class in the save while reporting the new
+        # one in memory.
+        super().reidentify(new_uuid, update=False)
         if new_class is not None:
             self.object.change_class(new_class, self.binary)
             uuid = self.object.uuid if new_uuid is None else new_uuid
             self.object = ArkGameObject(uuid=uuid, blueprint=new_class, binary_reader=self.binary)
+
+        if update:
+            self.update_binary()
 
     @staticmethod
     def from_inventory_item(item: InventoryItem, save: AsaSave, cls: callable = None):

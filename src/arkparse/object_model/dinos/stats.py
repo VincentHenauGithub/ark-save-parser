@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Collection, List, Optional
 from dataclasses import dataclass
 from uuid import UUID
 
@@ -174,8 +174,13 @@ class DinoStats(ParsedObjectBase):
         self.current_level = self.base_stat_points.get_level() + self.added_stat_points.get_level() + self.mutated_stat_points.get_level()
         self._percentage_imprinted = self.object.get_property_value("DinoImprintingQuality", 0.0) * 100
     
-    def __init__(self, uuid: UUID = None, save: AsaSave = None):
-        super().__init__(uuid, save=save)
+    def __init__(
+        self,
+        uuid: UUID = None,
+        save: AsaSave = None,
+        selected_property_names: Optional[Collection[str]] = None,
+    ):
+        super().__init__(uuid, save=save, selected_property_names=selected_property_names)
 
     @staticmethod
     def from_object(obj: ArkGameObject):

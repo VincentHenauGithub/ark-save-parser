@@ -1,4 +1,4 @@
-from typing import List, Optional, Type, TypeVar, Dict, TYPE_CHECKING
+from typing import Collection, List, Optional, Type, TypeVar, Dict, TYPE_CHECKING
 from dataclasses import dataclass, field
 
 # Import ArkProperty only for type checking to avoid circular import
@@ -36,15 +36,32 @@ class ArkPropertyContainer:
                 if isinstance(prop.value, ArkPropertyContainer):
                     self._nested_containers.append(prop)
 
-    def read_properties(self, byte_buffer: "ArkBinaryParser", propertyClass: Type['ArkProperty'], next_object_index: int) -> None:
+    def read_properties(
+        self,
+        byte_buffer: "ArkBinaryParser",
+        propertyClass: Type['ArkProperty'],
+        next_object_index: int,
+        selected_property_names: Optional[Collection[str]] = None,
+    ) -> None:
         last_property_position = byte_buffer.get_position()
+        selected_names = set(selected_property_names) if selected_property_names else None
+        skipped_property = getattr(propertyClass, "SKIPPED_PROPERTY", None)
         ArkSaveLogger.reset_struct_path()
         # ArkSaveLogger.open_hex_view(True)
         try:
             while byte_buffer.has_more() and byte_buffer.get_position() < next_object_index:
                 last_property_position = byte_buffer.get_position()
-                ark_property = propertyClass.read_property(byte_buffer)
+                if selected_names is None or skipped_property is None:
+                    ark_property = propertyClass.read_property(byte_buffer)
+                else:
+                    ark_property = propertyClass.read_property(
+                        byte_buffer,
+                        selected_property_names=selected_names,
+                    )
                 
+                if skipped_property is not None and ark_property is skipped_property:
+                    continue
+
                 if ark_property is None:
                     # last property read and was None marker
                     break

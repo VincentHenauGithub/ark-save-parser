@@ -1,7 +1,7 @@
 #TamedTimeStamp
 import json
 from uuid import UUID
-from typing import TYPE_CHECKING, Optional, List
+from typing import Collection, TYPE_CHECKING, Optional, List
 from pathlib import Path
 
 from arkparse.object_model.dinos.dino_id import DinoId
@@ -64,10 +64,16 @@ class TamedDino(Dino):
                 self.inv_uuid = None
                 self._inventory = None
 
-    def __init__(self, uuid: UUID = None, save: AsaSave = None, bypass_inventory: bool = True):
+    def __init__(
+        self,
+        uuid: UUID = None,
+        save: AsaSave = None,
+        bypass_inventory: bool = True,
+        selected_property_names: Optional[Collection[str]] = None,
+    ):
         self.inv_uuid = None
         self._inventory = None
-        super().__init__(uuid, save=save)
+        super().__init__(uuid, save=save, selected_property_names=selected_property_names)
 
         if self.inv_uuid is not None and not bypass_inventory:
             self._inventory = Inventory(self.inv_uuid, save=save)

@@ -67,29 +67,77 @@ class Inventory(ParsedObjectBase):
                 return item
 
     def add_item(self, item: UUID, store: bool = True):
-        if len(self.items) == 0:
-            raise ValueError("Currently, adding stuff to empty inventories is not supported!")
-            # self.binary.set_property_position("bInitializedMe")
-        else:
-            self.object.find_property("InventoryItems")
+        # An inventory holding nothing has no InventoryItems property at all --
+        # ARK leaves out anything still at its class default -- so the first item
+        # has to insert the array rather than replace it.
+        was_empty = len(self.items) == 0
 
         self._items[item] = InventoryItem(item, self.save)
         self._items[item].add_self_to_inventory(self.object.uuid)
         self.item_classes[item] = self.save.get_class_of_uuid(item)
 
-        object_references = []
-        for item in self._items.keys():
-            object_references.append(get_uuid_reference_bytes(item))
+        object_references = [get_uuid_reference_bytes(i) for i in self._items.keys()]
 
-        if len(self._items) == 0:
-            raise ValueError("Inventory cannot be empty when adding items (at this point in time)")
-            # self.binary.insert_array("InventoryItems", "ObjectProperty", object_references)
+        if was_empty:
+            self.__insert_items_array(object_references)
         else:
             self.binary.set_property_position("InventoryItems")
             self.binary.replace_array("InventoryItems", "ObjectProperty", object_references)
 
         if store:
             self.update_binary()
+        if was_empty:
+            self.update_object()
+
+    def __insert_items_array(self, object_references):
+        """Give an empty inventory its InventoryItems array.
+
+        Every inventory in a save that does carry items spells the array out
+        directly before bInitializedMe, with the same two header values, so that
+        is where and how it is written back.
+        """
+        for name in ("InventoryItems", "ObjectProperty"):
+            if self.save.save_context.get_name_id(name) is None:
+                self.save.add_name_to_name_table(name)
+
+        position = self.binary.set_property_position("bInitializedMe")
+        if position is None:
+            raise ValueError(
+                f"Inventory {self.object.uuid} has no bInitializedMe property to "
+                "anchor its item list to")
+
+        self.binary.insert_array("InventoryItems", "ObjectProperty", object_references,
+                                 self.__ARRAY_HEADER, self.__ARRAY_TYPE_INT,
+                                 position=position)
+
+    # Constant across every InventoryItems array found in a save, whether it
+    # holds one entry or a hundred.
+    __ARRAY_HEADER = 1
+    __ARRAY_TYPE_INT = 0
+
+    @staticmethod
+    def generate_from_template(save: AsaSave, class_: str) -> "Inventory":
+        """Create an empty inventory of ``class_`` in ``save`` and return it.
+
+        Items are added afterwards with :meth:`add_item`, which grows the empty
+        layout into the populated one. The populated template is kept alongside
+        it under ``assets/templates/inventory`` as the reference for that shape,
+        but starting from it would mean carrying its item references along.
+        """
+        import os
+        from arkparse.object_model.misc.__parsed_object_base import ParsedObjectBase
+
+        uuid, _ = ParsedObjectBase._generate(save, os.path.join("templates", "inventory", "empty"))
+
+        if save.save_context.get_name_id(class_) is None:
+            save.add_name_to_name_table(class_)
+
+        inventory = Inventory(uuid, save)
+        inventory.reidentify(uuid, update=False)
+        inventory.object.change_class(class_, inventory.binary)
+        inventory.update_binary()
+        inventory.update_object()
+        return inventory
 
     def remove_item(self, item: UUID):
         if len(self.items) == 0:

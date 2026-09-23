@@ -124,22 +124,34 @@ class Saddles:
     giant_turtle: str = "/Game/Genesis/Dinos/GiantTurtle/PrimalItemArmor_GiantTurtleSaddle.PrimalItemArmor_GiantTurtleSaddle_C"
     palaeoctopus: str = "/Game/Packs/TidesOfFortune/Dinos/Paleoctopus/Saddle/PrimalItemArmor_PalaeoctopusSaddle.PrimalItemArmor_PalaeoctopusSaddle_C"
 
-    all_bps = [yi_ling, archelon, ceratosaurus, deinosuchus, fasolasuchus, gigantoraptor_ASA, 
-               shastasaurus, xiphactinus, saddle_cart_btt, rockdrake_btt, allo, ankylo, 
-               argentavis, arthro, baryonyx, basilo, castoroides, carcha, carno, chalico, 
-               daeodon, diplodocus, dire_bear, doedi, dolphin, dunkleosteus, equus, gallimimus, 
-               giga, hyaenodon, iguanodon, kaprosuchus, mammoth, manta, megalania, megalodon, 
-               megalodon_tek, megalosaurus, megatherium, mosa, mosa_platform, mosa_tek, pachy, 
-               pachyrhino, parasaur, paracer_platform, paracer, pelagornis, phiomia, plesio_platform, 
-               plesiosaur, procoptodon, ptero, quetz, quetz_platform, raptor, rex, rex_tek, rhino, 
-               rhynio, sabertooth, sarco, bronto, bronto_platform, pulmonoscorpius, araneo, spino, 
-               megaloceros, stego, tapejara, tapejara_tek, terror_bird, therizinosaurus, thylacoleo, 
-               titanosaur_platform, beelzebufo, trike, carbo, tuso, yuty, basilisk, cave_wolf,
-               karkinos, mole_rat, rock_drake, rock_drake_tek, camel, mantis, moth, rock_golem,
-               thorny_dragon, bison, deinotherium, dreadnoughtus, maelizard, gacha, gas_bags,
-               snow_owl, ravager, managarmr, velonosaur, helicoprion, gigantoraptor, desmodus,
-               soulwyn, gigadesmodus_platform, gigadesmodus, maelwyn, aureliax, ossidon, megaraptor, 
-               pyromane, crylophosaurus, deinonychus, acrocanthosaurus, axolotl, cherufe, giant_turtle, palaeoctopus]
+    spirit_bear_saddle: str = "/Game/ASA/Dinos/SpiritBear/PrimalItemArmor_ForSBear.PrimalItemArmor_ForSBear_C"
+    boaratos: str = "/Game/ASA/Dinos/Boaratos/Saddles/PrimalItemArmor_BoaratosSaddle.PrimalItemArmor_BoaratosSaddle_C"
+    concavenator: str = "/Game/ASA/Dinos/Concavenator/Saddle/PrimalItemArmor_ConcavenatorSaddle.PrimalItemArmor_ConcavenatorSaddle_C"
+    grand_tortuga: str = "/Game/ASA/Dinos/GrandTortugar/Saddle/PrimalItemArmor_GrandTortugaSaddle.PrimalItemArmor_GrandTortugaSaddle_C"
+    grand_tortuga_platform: str = "/Game/ASA/Dinos/GrandTortugar/Saddle/PrimalItemArmor_GrandTortugar_Platform.PrimalItemArmor_GrandTortugar_Platform_C"
+    jackalope: str = "/Game/ASA/Dinos/Jackalope/PrimalItemArmor_JackalopeSaddle.PrimalItemArmor_JackalopeSaddle_C"
+    lumina: str = "/Game/Dragontopia/Dragons/Eclipsar/Lumina/PrimalItemArmor_LuminaSaddle.PrimalItemArmor_LuminaSaddle_C"
+    umbra: str = "/Game/Dragontopia/Dragons/Eclipsar/Umbra/Saddle/PrimalItemArmor_UmbraSaddle.PrimalItemArmor_UmbraSaddle_C"
+    space_whale_tek: str = "/Game/Genesis/Dinos/SpaceWhale/PrimalItemArmor_SpaceWhaleSaddle_Tek.PrimalItemArmor_SpaceWhaleSaddle_Tek_C"
+    spiney_lizard_promo: str = "/Game/ScorchedEarth/Dinos/SpineyLizard/PrimalItemArmor_SpineyLizardPromoSaddle.PrimalItemArmor_SpineyLizardPromoSaddle_C"
+
+    all_bps = [yi_ling, archelon, ceratosaurus, deinosuchus, fasolasuchus, gigantoraptor_ASA, shastasaurus,
+               xiphactinus, helicoprion, saddle_cart_btt, rockdrake_btt, allo, ankylo, argentavis, arthro,
+               baryonyx, basilo, castoroides, carcha, carno, chalico, daeodon, diplodocus, dire_bear, doedi,
+               dolphin, dunkleosteus, equus, gallimimus, giga, hyaenodon, iguanodon, kaprosuchus, mammoth,
+               manta, megalania, megalodon, megalodon_tek, megalosaurus, megatherium, mosa, mosa_platform,
+               mosa_tek, pachy, pachyrhino, parasaur, paracer_platform, paracer, pelagornis, phiomia,
+               plesio_platform, plesiosaur, procoptodon, ptero, quetz, quetz_platform, raptor, rex, rex_tek,
+               rhino, rhynio, sabertooth, sarco, bronto, bronto_platform, pulmonoscorpius, araneo, spino,
+               megaloceros, stego, tapejara, tapejara_tek, terror_bird, therizinosaurus, thylacoleo,
+               titanosaur_platform, beelzebufo, trike, carbo, tuso, yuty, basilisk, cave_wolf, karkinos,
+               mole_rat, rock_drake, rock_drake_tek, camel, mantis, moth, rock_golem, thorny_dragon, bison,
+               deinotherium, dreadnoughtus, maelizard, gacha, gas_bags, snow_owl, ravager, managarmr,
+               velonosaur, gigantoraptor, desmodus, soulwyn, gigadesmodus_platform, gigadesmodus, maelwyn,
+               aureliax, ossidon, megaraptor, pyromane, crylophosaurus, deinonychus, acrocanthosaurus,
+               axolotl, cherufe, giant_turtle, palaeoctopus, spirit_bear_saddle, boaratos, concavenator,
+               grand_tortuga, grand_tortuga_platform, jackalope, lumina, umbra, space_whale_tek,
+               spiney_lizard_promo]
     
 class Hazard:
     boots: str = "/Game/Aberration/CoreBlueprints/Items/Armor/HazardSuit/PrimalItemArmor_HazardSuitBoots.PrimalItemArmor_HazardSuitBoots_C"
@@ -257,7 +269,9 @@ class Shields:
     riot: str = "/Game/PrimalEarth/CoreBlueprints/Items/Armor/Shields/PrimalItemArmor_TransparentRiotShield.PrimalItemArmor_TransparentRiotShield_C"
     wood: str = "/Game/PrimalEarth/CoreBlueprints/Items/Armor/Shields/PrimalItemArmor_WoodShield.PrimalItemArmor_WoodShield_C"
     tek: str = "/Game/PrimalEarth/CoreBlueprints/Items/Armor/Shields/PrimalItemArmor_ShieldTek.PrimalItemArmor_ShieldTek_C"
-    all_bps = [metal, riot, wood, tek]
+    metal_thrall: str = "/Game/LostColony/CoreBlueprints/Items/Armor/PrimalItemArmor_MetalShield_Thrall.PrimalItemArmor_MetalShield_Thrall_C"
+
+    all_bps = [metal, riot, wood, tek, metal_thrall]
 
 class Desert:
     boots: str = "/Game/ScorchedEarth/Outfits/PrimalItemArmor_DesertClothBoots.PrimalItemArmor_DesertClothBoots_C"
@@ -298,7 +312,9 @@ class Armor:
 class Utilities:
     glider: str = "/Game/Aberration/CoreBlueprints/Items/Armor/PrimalItemArmor_Glider.PrimalItemArmor_Glider_C"
     zipline_motor: str = "/Game/Aberration/CoreBlueprints/Items/Armor/PrimalItemArmor_ZiplineMotor.PrimalItemArmor_ZiplineMotor_C"
-    all_bps = [glider, zipline_motor]
+    glider_thrall: str = "/Game/LostColony/CoreBlueprints/Items/PrimalItemArmor_Glider_Thrall.PrimalItemArmor_Glider_Thrall_C"
+
+    all_bps = [glider, zipline_motor, glider_thrall]
 
 class Gathering:
     metal_hatchet: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponMetalHatchet.PrimalItem_WeaponMetalHatchet_C"
@@ -376,7 +392,7 @@ class Throwables:
     tek_gravity_grenade: str = "/Game/Extinction/CoreBlueprints/Weapons/PrimalItem_WeaponTekGravityGrenade.PrimalItem_WeaponTekGravityGrenade_C"
     all_bps = [gas_grenade, poison_grenade, tek_grenade, c4, grenade, bola, spear, tek_gravity_grenade]
 
-class Misc:
+class Tools:
     climb_pick: str = "/Game/Aberration/CoreBlueprints/Weapons/PrimalItem_WeaponClimbPick.PrimalItem_WeaponClimbPick_C"
     empty_cryopod: str = "/Game/Extinction/CoreBlueprints/Weapons/PrimalItem_WeaponEmptyCryopod.PrimalItem_WeaponEmptyCryopod_C"
     shovel: str = "/Game/Packs/Frontier/Weapons/Shovel/PrimalItem_WeaponShovel.PrimalItem_WeaponShovel_C"
@@ -397,16 +413,54 @@ class Misc:
     
     paintbrush: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponPaintbrush.PrimalItem_WeaponPaintbrush_C"
     scissors: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponScissors.PrimalItem_WeaponScissors_C"
-    all_bps = [climb_pick, empty_cryopod, shovel, gene_scanner, goo_gun, stopwatch, radio,
-                alarm_trap, flare_gun, handcuffs, harpoon, fists, 
-                poison_trap, prod, spray_paint, tripwire_c4, paintbrush, scissors]
+    shoulder_cannon: str = "/Game/Genesis/Items/Armor/PrimalItemArmor_ShoulderCannon.PrimalItemArmor_ShoulderCannon_C"
+    weapon_shoulder_dragon_autumn: str = "/Game/ASA/Dinos/ShoulderDragon/Variants/Autumn/PrimalItem_WeaponShoulderDragon_Autumn.PrimalItem_WeaponShoulderDragon_Autumn_C"
+    weapon_shoulder_dragon_spring: str = "/Game/ASA/Dinos/ShoulderDragon/Variants/Spring/PrimalItem_WeaponShoulderDragon_Spring.PrimalItem_WeaponShoulderDragon_Spring_C"
+    weapon_shoulder_dragon_winter: str = "/Game/ASA/Dinos/ShoulderDragon/Variants/Winter/PrimalItem_WeaponShoulderDragon_Winter.PrimalItem_WeaponShoulderDragon_Winter_C"
+    weap_climb_pick: str = "/Game/Aberration/CoreBlueprints/Weapons/WeapClimbPick.WeapClimbPick_C"
+    weapon_drake_claw: str = "/Game/Dragontopia/Weapons/DrakeClaw/PrimalItem_WeaponDrakeClaw.PrimalItem_WeaponDrakeClaw_C"
+    weap_empty_cryopod: str = "/Game/Extinction/CoreBlueprints/Weapons/WeapEmptyCryopod.WeapEmptyCryopod_C"
+    weapon_scout_remote: str = "/Game/Extinction/Dinos/Scout/PrimalItem_WeaponScoutRemote.PrimalItem_WeaponScoutRemote_C"
+    weapon_scout_remote_city_terminal: str = "/Game/Extinction/Structures/CityTerminal/PrimalItem_WeaponScoutRemote_CityTerminal.PrimalItem_WeaponScoutRemote_CityTerminal_C"
+    weapon_admin_blink_rifle: str = "/Game/Extinction/Weapon_AdminBlinkRifle/PrimalItem_WeaponAdminBlinkRifle.PrimalItem_WeaponAdminBlinkRifle_C"
+    weap_admin_blink_rifle: str = "/Game/Extinction/Weapon_AdminBlinkRifle/WeapAdminBlinkRifle.WeapAdminBlinkRifle_C"
+    weapon_tek_cruise_missile: str = "/Game/Genesis/Weapons/CruiseMissile/PrimalItem_WeaponTekCruiseMissile.PrimalItem_WeaponTekCruiseMissile_C"
+    weapon_fishing_net: str = "/Game/Genesis/Weapons/FishingNet/PrimalItem_WeaponFishingNet.PrimalItem_WeaponFishingNet_C"
+    weapon_lost_charge_pet: str = "/Game/LostColony/Dinos/LostChargePet/Weapon/PrimalItem_WeaponLostChargePet.PrimalItem_WeaponLostChargePet_C"
+    weapon_base_clipboard_and_hammer: str = "/Game/LostColony/Weapons/ClipboardAndHammer/PrimalItem_WeaponBaseClipboardAndHammer.PrimalItem_WeaponBaseClipboardAndHammer_C"
+    weap_gene_scanner: str = "/Game/Packs/Steampunk/Weapons/GeneScanner/WeapGeneScanner.WeapGeneScanner_C"
+    weapon_spear_explosive: str = "/Game/Packs/Wasteland/Weapons/ExplosiveSpear/PrimalItem_WeaponSpear_Explosive.PrimalItem_WeaponSpear_Explosive_C"
+    weapon_lasso: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItem_WeaponLasso.PrimalItem_WeaponLasso_C"
+    weap_compound_bow: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/WeapCompoundBow.WeapCompoundBow_C"
+    weap_crossbow_tranq: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/WeapCrossbow_Tranq.WeapCrossbow_Tranq_C"
+    weap_machined_sniper_scope: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/WeapMachinedSniper_Scope.WeapMachinedSniper_Scope_C"
+    weap_one_shot_rifle_tranq: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/WeapOneShotRifleTranq.WeapOneShotRifleTranq_C"
+    weap_sickle: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/WeapSickle.WeapSickle_C"
+    weapon_magnifying_glass: str = "/Game/PrimalEarth/Test/PrimalItem_WeaponMagnifyingGlass.PrimalItem_WeaponMagnifyingGlass_C"
+    weapon_spyglass: str = "/Game/PrimalEarth/Test/PrimalItem_WeaponSpyglass.PrimalItem_WeaponSpyglass_C"
+    weapon_cluster_grenade: str = "/Game/ScorchedEarth/WeaponClusterGrenade/PrimalItem_WeaponClusterGrenade.PrimalItem_WeaponClusterGrenade_C"
+    weapon_electronic_binoculars: str = "/Game/ScorchedEarth/WeaponElectronicBinoculars/PrimalItem_WeaponElectronicBinoculars.PrimalItem_WeaponElectronicBinoculars_C"
+    weapon_oil_jar: str = "/Game/ScorchedEarth/WeaponOilJar/PrimalItem_WeaponOilJar.PrimalItem_WeaponOilJar_C"
+    weap_whip: str = "/Game/ScorchedEarth/WeaponWhip/WeapWhip.WeapWhip_C"
+
+    all_bps = [climb_pick, empty_cryopod, shovel, gene_scanner, goo_gun, stopwatch, radio, alarm_trap,
+               flare_gun, handcuffs, harpoon, poison_trap, prod, spray_paint, tripwire_c4, fists,
+               taxidermy_tool, paintbrush, scissors, shoulder_cannon,
+               weapon_shoulder_dragon_autumn, weapon_shoulder_dragon_spring,
+               weapon_shoulder_dragon_winter, weap_climb_pick, weapon_drake_claw, weap_empty_cryopod,
+               weapon_scout_remote, weapon_scout_remote_city_terminal, weapon_admin_blink_rifle,
+               weap_admin_blink_rifle, weapon_tek_cruise_missile, weapon_fishing_net, weapon_lost_charge_pet,
+               weapon_base_clipboard_and_hammer, weap_gene_scanner, weapon_spear_explosive, weapon_lasso,
+               weap_compound_bow, weap_crossbow_tranq, weap_machined_sniper_scope, weap_one_shot_rifle_tranq,
+               weap_sickle, weapon_magnifying_glass, weapon_spyglass, weapon_cluster_grenade,
+               weapon_electronic_binoculars, weapon_oil_jar, weap_whip]
     
 class Ammo:
     zipline: str = "/Game/Aberration/CoreBlueprints/Weapons/PrimalItemAmmo_Zipline.PrimalItemAmmo_Zipline_C"
     advanced_bullet: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedBullet.PrimalItemAmmo_AdvancedBullet_C"
     advanced_rifle_bullet: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedRifleBullet.PrimalItemAmmo_AdvancedRifleBullet_C"
     advanced_sniper_bullet: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AdvancedSniperBullet.PrimalItemAmmo_AdvancedSniperBullet_C"
-    tranq_dart: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AggroTranqDart.PrimalItemAmmo_AggroTranqDart_C"
+    aggro_tranq_dart: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_AggroTranqDart.PrimalItemAmmo_AggroTranqDart_C"
     arrow_flame: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_ArrowFlame.PrimalItemAmmo_ArrowFlame_C"
     arrow_stone: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_ArrowStone.PrimalItemAmmo_ArrowStone_C"
     arrow_tranq: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_ArrowTranq.PrimalItemAmmo_ArrowTranq_C"
@@ -426,10 +480,20 @@ class Ammo:
     flamethrower: str = "/Game/ScorchedEarth/WeaponFlamethrower/PrimalItemAmmo_Flamethrower.PrimalItemAmmo_Flamethrower_C"
     rocket_homing_missile: str = "/Game/ScorchedEarth/WeaponHomingMissile/PrimalItemAmmo_RocketHomingMissile.PrimalItemAmmo_RocketHomingMissile_C"
     
-    all_bps = [zipline, advanced_bullet, advanced_rifle_bullet, advanced_sniper_bullet, tranq_dart, arrow_flame, 
-                arrow_stone, arrow_tranq, ballista_arrow, cannon_ball, chain_bola, compound_bow_arrow, grappling_hook, 
-                refined_tranq_dart, rocket, simple_bullet, simple_rifle_bullet, simple_shotgun_bullet, tranq_dart, 
-                tranq_spear_bolt, c4_ammo, flamethrower, rocket_homing_missile] 
+    cannon_shell: str = "/Game/Extinction/CoreBlueprints/Weapons/PrimalItemAmmo_CannonShell.PrimalItemAmmo_CannonShell_C"
+    rocket_pod: str = "/Game/Extinction/CoreBlueprints/Weapons/PrimalItemAmmo_RocketPod.PrimalItemAmmo_RocketPod_C"
+    cannon_ball_tof_corrosive: str = "/Game/Packs/TidesOfFortune/CoreBlueprints/Items/PrimalItemAmmo_CannonBall_ToF_Corrosive.PrimalItemAmmo_CannonBall_ToF_Corrosive_C"
+    cannon_ball_tof_incendiary: str = "/Game/Packs/TidesOfFortune/CoreBlueprints/Items/PrimalItemAmmo_CannonBall_ToF_Incendiary.PrimalItemAmmo_CannonBall_ToF_Incendiary_C"
+    cannon_ball_tof_reinforced: str = "/Game/Packs/TidesOfFortune/CoreBlueprints/Items/PrimalItemAmmo_CannonBall_ToF_Reinforced.PrimalItemAmmo_CannonBall_ToF_Reinforced_C"
+    grapeshot_tof: str = "/Game/Packs/TidesOfFortune/Weapons/HandCannon/Ammo/PrimalItemAmmo_Grapeshot_ToF.PrimalItemAmmo_Grapeshot_ToF_C"
+    boulder: str = "/Game/PrimalEarth/CoreBlueprints/Weapons/PrimalItemAmmo_Boulder.PrimalItemAmmo_Boulder_C"
+
+    all_bps = [zipline, advanced_bullet, advanced_rifle_bullet, advanced_sniper_bullet, aggro_tranq_dart,
+               arrow_flame, arrow_stone, arrow_tranq, ballista_arrow, cannon_ball, chain_bola,
+               compound_bow_arrow, grappling_hook, refined_tranq_dart, rocket, simple_bullet,
+               simple_rifle_bullet, simple_shotgun_bullet, tranq_dart, tranq_spear_bolt, c4_ammo,
+               flamethrower, rocket_homing_missile, cannon_shell, rocket_pod, cannon_ball_tof_corrosive,
+               cannon_ball_tof_incendiary, cannon_ball_tof_reinforced, grapeshot_tof, boulder]
 class Weapons:
     gathering: Gathering = Gathering()
     primitive: Primitive = Primitive()
@@ -444,6 +508,9 @@ class Mek:
     missile_pod: str = "/Game/Extinction/CoreBlueprints/Items/Saddle/PrimalItemArmor_MekBackpack_MissilePod.PrimalItemArmor_MekBackpack_MissilePod_C"
     transformer: str = "/Game/Extinction/CoreBlueprints/Items/Saddle/PrimalItemArmor_MekTransformer.PrimalItemArmor_MekTransformer_C"
 
+    # Not backpacks: excluded from all_bps so the armour lookup stays correct.
+    extras = [missile_pod, transformer]
+
     all_bps = [shield, cannon]
 
 class ArmaDoggoGear:
@@ -457,14 +524,27 @@ class ArmaDoggoGear:
     camping_gear: str = "/Game/Packs/Wasteland/Dinos/CompanionDino/Items/Armor/PrimalItemArmor_DinoCompanion_Gear_RolledUpSleepingBag.PrimalItemArmor_DinoCompanion_Gear_RolledUpSleepingBag_C"
     picnic_set: str = "/Game/Packs/Wasteland/Dinos/CompanionDino/Items/Armor/PrimalItemArmor_DinoCompanion_Gear_FoodBasket.PrimalItemArmor_DinoCompanion_Gear_FoodBasket_C"
     battle_spikes: str = "/Game/Packs/Wasteland/Dinos/CompanionDino/Items/Armor/PrimalItemArmor_DinoCompanion_Gear_Spikes.PrimalItemArmor_DinoCompanion_Gear_Spikes_C"
+    chibi_basket: str = "/Game/Packs/Wasteland/Dinos/CompanionDino/Items/Armor/PrimalItemArmor_DinoCompanion_Gear_ChibiBasket.PrimalItemArmor_DinoCompanion_Gear_ChibiBasket_C"
+    spyglass: str = "/Game/Packs/Wasteland/Dinos/CompanionDino/Items/Armor/PrimalItemArmor_DinoCompanion_Gear_Spyglass.PrimalItemArmor_DinoCompanion_Gear_Spyglass_C"
     bait_trap: str = "/Game/Packs/Wasteland/Dinos/CompanionDino/Items/Armor/PrimalItemArmor_DinoCompanion_Gear_MeatSack.PrimalItemArmor_DinoCompanion_Gear_MeatSack_C"
 
     # Utility gear attachments for the companion dino; these occupy an armor
     # slot but provide no armor rating (unlike the doggo saddle `armor`).
     gear = [ammo_box, extra_armor, speed_booster, oxygen_tank, rucksack, medpack,
-            camping_gear, picnic_set, battle_spikes, bait_trap]
+            camping_gear, picnic_set, battle_spikes, chibi_basket,
+            spyglass, bait_trap]
 
     all_bps = [armor]
+
+class Attachments:
+    flashlight: str = "/Game/PrimalEarth/CoreBlueprints/Items/WeaponAttachments/PrimalItemWeaponAttachment_Flashlight.PrimalItemWeaponAttachment_Flashlight_C"
+    holo_scope: str = "/Game/PrimalEarth/CoreBlueprints/Items/WeaponAttachments/PrimalItemWeaponAttachment_HoloScope.PrimalItemWeaponAttachment_HoloScope_C"
+    laser: str = "/Game/PrimalEarth/CoreBlueprints/Items/WeaponAttachments/PrimalItemWeaponAttachment_Laser.PrimalItemWeaponAttachment_Laser_C"
+    scope: str = "/Game/PrimalEarth/CoreBlueprints/Items/WeaponAttachments/PrimalItemWeaponAttachment_Scope.PrimalItemWeaponAttachment_Scope_C"
+    silencer: str = "/Game/PrimalEarth/CoreBlueprints/Items/WeaponAttachments/PrimalItemWeaponAttachment_Silencer.PrimalItemWeaponAttachment_Silencer_C"
+
+    all_bps = [flashlight, holo_scope, laser, scope, silencer]
+
 
 class Equipment:
     saddles = Saddles()
@@ -473,9 +553,12 @@ class Equipment:
     weapons = Weapons()
     shield = Shields()
     ammo = Ammo()
-    misc: Misc = Misc()
+    misc: Tools = Tools()
     throwables: Throwables = Throwables()
     mek: Mek = Mek()
     arma_doggo_gear: ArmaDoggoGear = ArmaDoggoGear()
+    attachments: Attachments = Attachments()
 
-    all_bps = saddles.all_bps + armor.all_bps + utilities.all_bps + weapons.all_bps + shield.all_bps + ammo.all_bps + misc.all_bps + throwables.all_bps + mek.all_bps + arma_doggo_gear.all_bps
+    all_bps = saddles.all_bps + armor.all_bps + utilities.all_bps + weapons.all_bps + shield.all_bps + ammo.all_bps + misc.all_bps + throwables.all_bps + mek.all_bps + mek.extras + \
+            arma_doggo_gear.all_bps + arma_doggo_gear.gear + \
+            attachments.all_bps

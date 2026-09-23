@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Optional, TYPE_CHECKING
+from typing import Collection, List, Optional, TYPE_CHECKING
 from uuid import UUID
 import random
 
@@ -40,10 +40,19 @@ class ArkGameObject(ArkPropertyContainer):
     properties_offset : int = 0
     parser_type: type = None
 
-    def __init__(self, uuid: Optional[UUID] = None, blueprint: Optional[str] = None, binary_reader: Optional[ArkBinaryParser|LegacyArkBinaryParser] = None, from_custom_bytes: bool = False, no_header: bool = False):
+    def __init__(
+        self,
+        uuid: Optional[UUID] = None,
+        blueprint: Optional[str] = None,
+        binary_reader: Optional[ArkBinaryParser|LegacyArkBinaryParser] = None,
+        from_custom_bytes: bool = False,
+        no_header: bool = False,
+        selected_property_names: Optional[Collection[str]] = None,
+    ):
         self.parser_type = ArkProperty if (isinstance(binary_reader, ArkBinaryParser) or binary_reader is None) else LegacyArkProperty
         self.uuid = uuid
         self.blueprint = blueprint
+        self._selected_property_names = frozenset(selected_property_names) if selected_property_names else None
         string_name = False
         string_names: List[str] = []
         string_name_offsets: List[int] = []
@@ -119,7 +128,12 @@ class ArkGameObject(ArkPropertyContainer):
 
                 if not from_custom_bytes:
                     ArkSaveLogger.parser_log(f"Reading properties for object {self.blueprint} ({self.uuid})")
-                    self.read_properties(binary_reader, self.parser_type, binary_reader.size())
+                    self.read_properties(
+                        binary_reader,
+                        self.parser_type,
+                        binary_reader.size(),
+                        selected_property_names=selected_property_names,
+                    )
                     
                     if  binary_reader.size() - binary_reader.position >= 20:
                         binary_reader.set_position(binary_reader.size() - 20)

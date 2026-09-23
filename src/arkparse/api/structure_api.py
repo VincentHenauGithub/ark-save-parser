@@ -33,23 +33,50 @@ class StructureApi:
         self.retrieved_all = False
         self.parsed_structures = {}
 
+    @staticmethod
+    def _name_based_reader_config() -> GameObjectReaderConfiguration:
+        """Select structures by class path.
+
+        Only used as a fallback: it misses every mod structure whose class path
+        doesn't contain "Structures" (thousands of them on a modded save), which
+        is why `_default_reader_config` prefers the StructureID property.
+        """
+        return GameObjectReaderConfiguration(
+            blueprint_name_filter=lambda name: name is not None and (\
+                                               (name in _KNOWN_DEVIATING_STRUCTURE_BPS) or \
+                                               ((("Structures" in name) or (name in _KNOWN_DEVIATING_STRUCTURE_BPS)) \
+                                               and (not "PrimalItemStructure_" in name or "PrimalItemStructure_ASR" in name) \
+                                               and (not "/Skins/" in name) \
+                                               and (not "PrimalInventory" in name) \
+                                               and (not "/TreasureMap/" in name) \
+                                               and (not "PrimalItemStructureSkin" in name) \
+                                               and (not "PrimalItemResource" in name) \
+                                               and (not "/TrainCarts/" in name) \
+                                               and (not name in _KNOWN_NONE_STRUCTURES)) \
+            )
+        )
+
+    def _default_reader_config(self) -> GameObjectReaderConfiguration:
+        """Select structures by the StructureID property they all carry.
+
+        This is a raw byte-pattern scan over each object's blob, so unlike the
+        class-path filter it is mod-agnostic. The scan can match blobs that
+        merely contain the name id, so the StructureID check further down still
+        drops anything that turns out not to be a structure.
+        """
+        if self.save.save_context.get_name_id("StructureID") is None:
+            # An absent name id yields an empty pattern list, which the reader
+            # treats as "no property filter" (i.e. parse the entire save), so
+            # fall back to the class-path filter instead.
+            ArkSaveLogger.warning_log("Save has no 'StructureID' name entry, falling back to class-path structure filter")
+            return StructureApi._name_based_reader_config()
+
+        return GameObjectReaderConfiguration(property_names=["StructureID"])
+
     def get_all_objects(self, config: GameObjectReaderConfiguration = None) -> Dict[UUID, ArkGameObject]:
         if config is None:
             ArkSaveLogger.api_log("Retrieving all structure objects from save")
-            reader_config = GameObjectReaderConfiguration(
-                blueprint_name_filter=lambda name: name is not None and (\
-                                                   (name in _KNOWN_DEVIATING_STRUCTURE_BPS) or \
-                                                   ((("Structures" in name) or (name in _KNOWN_DEVIATING_STRUCTURE_BPS)) \
-                                                   and (not "PrimalItemStructure_" in name or "PrimalItemStructure_ASR" in name) \
-                                                   and (not "/Skins/" in name) \
-                                                   and (not "PrimalInventory" in name) \
-                                                   and (not "/TreasureMap/" in name) \
-                                                   and (not "PrimalItemStructureSkin" in name) \
-                                                   and (not "PrimalItemResource" in name) \
-                                                   and (not "/TrainCarts/" in name) \
-                                                   and (not name in _KNOWN_NONE_STRUCTURES)) \
-                )
-            )
+            reader_config = self._default_reader_config()
 
             objects = self.save.get_game_objects(reader_config)
 
