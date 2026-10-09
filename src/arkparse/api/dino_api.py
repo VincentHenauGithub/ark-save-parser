@@ -91,7 +91,7 @@ class DinoApi:
     _DEFAULT_CONFIG = GameObjectReaderConfiguration(
         blueprint_name_filter=lambda name: \
             name is not None and \
-                (((("/Creatures/" in name) or ("/Dinos/" in name) or ("/SDinoVariants/" in name) or ("/AstraeosCreatures/" in name)) and "_Character_" in name) or \
+                (((("/Creatures/" in name) or ("/Dinos/" in name) or ("/Dragons/" in name) or ("/SDinoVariants/" in name) or ("/AstraeosCreatures/" in name)) and "_Character_" in name) or \
                 ("DinoCharacterStatusComponent" in name) or \
                 (name in _KNOWN_SPECIAL_CASES) or \
                 _is_vessel_hull(name) or \
