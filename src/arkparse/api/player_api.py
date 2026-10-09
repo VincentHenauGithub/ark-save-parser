@@ -135,6 +135,9 @@ class PlayerApi:
         self.players: List[ArkPlayer] = []
         self.tribes: List[ArkTribe] = []
         self.tribe_to_player_map: Dict[int, List[ArkPlayer]] = {}
+        # Older copies of a player/tribe record left behind in the store.
+        self.superseded_players = 0
+        self.superseded_tribes = 0
         self.save: AsaSave = save
         self.pawns: Optional[Dict[UUID, ArkGameObject]] = None
         self.cluster_data: Optional[Dict[str, "ClusterData"]] = {}
@@ -276,6 +279,7 @@ class PlayerApi:
         new_players: Dict[int, ArkPlayer] = {}
         new_tribes: Dict[int, ArkTribe] = {}
         new_tribe_to_player: Dict[int, List[ArkPlayer]] = {}
+        superseded_players = superseded_tribes = 0
 
         if not self.from_store:
             index: int = 0
@@ -298,6 +302,11 @@ class PlayerApi:
                 if self.ignore_error:
                     continue
                 raise e
+            # The store is append-only: re-saving a player appends a new copy and
+            # leaves the old one in place, so a later record supersedes an
+            # earlier one with the same id.
+            if parsed_player.id_ in new_players:
+                superseded_players += 1
             new_players[parsed_player.id_] = parsed_player
 
         if not self.pawns is None:
@@ -325,12 +334,16 @@ class PlayerApi:
                 else:
                     ArkSaveLogger.api_log(f"Player with ID {member_id} not found in player list")
 
+            if parsed_tribe.tribe_id in new_tribes:
+                superseded_tribes += 1
             new_tribes[parsed_tribe.tribe_id] = parsed_tribe
             new_tribe_to_player[parsed_tribe.tribe_id] = players
 
         self.players = list(new_players.values())
         self.tribes = list(new_tribes.values())
         self.tribe_to_player_map = new_tribe_to_player
+        self.superseded_players = superseded_players
+        self.superseded_tribes = superseded_tribes
 
     def __calc_stat(self, stat: List[int], stat_type: int):
         if stat_type == self.StatType.LOWEST:

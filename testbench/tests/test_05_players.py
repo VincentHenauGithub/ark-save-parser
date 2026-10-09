@@ -47,6 +47,10 @@ def test_matches_files_on_disk(player_api: PlayerApi):
     zero players still "passes" once a broken zero is baselined into the
     snapshot, which is exactly how a store-detection bug stayed hidden.
     """
+    if player_api.from_store:
+        pytest.skip("Player data comes from the in-save store; any files next "
+                    "to the save are leftovers (see test_store_records_all_reachable)")
+
     save_dir = player_api.save.save_dir
     if save_dir is None:
         pytest.skip("Save has no directory on disk")
@@ -98,9 +102,11 @@ def test_store_records_all_reachable(player_api: PlayerApi):
         f"loaded: players={n_players} tribes={n_tribes}"
     )
 
-    assert n_players == n_player_ptrs, (
+    # The store is append-only, so a re-saved player leaves its older copies
+    # behind; those collapse on player id and are counted as superseded.
+    assert n_players + player_api.superseded_players == n_player_ptrs, (
         f"store located {n_player_ptrs} player record(s) but {n_players} "
-        f"player(s) were loaded"
+        f"player(s) were loaded ({player_api.superseded_players} superseded)"
     )
 
     # The record boundary for the last player used to be computed as "up to the
@@ -113,8 +119,8 @@ def test_store_records_all_reachable(player_api: PlayerApi):
         "the last player record in the store was not picked up"
     )
 
-    # Tribe pointers can hold several revisions of the same tribe, which collapse
-    # on tribe id, so this is bounded rather than exact.
-    assert 0 < n_tribes <= n_tribe_ptrs, (
-        f"{n_tribe_ptrs} tribe record(s) in the store but {n_tribes} loaded"
+    assert n_tribes > 0, "no tribes loaded from the store"
+    assert n_tribes + player_api.superseded_tribes == n_tribe_ptrs, (
+        f"{n_tribe_ptrs} tribe record(s) in the store but {n_tribes} loaded "
+        f"({player_api.superseded_tribes} superseded)"
     )

@@ -107,6 +107,8 @@ _STRUCT_READERS: Dict[ArkStructType, Callable[["ArkBinaryParser", int], Any]] = 
     ArkStructType.ArkTribeRankGroup: lambda bb, ds: ArkTribeRankGroup(bb),
     ArkStructType.ArkMilestoneTreeLevelAndIndex: lambda bb, ds: ArkMilestoneTreeLevelAndIndex(bb),
     ArkStructType.ArkPatrolGroupSavedData: lambda bb, ds: ArkPatrolGroupSavedData(bb),
+    # FGuid is serialized natively as 16 raw bytes, not as a property list
+    ArkStructType.Guid: lambda bb, ds: bb.read_uuid(),
 }
 
 # Flags driving how a primitive value is read

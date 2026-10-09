@@ -42,15 +42,10 @@ def test_breakdown(dino_api: DinoApi, snapshot: Snapshot, save):
     with_id = save.get_game_objects(config)
     print(f"Found {len(with_id)} dinos with DinoID1 property")
 
+    dino_uuids = set(dinos.keys())
     count = 0
     for uuid2, d in with_id.items():
-        found = False
-        
-        for uuid, dino in dinos.items():
-            if uuid.bytes == uuid2.bytes:
-                found = True
-                break
-        if not found:
+        if uuid2 not in dino_uuids:
             count += 1
             print(f"Dino not found in containers: {d.blueprint} ({uuid2}) count={count}")
 

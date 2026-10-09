@@ -60,6 +60,23 @@ _KNOWN_SPECIAL_CASES = [
 _CRYOPOD_MARKERS = ("PrimalItem_WeaponEmptyCryopod", "PrimalItem_SCSCryopod",
                     "ItemDinoball.ItemDinoball_C")
 
+# Ship hulls (Brig, Sloop, Trireme, Galleon, ...) are creatures in the save:
+# they carry DinoID1/DinoID2 and a DinoCharacterStatusComponent. Seats and other
+# parts under the same folder are structures, so only the hull classes match.
+_VESSEL_FOLDER = "/Game/Water/Vessels/"
+_VESSEL_HULL_MARKERS = ("ShipBP", "ShipPlayerFollowingBP")
+
+
+def _is_vessel_hull(name: str) -> bool:
+    if not name.startswith(_VESSEL_FOLDER):
+        return False
+    class_name = name.rsplit("/", 1)[-1]
+    return any(marker in class_name for marker in _VESSEL_HULL_MARKERS)
+
+
+def _is_creature_bp(name: str) -> bool:
+    return "_Character_" in name or name in _KNOWN_SPECIAL_CASES or _is_vessel_hull(name)
+
 # Properties that only creatures carry, whichever mod they came from. Scanning
 # for these finds creatures without having to recognise their class path.
 _CREATURE_PROPERTIES = ["DinoID1", "DinoID2"]
@@ -74,9 +91,10 @@ class DinoApi:
     _DEFAULT_CONFIG = GameObjectReaderConfiguration(
         blueprint_name_filter=lambda name: \
             name is not None and \
-                (((("/Creatures/" in name) or ("/Dinos/" in name) or ("/SDinoVariants/" in name) or ("/AstraeosCreatures/" in name)) and "_Character_" in name) or \
+                (((("/Creatures/" in name) or ("/Dinos/" in name) or ("/Dragons/" in name) or ("/SDinoVariants/" in name) or ("/AstraeosCreatures/" in name)) and "_Character_" in name) or \
                 ("DinoCharacterStatusComponent" in name) or \
                 (name in _KNOWN_SPECIAL_CASES) or \
+                _is_vessel_hull(name) or \
                 any(marker in name for marker in _CRYOPOD_MARKERS)))
 
     def __init__(self, save: AsaSave):
@@ -201,7 +219,7 @@ class DinoApi:
             return None
         
         dino = None
-        if "_Character_" in object.blueprint or (object.blueprint in _KNOWN_SPECIAL_CASES):
+        if _is_creature_bp(object.blueprint):
             if uuid in self.parsed_dinos:
                 dino = self.parsed_dinos[uuid]
             else:
@@ -238,7 +256,7 @@ class DinoApi:
         
         for key, obj in objects.items():
 
-            if not only_cryopodded and (("_Character_" in obj.blueprint)  or (obj.blueprint in _KNOWN_SPECIAL_CASES)):
+            if not only_cryopodded and _is_creature_bp(obj.blueprint):
                 is_tamed = (obj.get_property_value("TamedTimeStamp") is not None) or (obj.get_property_value("TamingTeamID") is not None)
                 is_baby = obj.get_property_value("bIsBaby", False)
                 

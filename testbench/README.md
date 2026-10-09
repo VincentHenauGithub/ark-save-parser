@@ -87,8 +87,8 @@ block at the top of `conftest.py` (e.g. enable `DEBUG`), or run a single file:
 pytest tests/test_02_dinos.py -k breakdown
 ```
 
-The suite stops at the **first failure** (`-x` in `pytest.ini`) so the structured
-parser output stays at the bottom of the run, easy to read.
+The suite always runs **every test**, regardless of earlier failures or errors.
+Pass `-x` on the command line to stop at the first failure instead.
 
 ## Failed-object debug dumps
 
