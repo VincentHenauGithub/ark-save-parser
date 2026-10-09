@@ -99,8 +99,8 @@ def save(save_file: Path, dumper: FailedObjectDumper) -> AsaSave:
     1. Parse with mod failures allowed so every failing object is dumped to
        ``debug_dumps/`` (rather than aborting at the first one).
     2. If anything failed, raise a clean summary pointing at the dumps. This
-       errors the fixture, and with ``-x`` the run stops here with the structured
-       parser logs and dump paths right above.
+       errors the fixture (and every test depending on it); the structured
+       parser logs and dump paths are printed right above.
     """
     # The reparse.py helpers reload from the save, so the dumper needs its path.
     dumper.save_path = save_file

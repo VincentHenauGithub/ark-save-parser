@@ -60,6 +60,7 @@ class ArkStructType(Enum):
     ArkTribeRankGroup = "TribeRankGroup"
     ArkMilestoneTreeLevelAndIndex = "MilestoneTreeLevelAndIndex"
     ArkPatrolGroupSavedData = "Struct_PatrolGroupSavedData"
+    Guid = "Guid"
 
     # Static constructor mapping for ArkStructType
     
