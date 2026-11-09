@@ -1,7 +1,11 @@
+import json
+
 from arkparse.object_model.dinos.tamed_dino import TamedDino
 from arkparse.parsing.ark_property_container import ArkPropertyContainer
 from arkparse.parsing.ark_archive import ArkArchive
 from arkparse.classes import Dinos
+from arkparse.utils.json_utils import DefaultJsonEncoder
+
 
 class ClusterDataDino:
 
@@ -60,4 +64,8 @@ class ClusterDataDino:
             "UploadTime": self.upload_time,
             "Dino": self.dino.to_json_obj()
         }
+
+    def to_json_str(self):
+        return json.dumps(self.to_json_obj(), default=lambda o: o.to_json_obj() if hasattr(o, 'to_json_obj') else None,
+                          indent=4, cls=DefaultJsonEncoder)
 

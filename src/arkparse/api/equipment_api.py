@@ -12,8 +12,11 @@ from arkparse.object_model.misc.object_crafter import ObjectCrafter
 from arkparse.parsing import GameObjectReaderConfiguration
 from arkparse.enums import ArkItemQuality, ArkEquipmentStat
 from arkparse.classes.equipment import Equipment as EqClasses
+from arkparse.classes.skins import Skins as SkClasses
 
 from .general_api import GeneralApi
+from ..object_model.misc.skin import Skin
+
 
 class EquipmentApi(GeneralApi):
     _DEFAULT_CONFIG = GameObjectReaderConfiguration(
@@ -23,11 +26,22 @@ class EquipmentApi(GeneralApi):
                             name in (EqClasses.weapons.all_bps + EqClasses.shield.all_bps + EqClasses.saddles.all_bps + EqClasses.armor.all_bps))
     )
 
+    _SKINS_CONFIG = GameObjectReaderConfiguration(
+            blueprint_name_filter=lambda name: name is not None and \
+                        ("PrimalItemSkin_" in name or \
+                            "PrimalItemCostume_" in name or \
+                            "PrimalItemStructureSkin_" in name or \
+                            name in SkClasses.all_bps)
+    )
+
     class Classes:
         WEAPON = Weapon
         SADDLE = Saddle
         ARMOR = Armor
         SHIELD = Shield
+
+    class SkinClasses:
+        SKIN = Skin
 
     def __init__(self, save: AsaSave):
         config = EquipmentApi._DEFAULT_CONFIG
@@ -36,7 +50,9 @@ class EquipmentApi(GeneralApi):
 
     @staticmethod
     def bp_to_class(blueprint: str):
-        if blueprint in EqClasses.weapons.all_bps or ("/Weapons/" in blueprint) or ("/CursedWeapons/" in blueprint):
+        if blueprint in SkClasses.all_bps or ("PrimalItemSkin_" in blueprint) or ("PrimalItemCostume_" in blueprint) or ("PrimalItemStructureSkin_" in blueprint):
+            return EquipmentApi.SkinClasses.SKIN
+        elif blueprint in EqClasses.weapons.all_bps or ("/Weapons/" in blueprint) or ("/CursedWeapons/" in blueprint):
             return EquipmentApi.Classes.WEAPON
         elif blueprint in EqClasses.saddles.all_bps or ("/Saddles/" in blueprint) or ("/CursedSaddles/" in blueprint):
             return EquipmentApi.Classes.SADDLE
@@ -50,6 +66,10 @@ class EquipmentApi(GeneralApi):
     @staticmethod
     def is_applicable_bp(blueprint: str) -> bool:
         return EquipmentApi._DEFAULT_CONFIG.blueprint_name_filter(blueprint)
+
+    @staticmethod
+    def is_applicable_bp_skin(blueprint: str) -> bool:
+        return EquipmentApi._SKINS_CONFIG.blueprint_name_filter(blueprint)
 
     def __get_cls_filter(self, cls: "EquipmentApi.Classes"):
         def create_cursed_variants(list: List[str]) -> List[str]:

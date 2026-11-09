@@ -32,6 +32,22 @@ class SaveContext:
         self.current_time = 0
         self.current_day = 0
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        # threading.local is not supported by pickling: we exclude it from object state
+        state.pop("_local", None)
+        # we store current thread's value
+        state["_generate_unknown_snapshot"] = self.generate_unknown
+        return state
+
+    def __setstate__(self, state):
+        snapshot = state.pop("_generate_unknown_snapshot", False)
+        self.__dict__.update(state)
+        # we create a new thread-local object in the destination process
+        self._local = threading.local()
+        # we restore previously stored value
+        self.generate_unknown = snapshot
+
     @property
     def generate_unknown(self) -> bool:
         """Whether name ids missing from the name table are fabricated instead of
