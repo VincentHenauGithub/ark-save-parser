@@ -34,17 +34,18 @@ class SaveContext:
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        # threading.local n'est pas picklable : on l'exclut de l'état
+        # threading.local is not supported by pickling: we exclude it from object state
         state.pop("_local", None)
-        # On conserve la valeur du thread courant (facultatif, voir plus bas)
+        # we store current thread's value
         state["_generate_unknown_snapshot"] = self.generate_unknown
         return state
 
     def __setstate__(self, state):
         snapshot = state.pop("_generate_unknown_snapshot", False)
         self.__dict__.update(state)
-        # Nouvel objet thread-local dans le process de destination
+        # we create a new thread-local object in the destination process
         self._local = threading.local()
+        # we restore previously stored value
         self.generate_unknown = snapshot
 
     @property
