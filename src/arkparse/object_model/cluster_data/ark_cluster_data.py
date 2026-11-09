@@ -1,9 +1,12 @@
+import json
 from pathlib import Path
 
 from arkparse.object_model.ark_game_object import ArkGameObject
 from arkparse.object_model.cluster_data.cluster_data_item import ClusterDataItem
 from arkparse.parsing.ark_archive import ArkArchive
 from arkparse.object_model.cluster_data.cluster_data_dino import ClusterDataDino
+from arkparse.utils.json_utils import DefaultJsonEncoder
+
 
 class ClusterData:
     def __init__(self, path: Path, uuid: str):
@@ -49,4 +52,14 @@ class ClusterData:
 
         return ArkArchive(data, from_store=False)
 
-    
+    def __str__(self):
+        return f" Path: {self._path.__str__()} - UUID: {self._uuid} - Dinos: {self.dinos} - Items: {self.items}"
+
+    def to_json_obj(self, include_owner_inv_uuid=True):
+        dinos_json = [dino.to_json_obj() for dino in self.dinos]
+        items_json = [item.to_json_obj() for item in self.items]
+        return {"Path": self._path.__str__(), "UUID": self._uuid, "Dinos": dinos_json, "Items": items_json}
+
+    def to_json_str(self):
+        return json.dumps(self.to_json_obj(), default=lambda o: o.to_json_obj() if hasattr(o, 'to_json_obj') else None,
+                          indent=4, cls=DefaultJsonEncoder)

@@ -32,6 +32,21 @@ class SaveContext:
         self.current_time = 0
         self.current_day = 0
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        # threading.local n'est pas picklable : on l'exclut de l'état
+        state.pop("_local", None)
+        # On conserve la valeur du thread courant (facultatif, voir plus bas)
+        state["_generate_unknown_snapshot"] = self.generate_unknown
+        return state
+
+    def __setstate__(self, state):
+        snapshot = state.pop("_generate_unknown_snapshot", False)
+        self.__dict__.update(state)
+        # Nouvel objet thread-local dans le process de destination
+        self._local = threading.local()
+        self.generate_unknown = snapshot
+
     @property
     def generate_unknown(self) -> bool:
         """Whether name ids missing from the name table are fabricated instead of

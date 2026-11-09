@@ -67,8 +67,13 @@ class Dino(ParsedObjectBase):
         self.is_female = self.object.get_property_value("bIsFemale", False)
 
         # Special case for Lumina:
-        if "/Lumina/" in self.object.blueprint:
-            self.is_female = True
+        if hasattr(self.object, "blueprint"):
+            if "/Lumina/" in self.object.blueprint:
+                self.is_female = True
+        elif hasattr(self.object, "class_name"):
+            if "/Lumina/" in self.object.class_name:
+                self.is_female = True
+
 
         self.id_ = DinoId.from_data(self.object)
         self.gene_traits = [GeneTrait(t) for t in self.object.get_array_property_value("GeneTraits")]
@@ -246,7 +251,7 @@ class Dino(ParsedObjectBase):
                      "bIsFemale": self.is_female,
                      "ShortName": self.get_short_name(),
                      "ClassName": "dino",
-                     "ItemArchetype": self.object.blueprint }
+                     "ItemArchetype": self.object.blueprint if hasattr(self.object, "blueprint") else self.object.class_name if hasattr(self.object, "class_name") else "Unknown" }
 
         # Grab dino location if it exists
         if self._location is not None:
